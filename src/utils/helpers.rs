@@ -22,10 +22,12 @@ pub fn generate_random_bits(block_size: u32) -> FieldElement {
     result
 }
 
+/// Generates random number in the specified field as binary element and pads to correct block size.
 pub fn generate_random_element(field: u32) -> FieldElement {
     let block_size = (field as f32).log(2.0).ceil() as u32;
     to_binary(thread_rng().gen_range(0..field), block_size)
 }
+
 /// Converts bit array to decimal expression
 pub fn to_decimal(bits: &FieldElement) -> u32 {
     let mut result = 0;
@@ -39,6 +41,7 @@ pub fn to_decimal(bits: &FieldElement) -> u32 {
     result
 }
 
+/// Converts number to bit array expression
 pub fn to_binary(number: u32, block_size: u32) -> FieldElement {
     let mut result = FieldElement::new();
     let mut state = number;
@@ -47,14 +50,14 @@ pub fn to_binary(number: u32, block_size: u32) -> FieldElement {
         state /= 2;
     }
 
-    // Pad to right size
+    // Pad to correct size
     result.append(&mut vec![0u8; (block_size as usize) - result.len()]);
     result.reverse();
     result
 }
 
 /// Adds elements over 2^n field for any n
-pub fn add_field_elements_over_finite_field(a: &FieldElement, b: &FieldElement) -> FieldElement {
+pub fn add_finite_field(a: &FieldElement, b: &FieldElement) -> FieldElement {
     let mut result = a.to_vec();
     for i in 0..result.len() {
         result[i] = a[i] ^ b[i];
@@ -74,8 +77,10 @@ pub fn multiply_finite_field(a: &FieldElement, b: &FieldElement) -> FieldElement
 
         if (a_n & 0x10) >= 1 {   // x^4
         // if (a_n & 0x1000000) >= 1 {   // x^24 <- for 2^25
+        // if (a_n & 0x40000000) >= 1 {   // x^30 <- for 2^31
             a_n = (a_n << 1) ^ 0x25 // x^5 + x^2 + 1
             // a_n = (a_n << 1) ^ 0x2000145 // x^25 + x^8 + x^6 + x^2 + 1 <- for 2^25
+        //     a_n = (a_n << 1) ^ 0x20000009 // x^31 x^3 + 1 <- for 2^31
         } else {
             a_n <<= 1;
         }

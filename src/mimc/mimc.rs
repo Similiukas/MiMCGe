@@ -1,6 +1,6 @@
 use std::fmt;
-use std::fmt::{Formatter, Pointer};
-use crate::utils::helpers::{add_field_elements_over_finite_field, FieldElement, generate_random_bits, power_finite_field, to_decimal};
+use std::fmt::Formatter;
+use crate::utils::helpers::{add_finite_field, FieldElement, generate_random_bits, power_finite_field, to_decimal};
 
 fn generate_round_constants(size: usize, block_size: u32) -> Vec<FieldElement> {
     let mut result: Vec<FieldElement> = Vec::with_capacity(size);
@@ -12,7 +12,7 @@ fn generate_round_constants(size: usize, block_size: u32) -> Vec<FieldElement> {
 }
 
 pub struct MiMC {
-    pub block_size: u32,
+    block_size: u32,
     rounds: usize,
     field: u32,
     round_constants: Vec<FieldElement>
@@ -20,13 +20,10 @@ pub struct MiMC {
 
 impl MiMC {
     pub fn new(block_size: u32) -> Self {
-        // For field 2 ** block_size
-        // let rounds = ((field as f32).log(2.0) / 3f32.log(2.0)).ceil() as usize;
-        // For prime field, we need cubing function to be a permutation, i.e. gcd(3, p-1) = 1 (original paper chapter 5)
-        // assert_eq!(gcd(3, (field - 1) as usize), 1);
+        // For field 2 ** block_size it must be that block_size is odd
+        assert_eq!(block_size % 2, 1, "Block size must be odd");
         let rounds = (block_size as f32 / 3f32.log(2.0)).ceil() as usize;
         let field = 2u32.pow(block_size);
-        println!("rounds {block_size} {rounds} {field}");
         MiMC {
             block_size,
             rounds,
@@ -35,23 +32,25 @@ impl MiMC {
         }
     }
 
-    pub fn encrypt(&self, plaintext: &FieldElement) -> FieldElement {
+    pub fn encrypt(&self, plaintext: &FieldElement, key: &FieldElement) -> FieldElement {
         let mut state: FieldElement = plaintext.to_vec();
         for round in 0..self.rounds {
-            let temp1= add_field_elements_over_finite_field(&state, &self.round_constants[round]);
-            state = power_finite_field(&temp1, 3);
+            let mut temp= add_finite_field(&key, &self.round_constants[round]);
+            temp = add_finite_field(&state, &temp);
+            state = power_finite_field(&temp, 3);
         }
-        state
+        add_finite_field(&state, &key)
     }
 
-    pub fn decrypt(&self, ciphertext: &FieldElement) -> FieldElement {
+    pub fn decrypt(&self, ciphertext: &FieldElement, key: &FieldElement) -> FieldElement {
         let mut state: FieldElement = ciphertext.to_vec();
         let power: u32 = ((2_i32.pow(self.block_size + 1) - 1) / 3) as u32;
         for round in self.round_constants[..1].iter().chain(self.round_constants[1..].iter().rev()) {
-            let temp = add_field_elements_over_finite_field(&state, round);
+            let mut temp = add_finite_field(&key, round);
+            temp = add_finite_field(&state, &temp);
             state = power_finite_field(&temp, power);
         }
-        state
+        add_finite_field(&state, &key)
     }
 }
 

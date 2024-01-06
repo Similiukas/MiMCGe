@@ -9,10 +9,11 @@ fn test_addition() {
     let a = generate_random_bits(block_size);
     let b = generate_random_bits(block_size);
 
-    let c = add_field_elements_over_finite_field(&a, &b);
+    let c = add_finite_field(&a, &b);
 
     println!("{:?} {:?} {:?}", a, b, c);
-    println!("{} {} {}", to_decimal(&a), to_decimal(&b), to_decimal(&c));
+    println!("{} {} {}\n\n", to_decimal(&a), to_decimal(&b), to_decimal(&c));
+
 
     // println!();
     // println!();
@@ -27,13 +28,10 @@ fn test_addition() {
 fn test_mul() {
     let block_size = 5;
     let a = generate_random_bits(block_size);
-    // let a = vec![1, 1, 1, 1];
-    // let b = vec![1, 0, 1, 1];
     let b = generate_random_bits(block_size);
 
     let c = multiply_finite_field(&a, &b);
 
-    // 3 3 5 8 -> 3 3 5 7
     let d = power_finite_field(&c, 2);
 
     println!("{:?} {:?} {:?} {:?}", a, b, c, d);
@@ -41,15 +39,19 @@ fn test_mul() {
 }
 
 fn test_mimc() {
-    let field = 5;
-    let k = MiMC::new(field);
-    println!("{}", k);
-    let plaintext = generate_random_bits(field);
+    let block_size = 5;
+    let k = MiMC::new(block_size);
+    println!("{k}");
+    let key = generate_random_bits(block_size);
+    println!("Key {} {:?}", to_decimal(&key), key);
+    let plaintext = generate_random_bits(block_size);
     println!("Original:   {} {:?}", to_decimal(&plaintext), plaintext);
-    let ciphertext = k.encrypt(&plaintext);
+    let ciphertext = k.encrypt(&plaintext, &key);
     println!("Ciphertext: {} {:?}", to_decimal(&ciphertext), ciphertext);
     let again = k.decrypt(&ciphertext);
     println!("Decrypted:  {} {:?}", to_decimal(&again), again);
+    let again = k.decrypt(&ciphertext, &key);
+    println!("Decrypted:  {} {:?}\n\n", to_decimal(&again), again);
 }
 
 fn main() {
