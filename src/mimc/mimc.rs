@@ -1,13 +1,12 @@
 use std::fmt;
 use std::fmt::{Formatter, Pointer};
-use crate::utils::helpers::{add_field_elements_over_finite_field, add_field_elements_over_prime_field, FieldElement, gcd, generate_random_bits, generate_random_element, multiply_over_prime_field, power_over_prime_field, to_decimal};
+use crate::utils::helpers::{add_field_elements_over_finite_field, FieldElement, generate_random_bits, power_finite_field, to_decimal};
 
 fn generate_round_constants(size: usize, block_size: u32) -> Vec<FieldElement> {
     let mut result: Vec<FieldElement> = Vec::with_capacity(size);
-    result.push(vec![0; size]); // c_0 must be 0
+    result.push(vec![0; block_size as usize]); // c_0 must be 0
     for _ in 1..size {
-        result.push(generate_random_bits(block_size as usize));
-        // result.push(generate_random_element(field));
+        result.push(generate_random_bits(block_size));
     }
     result
 }
@@ -39,21 +38,18 @@ impl MiMC {
     pub fn encrypt(&self, plaintext: &FieldElement) -> FieldElement {
         let mut state: FieldElement = plaintext.to_vec();
         for round in 0..self.rounds {
-            // let temp = state + &self.round_constants[round];
-            let temp1 = add_field_elements_over_finite_field(&state, &self.round_constants[round]);
-            // state = temp ** 3;
-            let temp2 = multiply_over_prime_field(&temp1, &temp1, self.field, self.block_size as usize);
-            state = multiply_over_prime_field(&temp2, &temp1, self.field, self.block_size as usize);
+            let temp1= add_field_elements_over_finite_field(&state, &self.round_constants[round]);
+            state = power_finite_field(&temp1, 3);
         }
         state
     }
 
     pub fn decrypt(&self, ciphertext: &FieldElement) -> FieldElement {
         let mut state: FieldElement = ciphertext.to_vec();
-        let power: u32 = ((2_i32.pow(self.field + 1) - 1) / 3) as u32;
-        for round in self.round_constants.iter().rev() {
-            let temp = add_field_elements_over_prime_field(&state, round, self.field, self.block_size as usize);
-            state = power_over_prime_field(&temp, power, self.field, self.block_size as usize);
+        let power: u32 = ((2_i32.pow(self.block_size + 1) - 1) / 3) as u32;
+        for round in self.round_constants[..1].iter().chain(self.round_constants[1..].iter().rev()) {
+            let temp = add_field_elements_over_finite_field(&state, round);
+            state = power_finite_field(&temp, power);
         }
         state
     }

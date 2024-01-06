@@ -14,8 +14,8 @@ pub fn gcd(a: usize, b: usize) -> usize {
 ///
 /// assert_eq!(bits, vec![0, 1, 1, 1]);
 /// ```
-pub fn generate_random_bits(block_size: usize) -> FieldElement {
-    let mut result: Vec<u8> = Vec::with_capacity(block_size);
+pub fn generate_random_bits(block_size: u32) -> FieldElement {
+    let mut result: Vec<u8> = Vec::with_capacity(block_size as usize);
     for _ in 0..block_size {
         result.push(thread_rng().gen_range(0..=1));
     }
@@ -23,7 +23,7 @@ pub fn generate_random_bits(block_size: usize) -> FieldElement {
 }
 
 pub fn generate_random_element(field: u32) -> FieldElement {
-    let block_size = (field as f32).log(2.0).ceil() as usize;
+    let block_size = (field as f32).log(2.0).ceil() as u32;
     to_binary(thread_rng().gen_range(0..field), block_size)
 }
 /// Converts bit array to decimal expression
@@ -39,7 +39,7 @@ pub fn to_decimal(bits: &FieldElement) -> u32 {
     result
 }
 
-pub fn to_binary(number: u32, block_size: usize) -> FieldElement {
+pub fn to_binary(number: u32, block_size: u32) -> FieldElement {
     let mut result = FieldElement::new();
     let mut state = number;
     while state > 0 {
@@ -48,7 +48,7 @@ pub fn to_binary(number: u32, block_size: usize) -> FieldElement {
     }
 
     // Pad to right size
-    result.append(&mut vec![0u8; block_size - result.len()]);
+    result.append(&mut vec![0u8; (block_size as usize) - result.len()]);
     result.reverse();
     result
 }
@@ -64,35 +64,44 @@ pub fn add_field_elements_over_finite_field(a: &FieldElement, b: &FieldElement) 
 
 // https://en.wikipedia.org/wiki/Finite_field_arithmetic#C_programming_example
 pub fn multiply_finite_field(a: &FieldElement, b: &FieldElement) -> FieldElement {
-    // let irreducible_poly: FieldElement = vec![1, 0, 0, 1, 1]; // x^4 + x + 1
     let mut p = 0u32;
     let mut a_n = to_decimal(&a);
     let mut b_n = to_decimal(&b);
     while a_n != 0 && b_n != 0 {
-        if (b_n & 1) == 1 {
+        if (b_n & 1) >= 1 {
             p ^= a_n;
         }
 
-        if (a_n & 0x8) >= 1 {
-            a_n = (a_n << 1) ^ 0x13 // // x^4 + x + 1
+        if (a_n & 0x10) >= 1 {   // x^4
+        // if (a_n & 0x1000000) >= 1 {   // x^24 <- for 2^25
+            a_n = (a_n << 1) ^ 0x25 // x^5 + x^2 + 1
+            // a_n = (a_n << 1) ^ 0x2000145 // x^25 + x^8 + x^6 + x^2 + 1 <- for 2^25
         } else {
             a_n <<= 1;
         }
         b_n >>= 1;
     }
-    to_binary(p as u32, 4)
+    to_binary(p, 5)
+}
+
+pub fn power_finite_field(a: &FieldElement, exponent: u32) -> FieldElement {
+    let mut result: FieldElement = a.to_vec();
+    for _ in 0..exponent - 1 {
+        result = multiply_finite_field(&result, a);
+    }
+    result
 }
 
 /// Adds elements over F_p field, where p is prime
-pub fn add_field_elements_over_prime_field(a: &FieldElement, b: &FieldElement, field: u32, block_size: usize) -> FieldElement {
+pub fn add_field_elements_over_prime_field(a: &FieldElement, b: &FieldElement, field: u32, block_size: u32) -> FieldElement {
     to_binary((to_decimal(a) + to_decimal(b)) % field, block_size)
 }
 
-pub fn multiply_over_prime_field(a: &FieldElement, b: &FieldElement, field: u32, block_size: usize) -> FieldElement {
+pub fn multiply_over_prime_field(a: &FieldElement, b: &FieldElement, field: u32, block_size: u32) -> FieldElement {
     to_binary((to_decimal(a) * to_decimal(b)) % field, block_size)
 }
 
-pub fn power_over_prime_field(a: &FieldElement, pow: u32, field: u32, block_size: usize) -> FieldElement {
+pub fn power_over_prime_field(a: &FieldElement, pow: u32, field: u32, block_size: u32) -> FieldElement {
     let mut result: FieldElement = a.to_vec();
     for _ in 0..pow {
         result = multiply_over_prime_field(&result, a, field, block_size);
