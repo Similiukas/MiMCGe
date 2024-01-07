@@ -27,24 +27,24 @@ fn test_addition() {
 }
 
 fn test_mul() {
-    let block_size = 5;
+    let block_size = 17;
     let a = generate_random_bits(block_size);
     let b = generate_random_bits(block_size);
 
-    let c = multiply_finite_field(&a, &b);
+    let c = multiply_finite_field(&a, &b, block_size);
 
-    let d = power_finite_field(&c, 2);
+    let d = power_finite_field(&c, 2, block_size);
 
     println!("{:?} {:?} {:?} {:?}", a, b, c, d);
     println!("{} {} {} {}\n", to_decimal(&a), to_decimal(&b), to_decimal(&c), to_decimal(&d));
 
-    let a1: GF = (to_decimal(&generate_random_bits(block_size))).into();
-    let b1: GF = (to_decimal(&generate_random_bits(block_size))).into();
-
-    let c1 = a1 * b1;
-
-    let d1 = c1.pow(21);
-    println!("{:?} {:?} {:?} {:?}", a1, b1, c1, d1);
+    // let a1: GF = (to_decimal(&generate_random_bits(block_size))).into();
+    // let b1: GF = (to_decimal(&generate_random_bits(block_size))).into();
+    //
+    // let c1 = a1 * b1;
+    //
+    // let d1 = c1.pow(21);
+    // println!("{:?} {:?} {:?} {:?}", a1, b1, c1, d1);
 
 }
 
@@ -74,6 +74,6 @@ fn test_mimc() {
 
 fn main() {
     // test_addition();
-    // test_mul();
-    test_mimc();
+    test_mul();
+    // test_mimc();
 }

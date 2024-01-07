@@ -1,6 +1,17 @@
+use std::collections::HashMap;
 use rand::{Rng, thread_rng};
+use lazy_static::lazy_static;
 
 pub type FieldElement = Vec<u8>;
+
+lazy_static! {
+    static ref IRREDUCIBLE_POLYNOMIALS: HashMap<u32, (u32, u32)> = HashMap::from([
+        (5, (0x10, 0x25)),              // x^4,  x^5 + x^2 + 1
+        (17, (0x10000, 0x20009)),       // x^16, x^17 + x^3 + 1
+        (25, (0x1000000, 0x2000145)),   // x^24, x^25 + x^8 + x^6 + x^2 + 1
+        (31, (0x40000000, 0x80000009)), // x^30, x^31 + x^3 + 1
+    ]);
+}
 
 pub fn gcd(a: usize, b: usize) -> usize {
     return if b == 0 { a } else { gcd(b, a % b ) }
@@ -65,8 +76,18 @@ pub fn add_finite_field(a: &FieldElement, b: &FieldElement) -> FieldElement {
     result
 }
 
-// https://en.wikipedia.org/wiki/Finite_field_arithmetic#C_programming_example
-pub fn multiply_finite_field(a: &FieldElement, b: &FieldElement) -> FieldElement {
+/// Multiplication in extension field 2^n for n as `block_size`. For every `block_size`, multiplication must be
+/// implemented separately as this is f(x) * g(x) mod h(x) where h(x) is the irreducible polynomial (equivalent to prime
+/// number in rings) which is different for every field.
+///
+/// This specific implementation uses [Russian peasant multiplication
+/// algorithm](https://en.wikipedia.org/wiki/Finite_field_arithmetic#C_programming_example). This can be further
+/// optimized using [precomputed tables](https://en.wikipedia.org/wiki/Finite_field_arithmetic#Generator_based_tables),
+/// [hardware specific instructions](https://en.wikipedia.org/wiki/Carry-less_product) or any other method. However, for
+/// small enough fields, this method is rather fast enough.
+pub fn multiply_finite_field(a: &FieldElement, b: &FieldElement, block_size: u32) -> FieldElement {
+    assert!(IRREDUCIBLE_POLYNOMIALS.contains_key(&block_size), "Multiplication for this block size is not implemented");
+    let poly = IRREDUCIBLE_POLYNOMIALS[&block_size];
     let mut p = 0u32;
     let mut a_n = to_decimal(&a);
     let mut b_n = to_decimal(&b);
@@ -75,24 +96,24 @@ pub fn multiply_finite_field(a: &FieldElement, b: &FieldElement) -> FieldElement
             p ^= a_n;
         }
 
-        if (a_n & 0x10) >= 1 {   // x^4
-        // if (a_n & 0x1000000) >= 1 {   // x^24 <- for 2^25
-        // if (a_n & 0x40000000) >= 1 {   // x^30 <- for 2^31
-            a_n = (a_n << 1) ^ 0x25 // x^5 + x^2 + 1
-            // a_n = (a_n << 1) ^ 0x2000145 // x^25 + x^8 + x^6 + x^2 + 1 <- for 2^25
-        //     a_n = (a_n << 1) ^ 0x20000009 // x^31 x^3 + 1 <- for 2^31
+        if (a_n & poly.0) >= 1 {
+            a_n = (a_n << 1) ^ poly.1;
         } else {
             a_n <<= 1;
         }
         b_n >>= 1;
     }
-    to_binary(p, 5)
+    to_binary(p, block_size)
 }
 
-pub fn power_finite_field(a: &FieldElement, exponent: u32) -> FieldElement {
+/// Naive approach for exponentiation in finite field. The implementation is to just multiply the number n times.
+///
+/// This can be optimized further using [square and multiply](https://en.wikipedia.org/wiki/Exponentiation_by_squaring)
+/// method or similar to reduce the number of multiplications.
+pub fn power_finite_field(a: &FieldElement, exponent: u32, block_size: u32) -> FieldElement {
     let mut result: FieldElement = a.to_vec();
     for _ in 0..exponent - 1 {
-        result = multiply_finite_field(&result, a);
+        result = multiply_finite_field(&result, a, block_size);
     }
     result
 }

@@ -37,7 +37,7 @@ impl MiMC {
         for round in 0..self.rounds {
             let mut temp= add_finite_field(&key, &self.round_constants[round]);
             temp = add_finite_field(&state, &temp);
-            state = power_finite_field(&temp, 3);
+            state = power_finite_field(&temp, 3, self.block_size);
         }
         add_finite_field(&state, &key)
     }
@@ -48,7 +48,7 @@ impl MiMC {
         for round in self.round_constants[..1].iter().chain(self.round_constants[1..].iter().rev()) {
             let mut temp = add_finite_field(&key, round);
             temp = add_finite_field(&state, &temp);
-            state = power_finite_field(&temp, power);
+            state = power_finite_field(&temp, power, self.block_size);
         }
         add_finite_field(&state, &key)
     }
