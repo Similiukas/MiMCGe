@@ -13,22 +13,26 @@ fn generate_round_constants(size: usize, block_size: u32) -> Vec<FieldElement> {
 
 pub struct MiMC {
     block_size: u32,
-    rounds: usize,
     field: u32,
+    rounds: usize,
     round_constants: Vec<FieldElement>
 }
 
 impl MiMC {
     pub fn new(block_size: u32) -> Self {
+        let rounds = (block_size as f32 / 3f32.log(2.0)).ceil() as usize;
+        MiMC::with_round_constants(block_size, &generate_round_constants(rounds, block_size))
+    }
+
+    pub fn with_round_constants(block_size: u32, round_constants: &Vec<FieldElement>) -> Self {
         // For field 2 ** block_size it must be that block_size is odd
         assert_eq!(block_size % 2, 1, "Block size must be odd");
-        let rounds = (block_size as f32 / 3f32.log(2.0)).ceil() as usize;
         let field = 2u32.pow(block_size);
         MiMC {
             block_size,
-            rounds,
             field,
-            round_constants: generate_round_constants(rounds, block_size)
+            rounds: round_constants.len(),
+            round_constants: round_constants.to_vec()
         }
     }
 
@@ -64,5 +68,28 @@ impl fmt::Display for MiMC {
             .field(&*format!("\n  field [2^{}]", &self.block_size), &self.field)
             .field("\n  round constants", converted_rc)
             .finish()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::mimc::mimc::MiMC;
+
+    #[test]
+    fn encrypt() {
+        // 0, 5 , 22, 16
+        let round_constants = vec![vec![0;5], vec![0,0,1,0,1], vec![1,0,1,1,0], vec![1,0,0,0,0]];
+        let cipher = MiMC::with_round_constants(5, &round_constants);
+        // Plaintext 15, key 29, ciphertext 7
+        assert_eq!(cipher.encrypt(&vec![0,1,1,1,1], &vec![1,1,1,0,1]), vec![0,0,1,1,1]);
+    }
+
+    #[test]
+    fn decrypt() {
+        // 0, 5 , 22, 16
+        let round_constants = vec![vec![0;5], vec![0,0,1,0,1], vec![1,0,1,1,0], vec![1,0,0,0,0]];
+        let cipher = MiMC::with_round_constants(5, &round_constants);
+        // Ciphertext 7, key 29, ciphertext 15
+        assert_eq!(cipher.decrypt(&vec![0,0,1,1,1], &vec![1,1,1,0,1]), vec![0,1,1,1,1]);
     }
 }
