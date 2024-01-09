@@ -1,15 +1,6 @@
 use std::fmt;
 use std::fmt::Formatter;
-use crate::utils::helpers::{add_finite_field, FieldElement, generate_random_bits, power_finite_field, to_decimal};
-
-fn generate_round_constants(size: usize, block_size: u32) -> Vec<FieldElement> {
-    let mut result: Vec<FieldElement> = Vec::with_capacity(size);
-    result.push(vec![0; block_size as usize]); // c_0 must be 0
-    for _ in 1..size {
-        result.push(generate_random_bits(block_size));
-    }
-    result
-}
+use crate::utils::helpers::{add_finite_field, FieldElement, generate_round_constants, power_finite_field, to_decimal};
 
 pub struct MiMC {
     block_size: u32,
@@ -27,10 +18,9 @@ impl MiMC {
     pub fn with_round_constants(block_size: u32, round_constants: &Vec<FieldElement>) -> Self {
         // For field 2 ** block_size it must be that block_size is odd
         assert_eq!(block_size % 2, 1, "Block size must be odd");
-        let field = 2u32.pow(block_size);
         MiMC {
             block_size,
-            field,
+            field: 2u32.pow(block_size),
             rounds: round_constants.len(),
             round_constants: round_constants.to_vec()
         }
@@ -77,7 +67,7 @@ mod tests {
 
     #[test]
     fn encrypt() {
-        // 0, 5 , 22, 16
+        // 0, 5, 22, 16
         let round_constants = vec![vec![0;5], vec![0,0,1,0,1], vec![1,0,1,1,0], vec![1,0,0,0,0]];
         let cipher = MiMC::with_round_constants(5, &round_constants);
         // Plaintext 15, key 29, ciphertext 7
@@ -86,7 +76,7 @@ mod tests {
 
     #[test]
     fn decrypt() {
-        // 0, 5 , 22, 16
+        // 0, 5, 22, 16
         let round_constants = vec![vec![0;5], vec![0,0,1,0,1], vec![1,0,1,1,0], vec![1,0,0,0,0]];
         let cipher = MiMC::with_round_constants(5, &round_constants);
         // Ciphertext 7, key 29, ciphertext 15

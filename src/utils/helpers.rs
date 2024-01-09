@@ -39,6 +39,16 @@ pub fn generate_random_element(field: u32) -> FieldElement {
     to_binary(thread_rng().gen_range(0..field), block_size)
 }
 
+/// Generates random round constants for MiMC type cipher, where the first constant is 0.
+pub fn generate_round_constants(size: usize, block_size: u32) -> Vec<FieldElement> {
+    let mut result: Vec<FieldElement> = Vec::with_capacity(size);
+    result.push(vec![0; block_size as usize]); // c_0 must be 0
+    for _ in 1..size {
+        result.push(generate_random_bits(block_size));
+    }
+    result
+}
+
 /// Converts bit array to decimal expression
 pub fn to_decimal(bits: &FieldElement) -> u32 {
     let mut result = 0;

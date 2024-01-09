@@ -1,11 +1,13 @@
 use g2p::GaloisField;
 use crate::mimc::mimc::MiMC;
 use crate::mimc_lib::mimc_lib::{GF, MiMCLib};
+use crate::tests::tests::{test_confusion, test_diffusion};
 use crate::utils::helpers::{add_finite_field, generate_random_bits, multiply_finite_field, power_finite_field, to_decimal};
 
 mod utils;
 mod mimc;
 mod mimc_lib;
+mod tests;
 
 fn test_addition() {
     let block_size = 5;
@@ -61,7 +63,6 @@ fn test_mimc() {
     let again = k.decrypt(&ciphertext, &key);
     println!("Decrypted:  {} {:?}\n\n", to_decimal(&again), again);
 
-
     // let l = MiMCLib::new();
     // println!("{l}");
     // let plaintext: GF = (to_decimal(&generate_random_bits(17))).into();
@@ -74,6 +75,8 @@ fn test_mimc() {
 
 fn main() {
     // test_addition();
-    test_mul();
+    // test_mul();
     // test_mimc();
+    test_diffusion(1000000, 5);
+    // test_confusion(100000, 5);
 }

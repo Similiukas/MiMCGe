@@ -8,3 +8,7 @@ edition = "2021"
 g2p = "1.0.1"
 rand = { version = "0.8.5", features = [] }
 lazy_static = "1.4.0"
+
+# For running optimized code
+#[profile.dev]
+#opt-level = 3
