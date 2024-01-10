@@ -4,6 +4,11 @@ use lazy_static::lazy_static;
 
 pub type FieldElement = Vec<u8>;
 
+pub enum CipherType {
+    AES,
+    MiMC,
+}
+
 lazy_static! {
     static ref IRREDUCIBLE_POLYNOMIALS: HashMap<u32, (u32, u32)> = HashMap::from([
         (5, (0x10, 0x25)),              // x^4,  x^5 + x^2 + 1

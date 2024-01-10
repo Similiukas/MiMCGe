@@ -1,7 +1,7 @@
 use std::time::Instant;
 use crate::aes::aes::AES;
 use crate::mimc::mimc::MiMC;
-use crate::utils::helpers::{Cipher, generate_random_bits, generate_round_constants};
+use crate::utils::helpers::{Cipher, CipherType, generate_random_bits, generate_round_constants};
 
 /// Diffusion test for cipher. Initializes the cipher with random key, plaintext and produces ciphertext. Then changes
 /// one bit of plaintext and checks new ciphertext with original to see how many bits have flipped. Repeats this cycle
@@ -45,18 +45,18 @@ fn confusion(cipher: &Box<dyn Cipher>, block_size: u32) -> f64 {
     result / (block_size.pow(2) as f64)
 }
 
-fn choose_cipher(t: usize, block_size: u32) -> Box<dyn Cipher> {
+fn choose_cipher(t: CipherType, block_size: u32) -> Box<dyn Cipher> {
     let rounds = (block_size as f32 / 3f32.log(2.0)).ceil() as usize;
 
     match t {
-        1 => Box::new(AES{}),
-        _ => Box::new(MiMC::with_round_constants(block_size, &generate_round_constants(rounds, block_size)))
+        CipherType::AES => Box::new(AES{}),
+        CipherType::MiMC => Box::new(MiMC::with_round_constants(block_size, &generate_round_constants(rounds, block_size)))
     }
 }
 
-pub fn test_diffusion(test_size: usize, block_size: u32) {
+pub fn test_diffusion(test_size: usize, block_size: u32, cipher: CipherType) {
     let start = Instant::now();
-    let cipher = choose_cipher(0, block_size);
+    let cipher = choose_cipher(cipher, block_size);
 
     let mut result = 0.0;
     for _ in 0..test_size {
@@ -66,9 +66,9 @@ pub fn test_diffusion(test_size: usize, block_size: u32) {
     println!("Final result {} in {:.2?}", result / (test_size as f64), start.elapsed());
 }
 
-pub fn test_confusion(test_size: usize, block_size: u32) {
+pub fn test_confusion(test_size: usize, block_size: u32, cipher: CipherType) {
     let start = Instant::now();
-    let cipher = choose_cipher(1, block_size);
+    let cipher = choose_cipher(cipher, block_size);
 
     let mut result = 0.0;
     for _ in 0..test_size {
