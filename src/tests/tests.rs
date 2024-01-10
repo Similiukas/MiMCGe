@@ -1,13 +1,13 @@
 use std::time::Instant;
+use crate::aes::aes::AES;
 use crate::mimc::mimc::MiMC;
-use crate::utils::helpers::{FieldElement, generate_random_bits, generate_round_constants};
+use crate::utils::helpers::{Cipher, generate_random_bits, generate_round_constants};
 
 /// Diffusion test for cipher. Initializes the cipher with random key, plaintext and produces ciphertext. Then changes
 /// one bit of plaintext and checks new ciphertext with original to see how many bits have flipped. Repeats this cycle
 /// for every bit in plaintext.
-fn diffusion(block_size: u32, round_constants: &Vec<FieldElement>) -> f64 {
+fn diffusion(cipher: &Box<dyn Cipher>, block_size: u32) -> f64 {
     let mut result = 0.0;
-    let cipher = MiMC::with_round_constants(block_size, &round_constants);
     let key = generate_random_bits(block_size);
     let plaintext = generate_random_bits(block_size);
     let ciphertext = cipher.encrypt(&plaintext, &key);
@@ -28,9 +28,8 @@ fn diffusion(block_size: u32, round_constants: &Vec<FieldElement>) -> f64 {
 /// every bit in key.
 ///
 /// Similar to diffusion, changing key bits instead of plaintext being the only difference.
-fn confusion(block_size: u32, round_constants: &Vec<FieldElement>) -> f64 {
+fn confusion(cipher: &Box<dyn Cipher>, block_size: u32) -> f64 {
     let mut result = 0.0;
-    let cipher = MiMC::with_round_constants(block_size, round_constants);
     let key = generate_random_bits(block_size);
     let plaintext = generate_random_bits(block_size);
     let ciphertext = cipher.encrypt(&plaintext, &key);
@@ -46,12 +45,22 @@ fn confusion(block_size: u32, round_constants: &Vec<FieldElement>) -> f64 {
     result / (block_size.pow(2) as f64)
 }
 
+fn choose_cipher(t: usize, block_size: u32) -> Box<dyn Cipher> {
+    let rounds = (block_size as f32 / 3f32.log(2.0)).ceil() as usize;
+
+    match t {
+        1 => Box::new(AES{}),
+        _ => Box::new(MiMC::with_round_constants(block_size, &generate_round_constants(rounds, block_size)))
+    }
+}
+
 pub fn test_diffusion(test_size: usize, block_size: u32) {
     let start = Instant::now();
-    let rounds = (block_size as f32 / 3f32.log(2.0)).ceil() as usize;
+    let cipher = choose_cipher(0, block_size);
+
     let mut result = 0.0;
     for _ in 0..test_size {
-        result += diffusion(block_size, &generate_round_constants(rounds, block_size));
+        result += diffusion(&cipher, block_size);
     }
 
     println!("Final result {} in {:.2?}", result / (test_size as f64), start.elapsed());
@@ -59,10 +68,11 @@ pub fn test_diffusion(test_size: usize, block_size: u32) {
 
 pub fn test_confusion(test_size: usize, block_size: u32) {
     let start = Instant::now();
-    let rounds = (block_size as f32 / 3f32.log(2.0)).ceil() as usize;
+    let cipher = choose_cipher(1, block_size);
+
     let mut result = 0.0;
     for _ in 0..test_size {
-        result += confusion(block_size, &generate_round_constants(rounds, block_size));
+        result += confusion(&cipher, block_size);
     }
 
     println!("Final result {} in {:.2?}", result / (test_size as f64), start.elapsed());

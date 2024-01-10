@@ -13,6 +13,11 @@ lazy_static! {
     ]);
 }
 
+pub trait Cipher {
+    fn encrypt(&self, plaintext: &FieldElement, key: &FieldElement) -> FieldElement;
+    fn decrypt(&self, ciphertext: &FieldElement, key: &FieldElement) -> FieldElement;
+}
+
 pub fn gcd(a: usize, b: usize) -> usize {
     return if b == 0 { a } else { gcd(b, a % b ) }
 }
@@ -50,7 +55,7 @@ pub fn generate_round_constants(size: usize, block_size: u32) -> Vec<FieldElemen
 }
 
 /// Converts bit array to decimal expression
-pub fn to_decimal(bits: &FieldElement) -> u32 {
+pub fn to_decimal(bits: &[u8]) -> u32 {
     let mut result = 0;
     let mut multiple = 1;
     for &bit in bits.iter().rev() {
