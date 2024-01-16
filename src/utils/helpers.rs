@@ -10,11 +10,13 @@ pub enum CipherType {
 }
 
 lazy_static! {
-    static ref IRREDUCIBLE_POLYNOMIALS: HashMap<u32, (u32, u32)> = HashMap::from([
+    static ref IRREDUCIBLE_POLYNOMIALS: HashMap<u32, (u128, u128)> = HashMap::from([
         (5, (0x10, 0x25)),              // x^4,  x^5 + x^2 + 1
         (17, (0x10000, 0x20009)),       // x^16, x^17 + x^3 + 1
         (25, (0x1000000, 0x2000145)),   // x^24, x^25 + x^8 + x^6 + x^2 + 1
         (31, (0x40000000, 0x80000009)), // x^30, x^31 + x^3 + 1
+        (61, (0x1000000000000000, 0x2000000000000027)), // x^60, x^61 + x^5 + x^2 + x + 1
+        (127, (0x40000000000000000000000000000000, 0x80000000000000000000000000000003)) // x^126, x^127 + x + 1
     ]);
 }
 
@@ -44,7 +46,7 @@ pub fn generate_random_bits(block_size: u32) -> FieldElement {
 }
 
 /// Generates random number in the specified field as binary element and pads to correct block size.
-pub fn generate_random_element(field: u32) -> FieldElement {
+pub fn generate_random_element(field: u128) -> FieldElement {
     let block_size = (field as f32).log(2.0).ceil() as u32;
     to_binary(thread_rng().gen_range(0..field), block_size)
 }
@@ -60,7 +62,7 @@ pub fn generate_round_constants(size: usize, block_size: u32) -> Vec<FieldElemen
 }
 
 /// Converts bit array to decimal expression
-pub fn to_decimal(bits: &[u8]) -> u32 {
+pub fn to_decimal(bits: &[u8]) -> u128 {
     let mut result = 0;
     let mut multiple = 1;
     for &bit in bits.iter().rev() {
@@ -73,7 +75,7 @@ pub fn to_decimal(bits: &[u8]) -> u32 {
 }
 
 /// Converts number to bit array expression
-pub fn to_binary(number: u32, block_size: u32) -> FieldElement {
+pub fn to_binary(number: u128, block_size: u32) -> FieldElement {
     let mut result = FieldElement::new();
     let mut state = number;
     while state > 0 {
@@ -108,7 +110,7 @@ pub fn add_finite_field(a: &FieldElement, b: &FieldElement) -> FieldElement {
 pub fn multiply_finite_field(a: &FieldElement, b: &FieldElement, block_size: u32) -> FieldElement {
     assert!(IRREDUCIBLE_POLYNOMIALS.contains_key(&block_size), "Multiplication for this block size is not implemented");
     let poly = IRREDUCIBLE_POLYNOMIALS[&block_size];
-    let mut p = 0u32;
+    let mut p = 0u128;
     let mut a_n = to_decimal(&a);
     let mut b_n = to_decimal(&b);
     while a_n != 0 && b_n != 0 {
@@ -139,15 +141,15 @@ pub fn power_finite_field(a: &FieldElement, exponent: u32, block_size: u32) -> F
 }
 
 /// Adds elements over F_p field, where p is prime
-pub fn add_field_elements_over_prime_field(a: &FieldElement, b: &FieldElement, field: u32, block_size: u32) -> FieldElement {
+pub fn add_field_elements_over_prime_field(a: &FieldElement, b: &FieldElement, field: u128, block_size: u32) -> FieldElement {
     to_binary((to_decimal(a) + to_decimal(b)) % field, block_size)
 }
 
-pub fn multiply_over_prime_field(a: &FieldElement, b: &FieldElement, field: u32, block_size: u32) -> FieldElement {
+pub fn multiply_over_prime_field(a: &FieldElement, b: &FieldElement, field: u128, block_size: u32) -> FieldElement {
     to_binary((to_decimal(a) * to_decimal(b)) % field, block_size)
 }
 
-pub fn power_over_prime_field(a: &FieldElement, pow: u32, field: u32, block_size: u32) -> FieldElement {
+pub fn power_over_prime_field(a: &FieldElement, pow: u32, field: u128, block_size: u32) -> FieldElement {
     let mut result: FieldElement = a.to_vec();
     for _ in 0..pow {
         result = multiply_over_prime_field(&result, a, field, block_size);

@@ -11,7 +11,7 @@ fn generate_round_constants(size: usize, field: u32) -> Vec<GF> {
     let mut result: Vec<GF> = Vec::with_capacity(size);
     result.push(GF::ZERO); // c_0 must be 0
     for _ in 1..size {
-        result.push((to_decimal(&generate_random_element(field))).into());
+        result.push((to_decimal(&generate_random_element(field as u128)) as u32).into());
     }
     result
 }

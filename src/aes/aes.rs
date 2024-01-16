@@ -20,7 +20,7 @@ fn to_u8_slices(elem: &FieldElement) -> Vec<u8> {
 fn from_u8_slices(elem: &Vec<u8>) -> FieldElement {
     let mut result = Vec::with_capacity(128);
     for i in 0..16 {
-        result.append(&mut to_binary(elem[i] as u32, 8));
+        result.append(&mut to_binary(elem[i] as u128, 8));
     }
     result
 }
