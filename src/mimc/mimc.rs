@@ -16,7 +16,7 @@ impl MiMC {
     }
 
     pub fn with_round_constants(block_size: u32, round_constants: &Vec<FieldElement>) -> Self {
-        // For field 2 ** block_size it must be that block_size is odd
+        // For field 2 ^ block_size it must be that block_size is odd
         assert_eq!(block_size % 2, 1, "Block size must be odd");
         MiMC {
             block_size,
@@ -83,7 +83,7 @@ mod tests {
         // 0, 5, 22, 16
         let round_constants = vec![vec![0;5], vec![0,0,1,0,1], vec![1,0,1,1,0], vec![1,0,0,0,0]];
         let cipher = MiMC::with_round_constants(5, &round_constants);
-        // Ciphertext 7, key 29, ciphertext 15
+        // Ciphertext 7, key 29, plaintext 15
         assert_eq!(cipher.decrypt(&vec![0,0,1,1,1], &vec![1,1,1,0,1]), vec![0,1,1,1,1]);
     }
 
@@ -111,7 +111,7 @@ mod tests {
                                    to_binary(51166, 17), to_binary(52563, 17),
                                    to_binary(123364, 17)];
         let cipher = MiMC::with_round_constants(17, &round_constants);
-        // Plaintext 29321, key 17597, ciphertext 77574
+        // Ciphertext 77574, key 17597, plaintext 29321
         assert_eq!(cipher.decrypt(&to_binary(77574, 17), &to_binary(17597, 17)), to_binary(29321, 17));
     }
 

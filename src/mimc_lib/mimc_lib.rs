@@ -24,7 +24,7 @@ pub struct MiMCLib {
 
 impl MiMCLib {
     pub fn new() -> Self {
-        // For field 2 ** block_size it must be that block_size is odd
+        // For field 2 ^ block_size it must be that block_size is odd
         assert_eq!(BLOCK_SIZE % 2, 1, "Block size must be odd");
         let rounds = (BLOCK_SIZE as f32 / 3f32.log(2.0)).ceil() as usize;
         let field = 2u32.pow(BLOCK_SIZE);
