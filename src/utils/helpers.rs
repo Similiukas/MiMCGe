@@ -12,6 +12,7 @@ pub enum CipherType {
 lazy_static! {
     static ref IRREDUCIBLE_POLYNOMIALS: HashMap<u32, (u128, u128)> = HashMap::from([
         (5, (0x10, 0x25)),              // x^4,  x^5 + x^2 + 1
+        (11, (0x400, 0x805)),           // x^10, x^11 + x^2 + 1
         (17, (0x10000, 0x20009)),       // x^16, x^17 + x^3 + 1
         (25, (0x1000000, 0x2000145)),   // x^24, x^25 + x^8 + x^6 + x^2 + 1
         (31, (0x40000000, 0x80000009)), // x^30, x^31 + x^3 + 1
@@ -132,7 +133,7 @@ pub fn multiply_finite_field(a: &FieldElement, b: &FieldElement, block_size: u32
 ///
 /// This can be optimized further using [square and multiply](https://en.wikipedia.org/wiki/Exponentiation_by_squaring)
 /// method or similar to reduce the number of multiplications.
-pub fn power_finite_field(a: &FieldElement, exponent: u32, block_size: u32) -> FieldElement {
+pub fn power_finite_field(a: &FieldElement, exponent: usize, block_size: u32) -> FieldElement {
     let mut result: FieldElement = a.to_vec();
     for _ in 0..exponent - 1 {
         result = multiply_finite_field(&result, a, block_size);

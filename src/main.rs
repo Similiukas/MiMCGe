@@ -9,6 +9,7 @@ mod mimc_lib;
 mod tests;
 mod aes;
 mod mimc_5;
+mod mimc_general;
 
 fn test_addition() {
     let block_size = 5;

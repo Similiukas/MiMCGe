@@ -6,7 +6,7 @@ use crate::utils::helpers::{add_finite_field, Cipher, FieldElement, gcd, generat
 pub struct MiMC5 {
     block_size: u32,
     field: u128,
-    t: u32,
+    t: usize,
     rounds: usize,
     round_constants: Vec<FieldElement>
 }
@@ -23,7 +23,7 @@ impl MiMC5 {
         MiMC5 {
             block_size,
             field: 2u128.pow(block_size),
-            t: 5 - block_size % 4,
+            t: (5 - block_size % 4) as usize,
             rounds: round_constants.len(),
             round_constants: round_constants.to_vec()
         }
@@ -44,7 +44,7 @@ impl Cipher for MiMC5 {
     fn decrypt(&self, ciphertext: &FieldElement, key: &FieldElement) -> FieldElement {
         assert!(self.block_size <= 31, "Decryption for 2^31 field is not implemented (too slow)");
         let mut state: FieldElement = ciphertext.to_vec();
-        let power = (self.t * (2u32.pow(self.block_size) - 1) + 1) / 5;
+        let power = (self.t * (2usize.pow(self.block_size) - 1) + 1) / 5;
         for round in self.round_constants[..1].iter().chain(self.round_constants[1..].iter().rev()) {
             let mut temp = add_finite_field(&key, round);
             temp = add_finite_field(&state, &temp);

@@ -41,7 +41,7 @@ impl Cipher for MiMC {
     fn decrypt(&self, ciphertext: &FieldElement, key: &FieldElement) -> FieldElement {
         assert!(self.block_size <= 31, "Decryption for 2^31 field is not implemented (too slow)");
         let mut state: FieldElement = ciphertext.to_vec();
-        let power: u32 = ((2i32.pow(self.block_size + 1) - 1) / 3) as u32;
+        let power = (2usize.pow(self.block_size + 1) - 1) / 3;
         for round in self.round_constants[..1].iter().chain(self.round_constants[1..].iter().rev()) {
             let mut temp = add_finite_field(&key, round);
             temp = add_finite_field(&state, &temp);
