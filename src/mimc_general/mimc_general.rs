@@ -2,6 +2,22 @@ use std::fmt;
 use std::fmt::Formatter;
 use crate::utils::helpers::{add_finite_field, Cipher, FieldElement, gcd, generate_round_constants, power_finite_field, to_decimal};
 
+/// Finding integer *t* such that **1+t(2^n-1) / e** is an integer.
+///
+/// This value will be between 1 and exponent - 1. It cannot be > exponent - 1, since then we can reduce t to t = t % e.
+///
+/// # Panics
+///
+/// Panics if t is not find in range 0 t < e. Cannot do decryption then, since s, where x^s = x in GF(2^n) does not exist.
+fn find_t(exponent: usize, block_size: u32) -> usize {
+    for t in 1..exponent {
+        if (1 + t * (2_usize.pow(block_size) - 1)) % exponent == 0 {
+            return t
+        }
+    }
+    unreachable!()
+}
+
 pub struct MiMCGn {
     exponent: usize,
     block_size: u32,
@@ -24,7 +40,7 @@ impl MiMCGn {
             exponent,
             block_size,
             field: 2u128.pow(block_size),
-            t: exponent - (block_size % (exponent - 1) as u32) as usize,
+            t: find_t(exponent, block_size),
             rounds: round_constants.len(),
             round_constants: round_constants.to_vec()
         }
@@ -74,6 +90,28 @@ impl fmt::Display for MiMCGn {
 mod tests {
     use crate::mimc_general::mimc_general::MiMCGn;
     use crate::utils::helpers::{Cipher, to_binary};
+
+    #[test]
+    fn encrypt_2() {
+        let block_size = 8;
+        // 0, 79, 42, 125, 150, 10, 103, 30
+        let round_constants = vec![vec![0;8], to_binary(79, block_size), to_binary(42, block_size), to_binary(125, block_size),
+                                   to_binary(150, block_size), to_binary(10, block_size), to_binary(103, block_size), to_binary(30, block_size)];
+        let cipher = MiMCGn::with_round_constants(2, block_size, &round_constants);
+        // Plaintext 143, key 162, ciphertext 83
+        assert_eq!(cipher.encrypt(&to_binary(143, block_size), &to_binary(162, block_size)), to_binary(83, block_size));
+    }
+
+    #[test]
+    fn decrypt_2() {
+        let block_size = 8;
+        // 0, 79, 42, 125, 150, 10, 103, 30
+        let round_constants = vec![vec![0;8], to_binary(79, block_size), to_binary(42, block_size), to_binary(125, block_size),
+                                   to_binary(150, block_size), to_binary(10, block_size), to_binary(103, block_size), to_binary(30, block_size)];
+        let cipher = MiMCGn::with_round_constants(2, block_size, &round_constants);
+        // Ciphertext 83, key 162, ciphertext 143
+        assert_eq!(cipher.decrypt(&to_binary(83, block_size), &to_binary(162, block_size)), to_binary(143, block_size));
+    }
 
     #[test]
     fn encrypt_3() {

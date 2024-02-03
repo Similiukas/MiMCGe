@@ -12,6 +12,7 @@ pub enum CipherType {
 lazy_static! {
     static ref IRREDUCIBLE_POLYNOMIALS: HashMap<u32, (u128, u128)> = HashMap::from([
         (5, (0x10, 0x25)),              // x^4,  x^5 + x^2 + 1
+        (8, (0x80, 0x11D)),             // x^7,  x^8 + x^4 + x^3 + x^2 + 1
         (11, (0x400, 0x805)),           // x^10, x^11 + x^2 + 1
         (17, (0x10000, 0x20009)),       // x^16, x^17 + x^3 + 1
         (25, (0x1000000, 0x2000145)),   // x^24, x^25 + x^8 + x^6 + x^2 + 1
