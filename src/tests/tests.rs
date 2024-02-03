@@ -1,6 +1,7 @@
 use std::time::Instant;
 use crate::aes::aes::AES;
 use crate::mimc::mimc::MiMC;
+use crate::mimc_general::mimc_general::MiMCGn;
 use crate::utils::helpers::{Cipher, CipherType, generate_random_bits};
 
 /// Diffusion test for cipher. Initializes the cipher with random key, plaintext and produces ciphertext. Then changes
@@ -48,7 +49,8 @@ fn confusion(cipher: &Box<dyn Cipher>, block_size: u32) -> f64 {
 fn choose_cipher(t: CipherType, block_size: u32) -> Box<dyn Cipher> {
     match t {
         CipherType::AES => Box::new(AES{}),
-        CipherType::MiMC => Box::new(MiMC::new(block_size))
+        CipherType::MiMC => Box::new(MiMC::new(block_size)),
+        CipherType::MiMCGn => Box::new(MiMCGn::new(3, block_size)),
     }
 }
 
@@ -56,6 +58,7 @@ pub fn test_diffusion(test_size: usize, block_size: u32, cipher: CipherType) {
     let start = Instant::now();
     let cipher = choose_cipher(cipher, block_size);
 
+    // TODO: right now building the cipher once, that is, RC are chosen once. Is this what we want?
     let mut result = 0.0;
     for _ in 0..test_size {
         result += diffusion(&cipher, block_size);

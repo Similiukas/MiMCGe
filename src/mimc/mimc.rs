@@ -1,6 +1,6 @@
 use std::fmt;
 use std::fmt::Formatter;
-use crate::utils::helpers::{add_finite_field, Cipher, FieldElement, generate_round_constants, power_finite_field, to_decimal};
+use crate::utils::helpers::{add_finite_field, Cipher, FieldElement, generate_round_constants, square_multiply, to_decimal};
 
 pub struct MiMC {
     block_size: u32,
@@ -33,19 +33,19 @@ impl Cipher for MiMC {
         for round in 0..self.rounds {
             let mut temp= add_finite_field(&key, &self.round_constants[round]);
             temp = add_finite_field(&state, &temp);
-            state = power_finite_field(&temp, 3, self.block_size);
+            state = square_multiply(&temp, 3, self.block_size);
         }
         add_finite_field(&state, &key)
     }
 
     fn decrypt(&self, ciphertext: &FieldElement, key: &FieldElement) -> FieldElement {
-        assert!(self.block_size <= 31, "Decryption for 2^31 field is not implemented (too slow)");
+        assert!(self.block_size <= 125, "Decryption for 2^125 field is not implemented (overflow of decryption exponent)");
         let mut state: FieldElement = ciphertext.to_vec();
-        let power = (2usize.pow(self.block_size + 1) - 1) / 3;
+        let power = (2u128.pow(self.block_size + 1) - 1) / 3;
         for round in self.round_constants[..1].iter().chain(self.round_constants[1..].iter().rev()) {
             let mut temp = add_finite_field(&key, round);
             temp = add_finite_field(&state, &temp);
-            state = power_finite_field(&temp, power, self.block_size);
+            state = square_multiply(&temp, power, self.block_size);
         }
         add_finite_field(&state, &key)
     }

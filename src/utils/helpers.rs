@@ -7,6 +7,7 @@ pub type FieldElement = Vec<u8>;
 pub enum CipherType {
     AES,
     MiMC,
+    MiMCGn,
 }
 
 lazy_static! {
@@ -18,6 +19,7 @@ lazy_static! {
         (25, (0x1000000, 0x2000145)),   // x^24, x^25 + x^8 + x^6 + x^2 + 1
         (31, (0x40000000, 0x80000009)), // x^30, x^31 + x^3 + 1
         (61, (0x1000000000000000, 0x2000000000000027)), // x^60, x^61 + x^5 + x^2 + x + 1
+        (125, (0x10000000000000000000000000000000, 0x200000000000000000000000004BBE69)),// x^124, x^125 + x^22 + x^19 + x^17 + x^16 + x^15 + x^13 + x^12 + x^11 + x^10 + x^9 + x^6 + x^5 + x^3 + 1
         (127, (0x40000000000000000000000000000000, 0x80000000000000000000000000000003)) // x^126, x^127 + x + 1
     ]);
 }
@@ -27,7 +29,7 @@ pub trait Cipher {
     fn decrypt(&self, ciphertext: &FieldElement, key: &FieldElement) -> FieldElement;
 }
 
-pub fn gcd(a: usize, b: usize) -> usize {
+pub fn gcd(a: u128, b: u128) -> u128 {
     return if b == 0 { a } else { gcd(b, a % b ) }
 }
 
@@ -100,6 +102,24 @@ pub fn add_finite_field(a: &FieldElement, b: &FieldElement) -> FieldElement {
     result
 }
 
+fn _multiply_finite_field(mut a: u128, mut b: u128, block_size: u32) -> u128 {
+    let poly = IRREDUCIBLE_POLYNOMIALS[&block_size];
+    let mut p = 0u128;
+    while a != 0 && b != 0 {
+        if (b & 1) >= 1 {
+            p ^= a;
+        }
+
+        if (a & poly.0) >= 1 {
+            a = (a << 1) ^ poly.1;
+        } else {
+            a <<= 1;
+        }
+        b >>= 1;
+    }
+    p
+}
+
 /// Multiplication in extension field 2^n for n as `block_size`. For every `block_size`, multiplication must be
 /// implemented separately as this is f(x) * g(x) mod h(x) where h(x) is the irreducible polynomial (equivalent to prime
 /// number in rings) which is different for every field.
@@ -111,23 +131,7 @@ pub fn add_finite_field(a: &FieldElement, b: &FieldElement) -> FieldElement {
 /// small enough fields, this method is rather fast enough.
 pub fn multiply_finite_field(a: &FieldElement, b: &FieldElement, block_size: u32) -> FieldElement {
     assert!(IRREDUCIBLE_POLYNOMIALS.contains_key(&block_size), "Multiplication for this block size is not implemented");
-    let poly = IRREDUCIBLE_POLYNOMIALS[&block_size];
-    let mut p = 0u128;
-    let mut a_n = to_decimal(&a);
-    let mut b_n = to_decimal(&b);
-    while a_n != 0 && b_n != 0 {
-        if (b_n & 1) >= 1 {
-            p ^= a_n;
-        }
-
-        if (a_n & poly.0) >= 1 {
-            a_n = (a_n << 1) ^ poly.1;
-        } else {
-            a_n <<= 1;
-        }
-        b_n >>= 1;
-    }
-    to_binary(p, block_size)
+    to_binary(_multiply_finite_field(to_decimal(&a), to_decimal(&b), block_size), block_size)
 }
 
 /// Naive approach for exponentiation in finite field. The implementation is to just multiply the number n times.
@@ -140,6 +144,17 @@ pub fn power_finite_field(a: &FieldElement, exponent: usize, block_size: u32) ->
         result = multiply_finite_field(&result, a, block_size);
     }
     result
+}
+
+fn _square_multiply(y: u128, x: u128, exponent: u128, block_size: u32) -> u128 {
+    return if exponent == 0 { y }
+    else if exponent % 2 == 0 { _square_multiply(y, _multiply_finite_field(x, x, block_size), exponent / 2, block_size) }
+    else { _square_multiply(_multiply_finite_field(x, y, block_size), _multiply_finite_field(x, x, block_size), (exponent - 1) / 2, block_size) }
+}
+
+/// Fast exponentiation implementation using [square and multiply](https://en.wikipedia.org/wiki/Exponentiation_by_squaring) algorithm.
+pub fn square_multiply(a: &FieldElement, exponent: u128, block_size: u32) -> FieldElement {
+    to_binary(_square_multiply(1, to_decimal(&a), exponent, block_size), block_size)
 }
 
 /// Adds elements over F_p field, where p is prime
