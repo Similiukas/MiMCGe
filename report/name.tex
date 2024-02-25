@@ -1,0 +1,32 @@
+\documentclass{article}
+
+% \usepackage[
+% backend=biber,
+% style=alphabetic,
+% sorting=ynt
+% ]{biblatex}
+% \addbibresource{sample.bib}
+
+\title{Bibliography management: \texttt{biblatex} package}
+\author{Overleaf}
+\date{ }
+
+\begin{document}
+
+\maketitle
+
+Using \texttt{biblatex} you can display a bibliography divided 
+into sections, depending on citation type. Let's cite! Einstein's 
+journal paper \cite{texbook} and Dirac's book \cite{texbook} are 
+physics-related items. Next, \textit{The \LaTeX\ Companion} book
+ \cite{texbook}, Donald Knuth's website \cite{texbook},
+\textit{The Comprehensive Tex Archive Network} (CTAN) 
+\cite{texbook} are \LaTeX-related items; but the others, Donald Knuth's items, 
+\cite{texbook} are dedicated to programming. 
+
+\medskip
+
+\bibliographystyle{plain} % We choose the "plain" reference style
+\bibliography{sample} % Entries are in the refs.bib file
+
+\end{document}

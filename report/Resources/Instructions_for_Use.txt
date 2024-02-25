@@ -1,0 +1,55 @@
+For information on how to use basic LaTeX commands, please see the University of Birmingham Overleaf page: https://www.overleaf.com/edu/bham
+
+Specific instructions for using the UoBLab1 class:
+
+    Your lab report tex file should always begin with the following code:
+
+        \documentclass{Resources/UoBLab1}
+        \pubyear{2017}
+        \subjectarea{University of Birmingham Lab Report}
+
+        \begin{document}
+        \firstpage{1}
+
+        \title{Report Title}
+        \author{Author}
+        \course{Degree Course}
+        \school{School/College}
+        \date{Date}
+        \keywords{keyword1, keyword2, keyword3, etc.}
+
+        \maketitle
+
+    The document class would normally take an argument such as report or article, but in this case we reference our own class file in the Resources folder.
+    \pubyear{...} should take the year of writing as its argument, this command renders the date on the top right of the title page.
+    \subjectarea{...} defines the text in grey at the top of the report.
+    \title{...} is simply the title of your report, \author{..} is your name, \course{...} is your degree course, etc.
+
+
+    For your abstract you should use the unique abstract environment, accessed through:
+    
+        \begin{abstract}
+            Abstract text goes here.
+        \end{abstract}
+    
+    Alternatively you could place the abstract inside an unnumbered section (section*) abs use the \absection command for bold abstract text:
+
+        \section*{ABSTRACT}
+            \absection
+            Abstract text goes here.
+
+    (An end section command is not required; it ends when the next section begins.)
+
+    
+
+    To reference a source, you should add the source to the references section at the end of the tex file, within the 'thebibliography' environment.
+
+        \begin{thebibliography}{}
+            \bibitem{referenceLabel}
+            Author, Paper, Journal, URL, etc.
+        \end{thebibliography}
+
+    Then to refer to this in the body of the report we simply just use the \cite command:
+        
+        This is similar to the work of <author> on <paper> from 2012.\cite{referenceLabel}
+        

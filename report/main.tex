@@ -1,0 +1,358 @@
+\documentclass{Resources/UoBLab1}
+
+% theorems and stuff https://www.overleaf.com/learn/latex/Theorems_and_proofs
+\usepackage{amsthm}
+\usepackage{etoolbox}
+% \usepackage{parskip}
+% \usepackage{indentfirst}    % To indent first paragraph after section starts
+\theoremstyle{definition}
+% theorem numbering: https://tex.stackexchange.com/questions/45817/theorem-definition-lemma-problem-numbering
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+% ignoring indetation after definition/theorem and stuff https://tex.stackexchange.com/questions/176027/no-indentation-after-theorem-environment-with-amsthm
+% \AfterEndEnvironment{definition}{\noindent\ignorespaces}
+
+% hyper links: https://tex.stackexchange.com/questions/823/remove-ugly-borders-around-clickable-cross-references-and-hyperlinks
+% \usepackage{cite}
+\usepackage{xcolor} % hyperref color stuff
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!80!black},
+    urlcolor={blue!80!black}
+}
+
+\pubyear{2023}
+\subjectarea{Computer Science Project}
+\begin{document}
+\firstpage{1}
+
+\title{Try different polynomials in the structure of MiMC and analyse efficiency, and basic cryptographic properties.}
+\author{Simonas Tautvaišas}
+\course{M.Sci. Mathematics and Computer Science}
+\supervisor{Dr Rishiraj Bhattacharyya}
+\school{School of Mathematics}
+\date{2023-12-16}
+
+\maketitle
+
+% check references URLs
+% spell check su grammarly
+% pakeisti degree is M.Sci.
+% Maybe also have a table of contents?
+% Paziureti "kabutes" ar tikrai taip reikia jas deti
+% Galbut paziureti "we" ir bandyti perfrazuoti
+% not everything is a theorem, there are lemmas as well
+
+words: 632/981/1932/4345
+
+\begin{abstract}
+    Talk mostly about what was in the proposal but simplified. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+\end{abstract}
+
+% ------------- INTRODUCTION ----------------
+\section{Introduction}
+\begin{itemize}
+    \item Talk about modern cryptography and explain SNARK, MPC, ZK
+   \item What previously has been done related to this
+    \item What we are going to do
+    \begin{itemize}
+        \item Take new polynomial
+        \item Prove that it's still secure
+        \item Works for ZK, MPC?
+        \item Performance check
+    \end{itemize}
+\end{itemize}
+\vspace{15pt}
+In modern day cryptography there are many new techniques that focus on problems beyond classic confidentiality and authenticity between two-party communications. Research ideas like zero-knowledge proofs (ZK), secure multi-party computation (MPC) or fully homomorphic encryption (FHE) have grown in popularity over recent years. A large class of applications that use these ideas have cryptographic schemes that focus on minimizing the number of multiplications. Primarily, there are algorithms that work in a specific field of $\mathbb{F}_p$ or $\operatorname{GF}(p)$ for a prime $p \geq 3$. Working in a Galois field gives a few unique properties since numbers are in a ring structure. Some examples of cryptographic functions which capitalize these properties to lower number of multiplications include GMiMC\cite{GMiMC}, Poseidon\cite{Poseidon}, Griffin\cite{Griffin} and MiMC\cite{MiMC}.
+
+The goal to lower the number of multiplications comes from the fact that these algorithms are specifically intended to be optimized for ZK, MPC and FHE. Consider the current block cipher standard AES which with modern hardware equipped with CPU specific instruction sets (AES-NI) can process close to 1GB/s\cite{AESNI} of data. However in MPC context, this number is drastically lower which limits the usage of AES in multi-party computation protocols\cite{AESInMPC} \textcolor{orange}{Nesu tikras del to cite. Tikras is LowMC 2nd page, 2nd par}. This comes from the fact that traditionally ciphers are built from linear and non-linear blocks which have similar costs in hardware and software. However, in the MPC or FHE context, linear operations, which can be simply viewed as XOR operations rather than non-linear AND operations, are way cheaper and are essentially free since they only incur local computation. Thus the need for ciphers which optimize low multiplicative complexity arises\textcolor{red}{should reread and see if it fits with subsection 1.1 and doesn't repeat same things}.
+
+\subsection{Related work}
+\textbf{Secure multi-party computation.} The usage of cloud computing over the past decade has grown immensely\textcolor{orange}{butu gerai rasti souce, bet vis roda future trends} and it is predicted that by 2028 more than 50\% of businesses will use it\cite{CloudTrend}. Thus, one of cloud computing needs is for devices to jointly compute some result and be assured that the information is private and correct. This is the goal of secure multi-party computation (MPC) first introduced by Goldreich, Micali and Wigderson\cite{MPCFirst}. One other usage of MPC, for example, could be to check person's DNA against a database of cancer patients' DNA, to see if the person is in high risk group for certain cancer type. Clearly, DNA is a highly private information hence should not be revealed, however, using MPC, we can solve this issue guaranteeing privacy.
+\textcolor{blue}{gal parasyti kokius cipher ar kazka praktisko, kas yra su tuo MPC.}
+
+MPC is not just a theoretical concept as it has been successfully used in practice. One such example is in Estonia where a privacy preserving study has been conducted using MPC framework Sharemind\cite{Sharemind}. Encrypted income tax together with higher education records have been collected to look for a correlation between working during studies and failing to graduate.\cite{Estija}. One of the key aspects which is fundamental in MPC is the secret sharing which allows multiple parties to share a secret in a way no single party is able to reconstruct the secret on their own. Various secret sharing schemes are used, such as Shamir's Secret Sharing\cite{Shamir}. Another fundamental aspect in MPC is correctness, which provides evidence that neither of the parties cheat or manipulate the data. This is ensured using Zero-Knowledge proofs.\medskip
+
+\noindent\textbf{Zero-Knowledge.} The term Zero-Knowledge (ZK) proofs were first introduced by Goldwasser, Micali and Rackoff\cite{ZKOrigin} where they give a great example of what it is: to prove that a graph is Hamiltonian it suffices to give a Hamiltonian path, however this rather gives more information than just the single bit whether the graph is Hamiltonian or not. Thus, loosely speaking, Zero-Knowledge proofs yield nothing more than just the validity of the assertion.
+
+% https://www.reddit.com/r/LaTeX/comments/gqcqug/if_underfulll_hbox_badness_10000_in_paragraph_is/
+There are many flavours in which these proofs come depending on the application. The choice depends on the desired security and performance properties. For example, considering security settings, most protocols depend on a number of assumptions. They are in computational nature, where some mathematical problem is assumed to be hard to solve. This can be an assumption that a hash function behaves like a truly random function.\cite{RNGZK}. There are also interactive and non-interactive proofs. For example, we can interactively prove graph isomorphism\cite{ZKProofSystemsBook}. Interactive proofs are such where the prover and verifier interact over multiple rounds and can change responses based on the already received messages. However, what we are more interested in are non-interactive Zero-Knowledge proofs (NIZK) proposed by Blum, Feldman and Micali\cite{NIZK}.\medskip
+
+\noindent\textbf{Fully Homomorphic Encryption.} One such NIZK is the Boneh-Goh-Nissim\cite{BGNCipher} encryption which is somewhat homomorphic with respect to addition and multiplication respectively. Homomorphic means that computation and analysis can be performed on encrypted data without first decrypting it. There are different levels of homomorphisms from the simplest \textit{partially} homomorphic, \textit{somewhat} homomorphic to \textit{fully} homomorphic encryption (FHE). This level of homomorphism allows computation of data with arbitrary level of depth or complexity\cite{FHEPHD}. Note, that the first FHE cryptography system appeared only recently (2009\cite{FHEPHD}) even though it was first proposed over 45 years ago\cite{FHEMention} as privacy homomorphism.
+
+Currently, it is one of the more active research areas in cryptography, as its' applications are invaluable to modern day computing. It allows data to be computed by untrusted environment (such as cloud computing) without breaking confidentiality and preserving privacy concerns. At the moment, the main limitations is the increased computational degree, especially the multiplicative degree, however, works are made to make it more efficient and reduce the overhead when computing with such data\cite{FHEImprovement1}\cite{FHEImprovement2}.\textcolor{blue}{Maybe whether our cipher will be like that}\medskip
+
+\noindent\textbf{SNARKs.} There is a problem with non-interactive proof systems when the proof is bigger than the statement itself. To deal with this, we need to make sure that the proofs are brief. If we take NIZK and add another property \textit{succinctness}, then we can also look at a succint non-interactive argument of knowledge (SNARK) systems. What succinctness means is that the proof is extremely efficient to verify and also much smaller than the statement itself.
+
+One way this property is applied is through the usage of \textit{verifiable computation}, formalised by Gennaro, Gentry and Parno\cite{UntrustedWorkers}. They describe a system where a computationally weak client can outsource computationally heavy task to one or more workers, for example in cloud computing environment. Then the workers return the result together with a proof that such result is correct. SNARK guarantees that the verification of the proof is easier than doing the task itself. Thus, the client is assured they got the required result without doing heavy computations themselves.
+
+One such almost practical implementation is Pinocchio\cite{Pinocchio}. Using this system, it is possible to produce a scheme to convince a client that the computation is correct. This is done using a compiler which converts C code into a format suitable for verification. It has been tested on gas simulations, image matching and computing SHA-1 and shown to be faster than native execution showing potential for zero-knowledge applications. Advancements have been to achieve practical implementations of zero knowledge proof systems such as Gepetto\cite{Gepetto}, MIRAGE\cite{Mirage}, Buffet\cite{Buffet} and others. One problem with these systems, is that they require a trusted setup\textcolor{orange}{what is trusted setup?}, however, there are also \textit{zero-knowledge Scalable Transparent ARguments of Knowledge} (zk-STARK) proof systems, introduced by Eli Ben-Sasso et al\cite{STARK}. They offer transparency which means anyone can verify the proof without needing any secret information. This is particularly useful in decentralised applications like blockchain. In fact, the first widespread use of zk-SNARK is in the implementation of zerocash blockchain\cite{zcash}.\medskip
+
+\noindent\textbf{Bottlenecks.} In most of these scenarios for MPC, ZK and FHE, part of the circuit that is being evaluated is a pseudo-random number function (PRF), a collision resistant function or symmetric encryption. In a lot of these cases, the underlying bottleneck is the order of multiplications. Thus, research is done to create new ciphers and hash functions which circumvent this weakness. \textcolor{gray}{There are encryption schemes such as Ring-LWE\cite{RINGLWE} that offers lower multiplicative complexity in homomorphic scenarios compared to traditional number theoretic encryption schemes. Then there are CKKS\cite{CKKS}, BFV\cite{BFV1}\cite{BFV2} and even recent improvements to BFV\cite{BFVImprov} which improve Ring-LWE by leveraging low-degree polynomials to perform operations with reduced multiplicative degree.}. There is also the already mentioned cipher schemes Poseidon\cite{Poseidon}, MiMC\cite{MiMC}. There are also cipher families like Rescue together with Vision\cite{Rescue} which try to minimize arithmetic complexity by using simple round function and favouring addition over multiplication. These families are specifically intended to be used in zk-STARK and MPC scenarios.\textcolor{blue}{Kazkaip gal dar kazka su tuo parasyt ir graziau tiesiog? Butu gerai ta bottleneck argumentuoti. Tiesiog paimti is vieno cipher (pvz rescue) ir kodel reikia mazo to mult degree}
+
+Even though the concepts for ZK, MPC, FHE have been introduced in the 70s and 80s, the first practical implementations are relatively recent. However, as the world transitions more and more into the digital cyberspace, use cases for these principles are now more important than ever. Privacy and data correctness plays a significant role in every day life. We want to make sure, that our sensitive personal data is handled properly and not leaked to any malicious third party. Thus, getting more efficient and better optimized fundamental encryption schemes allows for bigger widespread tool creation and usage which ensure these concepts.
+
+\subsection{Our Goals}
+In this project, we are going to focus on MiMC, which is constructed of the simplified round function of the Knudsen-Nyberg cipher from 1995\cite{KNCipher}. The core component of this algorithm is the use of \(f(x)=x^3\) APN (almost perfect nonlinear) function \textcolor{red}{add reference to what it is or explain it or both}. What we are going to do is \textit{build new ciphers based on the structure of MiMC by trying different polynomials to better understand how cryptographic algorithms are proven to be secure and then see whether our newly built cipher is efficient and what are the possible applications.}
+
+Changing the core function of MiMC which is proven to be secure with a different polynomial is not enough to say that our new cipher is also secure. We are still required to prove that it holds key cryptographic properties like \textit{Diffusion}, \textit{Confussion}, \textit{Avalance Effect}, \textit{Key Sensitivity}, etc. \textcolor{red}{should probably say only the ones being tested}. We will use various methods to test these properties which include mathematical analysis, simulation, and empirical testing. \textcolor{red}{papildyti, apie testavimo budus}
+
+After deciding what are the polynomials we will use for the ciphers, we will have to build them. We will have to check various properties using simulation and testing to be more confident whether our ciphers are indeed secure. Moreover, we will be able to compare various polynomials to see which one is the most efficient. We will also compare it with the original MiMC cipher to check if we perhaps improved it or at least got similar results. To do this, a program is written in Rust programming language. The choice for this language is the growing popularity due to its high performance, reliability, great community and it is also author's subjective preference. As this project is more theory focused and not coding, the implementation part will discuss some key aspects of testing and rather than the overall software design.
+
+Having implemented the ciphers and checked that the new ciphers are secure, we will check what are the possible applications of it. Since the original idea of MiMC was to design a cipher with the intent of being ZK-friendly, we will have to verify whether our new cipher is still applicable for this purpose\textcolor{red}{reread and check what are the actual results we got}.
+
+
+% ------------- BUILDING NEW CIPHERS ----------------
+\section{Building new ciphers}
+\begin{itemize}
+    \item What if we would try x\^ 3 - 1 or something?
+    \item The math behind fields and how all operations work there.
+    \item Why taking these polynomials. The idea is that we need a permutation polynomial over our selected field $\mathbb{F}_n$. Need to argue why it has to be a polynomial of this form. Then can show what are these permutation polynomials. Explain \(x^n is a permutation if and only if gcd(exponent, 2^n - 1) = 1\)\par
+    \textcolor{blue}{Maybe use \textbf{GTDS} as well to get new polynomial and use that paper to show that our newly built cipher is still cryptographically secure?}
+    \item \textcolor{blue}{Maybe take some polynomial which would not work $x^2$ and show why it doesn't work.}
+    \item New cipher structure with new parameters (how many rounds, new field, block size etc)
+    \begin{itemize}
+        \item Could do normal MiMC and could do Feistel GMiMC maybe?
+    \end{itemize}
+\end{itemize}
+\vspace{10pt}
+In general, a block cipher can be described as a function of a pair:
+\[
+f : m \times k \to c,\quad f^{-1} : c \times k \to m,
+\]
+where $f$ encrypts the message $m$ with key $k$ and $f^{-1}$ decrypts the ciphertext $c$. Thus, in general, what we are always looking for is a to find a function $f$ such that\(\forall k \in \mathcal{K}\), where $\mathcal{K}$ is the domain of $k$ we have,
+\[
+(f^{-1} \circ f)(m, k) = m.
+\]
+In practice, the domains of $\mathcal{M}$, $\mathcal{K}$ and $\mathcal{C}$ are finite, hence by Universal Mapping Theorem (Theorem 72\cite{CryptanalysisBook}), any cipher can be written as polynomial system of equations over $\operatorname{GF}(p)$, for any prime $p$, where $\operatorname{GF}$ is the Galois (finite) field. In general, working in Galois fields is extremely useful, as it allows to construct ciphers and also we will see that it allows for fast computational implementations\textcolor{red}{veliau parasyt, kad tikrai taip}. However, first, we need to understand the maths of how to work in Galois fields as our cipher will operate in $\operatorname{GF}(p^n)$. We have to properly define such simple things as addition and multiplication once again, as these operations behave differently than in the standard fields of $\mathbb{N}$, $\mathbb{R}$ or $\mathbb{C}$.
+
+After that, we can try to look at MiMC and its' underlying APN $x^3$. Understanding why this particular polynomial works as a cipher is the key to building new ciphers in the same structure. Trying any polynomial and then hoping that we can find the inverse $f^{-1}$ which would decrypt our cipretext is the backwards way of thinking of how ciphers are actually created. We need to prove mathematically that for any message $m$ and any key $k$, we can indeed find the decryption function, such that \(f^{-1} \circ f = id\), where $id$ is the identity function. If we do that, then we have successfully created a cipher algorithm.
+
+However, this is just the first step of creating a properly secure cipher algorithm. What we are then tasked to do is prove mathematically, that it is secure. First, it is important to understand what it means to mathematically prove that the cipher is "secure". Then one of the methods explored in this project to prove this, is showing sufficient non-linearity of the cipher. However, proving security is the hardest step which requires deep knowledge of cryptanalysis, hence, this project is not an extensive dive into the realms of cryptography analysis. Rather, this is just an introduction of what are some techniques that are used to argue and prove that the cipher is indeed secure.
+
+\textcolor{red}{introduce rings, groups, fields}. Then \textcolor{red}{Possible candidates, what would be the decryption (proof of t)} and lastly \textcolor{red}{Motivate round number based on paper. In next chapter gonna need to prove this round number is indeed sufficient with stats and why it was chosen in the first place with attacks and MiMC improvement}
+
+% https://crypto.stackexchange.com/questions/10478/why-is-aes-considered-to-be-secure
+% It is usually the case, that it is not decidable whether the cipher is indeed not breakable. Most of the time the security holds because some mathematical problem is assumed to be "hard" to solve computationally \textcolor{red}{Teoriskai negalima sukuri unbreakable https://crypto.stackexchange.com/questions/87316/is-it-theoretically-possible-to-create-an-unbreakable-cipher Palikti sita treciam skyriuj, o cia labiau sakyti kaip argumentuosim, kad jis secure. Tipo bandysim matematiskai parodyti panasiai kaip original paper}. For example the security of RSA is based on the fact that factorizing numbers is hard\textcolor{red}{cource}.
+
+\subsection{Field maths}
+As already observed, since the domains of our message $\mathcal{M}$, key $\mathcal{K}$ and ciphertext $\mathcal{C}$ are finite, we will be operating in a Galois (finite) field. However first, it is necessary to understand what a \textit{field} actually is. Thus, an introduction to groups, fields, and maths behind it is given in this subsection and first we start with groups, hence, we give a formal definition of a group:
+\begin{definition}
+    A group is a set of elements $G = \{a, b, c, ...\}$ and an operation $\oplus$ for which the following axioms hold:
+    \begin{itemize}
+        \item \textit{Closure}: for any $a \in G$, $b \in G$, the element $a \oplus b$ is in $G$.
+        \item \textit{Associative law}: for any $a$, $b$, $c \in G$, $(a \oplus b) \oplus c = a \oplus (b \oplus c)$.
+        \item \textit{Identity}: There is an identity element $0$ in $G$ for which $a \oplus 0 = 0 \oplus a = a$ for all $a \in G$.
+        \item \textit{Inverse}: For each $a \in G$, there is an inverse $(-a)$ such that $a \oplus (-a) = 0$.
+    \end{itemize}
+\end{definition}
+At first, it might be confusing what a group actually is but this is simple can be the integers under addition, denoted ($\mathbb{Z}, +$). Note that for any element $a \in \mathbb{Z}$, all the axioms are satisfied as addition does not leave the group, it does not matter in which way we add numbers, $0$ is in $\mathbb{Z}$ and we can always find an inverse $(-a)$. However, if we look at natural numbers under addition ($\mathbb{N}, +$), then this is not a group. This is because the \textit{identity} and \textit{inverse} axioms are not satisfied. For example $5 \in \mathbb{N}$ however, $(-5) \notin \mathbb{N}$, moreover, $0 \notin \mathbb{N}$. Thus, a group consists of two things: a set of elements and an operator which satisfy the four axioms. But we can add more axioms. In particular, if we add the \textit{commutative} axiom we get the \textit{abelian} group:
+\begin{definition}
+    An abelian group $G$ with operator $\oplus$ is a group which additionally satisfies the \textit{commutativity} axiom: for any $a \in G$, $b \in G$, $a \oplus b = b \oplus a$.
+\end{definition}
+This axioms is really useful when working algebraically, as it allows for easier calculations, implementations and will give us fields. Most of the well known groups are abelian ($\mathbb{Z}, +$), ($\mathbb{R}, +$), ($\mathbb{Q}, +$). However, there are groups which are not abelian, namely the non-invertable matrices under multiplication as $AB \ne BA$, for non-invertable matrices $A$ and $B$.
+
+So far we have talked about groups with infinitely many elements, however we can have groups with finite amount of elements $G = \{a_1 , a_2, ..., a_n\}$, where $|G| = n$ is the order of $G$. Moreover, the operator $\oplus$ can then be specified by an $n \times n$ “addition table” whose entry at row $i$, column $j$ is $a_i \oplus a_j$ . The cancellation property implies that if $a_j \ne a_k$, then $a_i \oplus a_j \ne a_i \oplus a_k$ . Thus, all elements in any row $i$ of the addition table are distinct, i.e., each row contains each element of $G$ exactly once. Similarly, each column contains each element of $G$ exactly once. Thus the group axioms restrict the group operation $\oplus$ more than might be immediately evident.
+
+One important example of finite abelian group is the the integers mod-$n$ group denoted $\mathbb{Z}_n$. This is a group where a set is the remainders $\{0, 1, ..., n - 1\}$ under mod-$n$ addition, where $n$ is a positive integer. This is actually a finite \textit{cyclic} group, i.e. it has a generator $g \in G$, such that each element of $G$ can be expressed as a the sum $g\oplus ... \oplus g$ for some number of repetitions.
+
+Now we can talk about fields and we give a formal definition:
+\begin{definition}
+    A field is a set $\mathbb{F}$ of at least two elements, with two operations $\oplus$ (called addition) and $*$ (called multiplication), for which the following axioms are satisfied:
+    \begin{itemize}
+        \item The set $\mathbb{F}$ forms an abelian group with identity $0$ under the operation $\oplus$.
+        \item The set $\mathbb{F}^* = \mathbb{F} - \{0\} = \{a \in \mathbb{F}, a \ne 0\}$ forms an abelian group with identity called $1$ under the operation $*$.
+        \item \textit{Distributive law}: For all $a$, $b$, $c \in \mathbb{F}$, $(a \oplus b) * c = (a * b) \oplus (b * c)$.
+    \end{itemize}
+\end{definition}
+Hence the field is almost the same as a group but with another operation and a law of how to distribute these two operations. Similarly like with groups, the usual examples for a field are ($\mathbb{R}$, $+$, $*$) and ($\mathbb{Q}$, $+$, $*$). However, ($\mathbb{Z}$, $+$, $*$) does not form a field since there is not multiplicative inverse. This can be fixed if we instead take the cyclic group $\mathbb{Z}_p$ for some prime $p$. As it turns out, this is indeed a field with operators $+$ and $*$, where multiplication is defined as usual integers multiplication but taking the remainder after division by $p$.
+\begin{theorem}
+    For every prime $p$, the set $\{0, 1, ... , p - 1\}$ forms a Galois (prime) field (denoted by $\operatorname{GF}(p)$ or $\mathbb{F}_p$) under mod-$p$ addition and multiplication.
+\end{theorem}
+The proof of this simply follows the definition of groups and fields\cite{FieldNotes}. Moreover, these fields are actually unique for the given $p$ and can be shown that any field $\mathbb{F}$ with a prime number of elements $p$ is isomorphic to $\mathbb{F}_p$ (by prime field uniqueness theoreom\cite{FieldNotes}). In fact, this is already enough for us to build a cipher and we can work in $\mathbb{F}_p$ field, however, in this project we are going to work with $\mathbb{F}_{p^n}$:
+\begin{theorem}
+    If $g(x)$ is a prime polynomial of degree $n$ over a prime field $\operatorname{GF}(p)$ (or $\mathbb{F}_p$), then the set of remainder polynomials with mod-$g(x)$ arithmetic forms a finite field denoted by $\operatorname{GF}(p^n)$ (or $\mathbb{F}_{p^n}$) with $p^n$ elements.
+\end{theorem}
+Proving this is done showing that the field axioms hold with modular polynomial arithmetic\cite{FieldNotes}, which need to be discussed.
+
+\subsection{Permutation polynomials}
+Modular polynomial arithmetic is done the same way as with integers except we add and divide polynomials. This is because every polynomial $f(x)$ can be expressed as $f(x) = q(x)g(x) + r(x)$ for some polynomial remainder $r(x)$ and polynomial quotient $q(x)$. Then the coefficient operations are simply in $\mathbb{F}$. For example, \(x^3-2x^2-4 = (x^2+x+3)(x-3) + 5\), we can use Euclidean long division to verify this. Now similarly to primes in integers, there are also primes of polynomials.
+\begin{definition}
+    A polynomial is \textit{prime} if it is \textit{monic} and is \textit{irreducible}. That is, the highest order coefficient is 1 and the polynomial has no trivial factors.
+\end{definition}
+Moreover, just like with integers, every monic polynomial can be uniquely expressed as a prime polynomial factorization. Thus, prime polynomials behave pretty much the same as the usual primes. The only difference being is that we are working in a different field. Particularly, for our cipher we are working in $\operatorname{GF}(2^n)$, that is, the message $\mathcal{M}$, key $\mathcal{K}$ and ciphertext $\mathcal{C}$ elements are actually elements of $\operatorname{GF}(2^n)$, for some $n \ge 2$. What this means, is that the elements have the form of $f(x) = a_nx^n + a_{n-1}x^{n-1} + ... + a_0$, where $a_0$, $a_1$, ..., $a_n \in \operatorname{GF}(2)$. Any field can be chosen for this, however, implementations of this field are way easier and this is discussed in chapter \ref{Implementations}\textcolor{red}{duoti references, kodel butent GF(2)}. As discussed, our operations are modular polynomial operations, thus addition $+$ and multiplication $*$ is not like with integers.
+
+------------MAIN---------------
+
+If we take a look at MiMC cipher\cite{MiMC}, it uses the same field $\operatorname{GF}(2^n)$, where $n$ describes the block size. The underlying polynomial for the cipher is $x^3$. However, we can in fact take any polynomial $x^e$, for any $e \ge 2$ and we can prove that this does in fact give us a cipher. The rest of the cipher is unchanged: plaintext $m$ is added to round constant $r_i$ and key $k$. Then instead of cubic the result, it is raised to some power $e$ and this process is repeated for some number of rounds discussed in subsection \ref{sub2.3}.
+
+First, let us see why indeed we can take any power $e$. For this, we need to understand what a permutation polynomial is:
+\begin{definition}
+    A polynomial $f \in \operatorname{GF}(q)$ is called a \textit{permutation polynomial} of $\operatorname{GF}(q)$ if the associated polynomial function $f : c \to f(c)$ is a permutation of $\operatorname{GF}(q)$. 
+\end{definition}
+Moreover, remember, that in order to have a cipher, we need to have a function $f$ with an inverse $f^{-1}$, such that $f^{-1} \circ f = id$. However, if our encryption is essentially a permutation polynomial of the field, then we are guaranteed that there exists an inverse (decryption) function. Luckily, we can use a theorem for this:
+\begin{theorem}
+    A polynomial $x^e$ is a permutation polynomial of the field $\operatorname{GF}(q)$ if and only if gcd($e$, $q - 1$) $= 1$.
+\end{theorem}
+The proof of this uses Hermite's criterion\cite{PPIntro}\textcolor{red}{better to prove myself}. Thus, to have a cipher it is needed to get an inverse function. For that, it is necessary that the degree $e$ and $q - 1 = 2^n - 1$ are coprime, where $n$ is the block size. Now to build an inverse (decryption) function given $a^e = b$, integer $s$ has to be found such that $b^s = a$, where $a$ and $b$ are in $\operatorname{GF}(2^n)$. However, first we an additional theorem:
+\begin{lemma}\label{GroupProp}
+    The property $a^{q-1} = 1$ holds for any element $a \in \operatorname{GF}(q)$.
+\end{lemma}
+\begin{proof}
+    % Nezinau cia su situo, niekur nerandu, todel arba bandyt palikt, arba paklaust lectures, arba det reference koki i pvz sita: https://www.math.columbia.edu/~khovanov/ma2_fall/files/finitefields.pdf
+    \textcolor{red}{labai nepatinka sitas is wiki, bet nerandu geresnio niekur} Let the field be $\operatorname{GF}(q)$. Note that the equation $x^k = 1$ has at most $k$ solutions in any field hence, $k \le |\operatorname{GF}(q)| = q - 1$. Moreover, by Lagrange's theorem\textcolor{red}{gib}, there exists a divisor $k$ such that $x^k = 1$ for every non-zero $x$ in $\operatorname{GF}(q)$. Putting these two together we get that $q-1$ is the lowest value to $k$, i.e., $k = q - 1$.
+\end{proof}
+Notice, that when $q$ is prime, this is equivalent to the Fermat's little theorem. Now we can use this to prove our result:
+\begin{theorem}
+    The inverse element of $b = a^e$ in $\operatorname{GF}(2^n)$ is given by $b^s$, where $s := \frac{t(2^n-1) + 1}{e}$, for some integer $0 < t < e$\textcolor{red}{gal nedet nelygybiu ir pasakyt, kad dar gcd turi but?}.
+\end{theorem}
+\begin{proof}
+    We need to find $s$ such that in $\operatorname{GF}(2^n)$, we have:
+    \[
+        b^s = (a^e)^s = a^{es} = a.
+    \]
+    Using lemma \ref{GroupProp}, we have that $a^{2^n-1} = 1$ in $\operatorname{GF}(2^n)$. Moreover, we can raise this to some power $t$ and then multiply by $a$ to get:
+    \begin{gather*}
+        a^{2n-1} = 1\\
+        (a^{2n-1}) ^ t = 1^t = 1\\
+        a (a^{2n-1})^t = a\\
+        a^{t(2n-1)+1} = a
+    \end{gather*}
+    Note, that $1^t=1$ by the second axiom of the field, which says that $1$ is multiplicative identity. Thus we get that \(es = t(2^n-1)+1 \implies s := \frac{t(2^n-1)+1}{e}\).
+\end{proof}
+This means that the decryption function is of the same form but with a different power $s := \frac{t(2^n-1)+1}{e}$. Notice, that $e \ll s$, thus decryption is considerably slower and methods to compute fast exponentiation are necessary\textcolor{red}{ideti ref, kai bus parasyta}.
+
+\textcolor{red}{prove that it exists and the form. Then maybe that's it? Bet realiai kazkaip biski silpnokai atrodo, nes dauguma theorems neirodyta, o tiesiog pasakyta, tai gal kokia viena irodyt butu gerai.}
+
+---------------MAIN---------------
+
+\subsection{Round numbers}\label{sub2.3}
+\textcolor{red}{Now need to argue how to make this secure, bet realiai nedaug cia, daugiau apie sita sekanciam skyriuj. Tiesiog formule vos ne parasyt ir tiek?}
+
+% ------------- SECURITY ANALYSIS ----------------
+\section{Security analysis}
+\begin{itemize}
+    \item Prove them together, that they still have cryptographic properties
+    \item Need to argue how the number of rounds have been chosen by looking at the original paper and explaining why it's chosen that way. Then using that, our own ciphers have different round number.
+    \item Need to talk about paper where they broke MiMC.
+    \item \textcolor{red}{Create a graph which shows depending on rounds, what the confusion/diffusion rates are!! Also why showing for all is impossible (too many to test).}
+    \item In the end talk about what are some other techniques people use to analyse security but are too advanced for this paper (linear/differential cryptanalysis).
+    \item Show using graphs, NIST STS that these still hold and explain why we can't just say it works, i.e. it's an open problem on how to actually measure nonlinearity \begin{itemize}
+        \item Diffusion
+        \item Confusion
+        \item Avalanche effect
+        \item key sensitivy
+        \item key space
+        \item \textcolor{blue}{Maybe linear/differential cryptanalysis. Would be really nice to do this}
+        \item \textcolor{blue}{Maybe something else not basic? Like some other specific attacks}
+    \end{itemize}
+\end{itemize}
+
+
+% ------------- IMPLEMENTATIONS ----------------
+\section{Implementations}\label{Implementations}
+\begin{itemize}
+    \item Write code and perform benchmarks
+    \item Analyse found results. Are they faster/better/worse. Conclusions
+    \item Future work which explains that we could further optimize it using precalculated tables, etc.
+\end{itemize}
+
+
+% ------------- APPLICATIONS ----------------
+\section{Applications (MPC, ZK, SNARK)}
+\begin{itemize}
+    \item Talk about the importance of ZK, SNARK and it's usage in block chain for example or evoting: \href{https://ethereum.org/en/zero-knowledge-proofs/}{URL} has great sources to read more
+    \item Maybe talk about whether they're still available for MPC, ZK applications? What else?
+\end{itemize}
+
+
+% ------------- CONCLUSIONS ----------------
+\section{Conclusion}
+\begin{itemize}
+    \item Summary of what has been achieved and what hasn't. Iterate again where these ciphers could be used, were they faster.
+\end{itemize}
+
+
+\setlength{\labelsep}{10pt} % Adds horizontal spacing between numbers and reference [X]<->Name...
+\begin{thebibliography}{10}
+\bibitem{MiMC} Martin R. Albrecht, Lorenzo Grassi, Christian Rechberger, Arnab Roy, Tyge Tiessen. \textit{MiMC: Efficient Encryption and Cryptographic Hashing with Minimal Multiplicative Complexity}, \href{https://eprint.iacr.org/2016/492.pdf}{URL}, 2016.
+
+\bibitem{Poseidon} Lorenzo Grassi, Dmitry Khovratovich, Christian Rechberger, Arnab Roy, Markus Schofnegger. \textit{POSEIDON: A New Hash Function for Zero-Knowledge Proof Systems}, \href{https://www.usenix.org/system/files/sec21-grassi.pdf}{URL}, August 2021
+
+\bibitem{GMiMC} Martin R. Albrecht, Lorenzo Grassi, Léo Perrin, Sebastian Ramacher, Christian Rechberger, Dragos Rotaru, Arnab Roy, Markus Schofnegger. \textit{Feistel Structures for MPC, and More}, \href{https://eprint.iacr.org/2019/397.pdf}{URL}, 2019.
+
+\bibitem{Griffin} Lorenzo Grassi, Yonglin Hao, Christian Rechberger, Markus Schofnegger, Roman Walch, Qingju Wang. \textit{Horst Meets Fluid -SPN: Griffin for Zero-Knowledge Applications}, \href{https://eprint.iacr.org/2022/403.pdf}{URL}, 2022.
+
+\bibitem{KNCipher} Kaisa Nyberg, Lars Ramkilde Knudsen. \textit{Provable security against a differential attack}, \href{https://link.springer.com/article/10.1007/BF00204800}{URL}, December 1995.
+
+\bibitem{AESNI} Eslam G. AbdAllah, Yu Rang Kuang, Changcheng Huang. \textit{Advanced Encryption Standard New Instructions (AES-NI) Analysis: Security, Performance, and Power Consumption}, \href{https://www.sce.carleton.ca/faculty/huang/iccae-2020.pdf}{URL}, February 2020.
+
+\bibitem{AESInMPC} Benny Pinkas, Thomas Schneider, Nigel P. Smart, Stephen C. Williams. \textit{Secure Two-Party Computation is Practical}, \href{https://eprint.iacr.org/2009/314.pdf}{URL}, 2009.
+
+\bibitem{ZKOrigin} Shafi Goldwasser, Silvio Micali, Charles Rackoff. \textit{The Knowledge Complexity of Interactive Proof Systems}, \href{https://people.csail.mit.edu/silvio/Selected%20Scientific%20Papers/Proof%20Systems/The_Knowledge_Complexity_Of_Interactive_Proof_Systems.pdf}{URL}, February 1989.
+
+\bibitem{RNGZK} Mihir Bellare, Moti Yung. \textit{Certifying Permutations: Non-Interactive Zero-Knowledge Based on any Trapdoor Permutation}, \href{https://cseweb.ucsd.edu/~mihir/papers/cct.pdf}{URL}, 1992.
+
+\bibitem{ZKProofSystemsBook} Jonathan Bootle, Andrea Cerulli, Pyros Chaidos, Jens Groth. \textit{Efficient Zero-Knowledge Proof Systems}, \href{https://link.springer.com/chapter/10.1007/978-3-319-43005-8_1}{URL}, August 2016.
+
+\bibitem{NIZK} Manuel Blum, Paul Feldman, Silvio Micali. \textit{Non-interactive zero-knowledge and its applications}, \href{https://doi.org/10.1145/62212.62222}{URL}, January 1988. 
+
+\bibitem{BGNCipher} Dan Boneh, Eu-Jin Goh, Kobbi Nissim. \textit{Evaluating 2-DNF Formulas on Ciphertexts}, \href{https://crypto.stanford.edu/~dabo/papers/2dnf.pdf}{URL}, April 2006.
+
+\bibitem{FHEPHD} Craig Gentry. \textit{Fully Homomorphic Encryption Using Ideal Lattices}, \href{https://www.cs.cmu.edu/~odonnell/hits09/gentry-homomorphic-encryption.pdf}{URL}, May 2009.
+
+\bibitem{FHEMention} Ronald L. Rivest, Len Adleman, Michael L. Dertouzos. \textit{On data banks and privacy homomorphisms}, \href{https://luca-giuzzi.unibs.it/corsi/Support/papers-cryptography/RAD78.pdf}{URL}, October 1978.
+
+\bibitem{FHEImprovement1} Craig Gentry Amit Sahai Brent Waters. \textit{Homomorphic Encryption from Learning with Errors: Conceptually-Simpler, Asymptotically-Faster, Attribute-Based}, \href{https://eprint.iacr.org/2013/340.pdf}{URL}, June 2013.
+
+\bibitem{FHEImprovement2} Jung Hee Cheon, Andrey Kim, Miran Kim, Yongsoo Song. \textit{Homomorphic Encryption for Arithmetic of Approximate Numbers}, \href{https://link.springer.com/chapter/10.1007/978-3-319-70694-8_15}{URL}, November 2017.
+
+\bibitem{UntrustedWorkers} Rosario Gennaro, Craig Gentry, Bryan Parno. \textit{Non-Interactive Verifiable Computing: Outsourcing Computation to Untrusted Workers}, \href{https://eprint.iacr.org/2009/547.pdf}{URL}, February 2010.
+
+\bibitem{Pinocchio} Bryan Parno, Jon Howell, Craig Gentry, Mariana Raykova. \textit{Pinocchio: Nearly Practical Verifiable Computation}, \href{https://eprint.iacr.org/2013/279.pdf}{URL}, May 2013.
+
+\bibitem{Gepetto} Craig Costellom Cédric Fournet, Jon Howell, Markulf Kohlweiss, Benjamin Kreuter, Michael Naehrig, Bryan Parno, Samee Zahur. \textit{Geppetto: Versatile Verifiable Computation}, \href{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7163030}{URL}, May 2015.
+
+\bibitem{Mirage} Ahmed Kosba, Dimitrios Papadopoulos, Charalampos Papamanthou, Dawn Song. \textit{MIRAGE: Succinct Arguments for Randomized Algorithms with Applications to Universal zk-SNARKs}, \href{https://eprint.iacr.org/2020/278.pdf}{URL}, March 2020.
+
+\bibitem{Buffet} Riad S. Wahby, Srinath Setty, Zuocheng Ren, Andrew J. Blumberg, Michael Walfish. \textit{Efficient RAM and Control Flow in Verifiable Outsourced Computation}, \href{https://www.ndss-symposium.org/wp-content/uploads/2017/09/07_3_2.pdf}{URL}, February 2015.
+
+\bibitem{STARK} Eli Ben-Sasson, Iddo Bentov, Yinon Horesh, Michael Riabzev. \textit{Scalable, transparent, and post-quantum secure computational integrity}, \href{https://eprint.iacr.org/2018/046.pdf}{URL}, March 2018.
+
+\bibitem{zcash} Eli Ben-Sasson, Alessandro Chiesa, Christina Garman, Matthew Green, Ian Miers, Eran Tromer, Madar Virza. \textit{Zerocash: Decentralized Anonymous Payments from Bitcoin}, \href{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6956581}{URL}, November 2014.
+
+\bibitem{CloudTrend} Gartner. \textit{Gartner Says Cloud Will Become a Business Necessity by 2028}, \href{https://www.gartner.com/en/newsroom/press-releases/2023-11-29-gartner-says-cloud-will-become-a-business-necessity-by-2028}{URL}, November 2023.
+
+\bibitem{MPCFirst} Oded Goldreich, Silvio Micali, Avi Wigderson. \textit{HOW TO PLAY ANY MENTAL GAME}, \href{https://dl.acm.org/doi/pdf/10.1145/28395.28420}{URL}, January 1987.
+
+\bibitem{Estija} Dan Bogdanov, Liina Kamm, Baldur Kubo, Reimo Rebane, Ville Sokk, Riivo Talviste. \textit{Students and Taxes: a Privacy-Preserving Social Study Using Secure Computation}, \href{https://eprint.iacr.org/2015/1159.pdf}{URL}, December 2015.
+
+\bibitem{Sharemind} \href{https://sharemind.cyber.ee}{Sharemind}.
+
+\bibitem{Shamir} Adi Shamir. \textit{How to share a secret}, \href{https://dl.acm.org/doi/pdf/10.1145/359168.359176}{URL}, November 1979.
+
+\bibitem{RINGLWE} Vadim Lyubashevsky, Chris Peikert, Oded Regev. \textit{On Ideal Lattices and Learning with Errors Over Rings}, \href{https://eprint.iacr.org/2012/230.pdf}{URL}, June 2013.
+
+\bibitem{CKKS} Jung Hee Cheon, Andrey Kim, Miran Kim, Yongsoo Song. \textit{Homomorphic Encryption for Arithmetic of Approximate Numbers}, \href{https://eprint.iacr.org/2016/421.pdf}{URL}, May 2016.
+
+\bibitem{BFV1} Zvika Brakerski. \textit{Fully Homomorphic Encryption without Modulus Switching from Classical GapSVP}, \href{https://eprint.iacr.org/2012/078.pdf}{URL}, February 2012.
+
+\bibitem{BFV2} Junfeng Fan, Frederik Vercauteren. \textit{Somewhat Practical Fully Homomorphic Encryption}, \href{https://eprint.iacr.org/2012/144.pdf}{URL}, March 2012.
+
+\bibitem{BFVImprov} Beatrice Biasioli, Chiara Marcolla, Marco Calderini, Johannes Mono. \textit{Improving and Automating BFV Parameters Selection: An Average-Case Approach}, \href{https://eprint.iacr.org/2023/600.pdf}{URL}, April 2023.
+
+\bibitem{Rescue} Abdelrahaman Aly, Tomer Ashur, Eli Ben-Sasson, Siemen Dhooghe, Alan Szepieniec. \textit{Design of Symmetric-Key Primitives for Advanced Cryptographic Protocols}, \href{https://eprint.iacr.org/2019/426.pdf}{URL}, April 2019.
+
+\bibitem{CryptanalysisBook} Gregory V. Bard. \textit{Algebraic Cryptanalysis}, \href{https://link.springer.com/book/10.1007/978-0-387-88757-9}{URL}, 2009.
+
+\bibitem{FieldNotes} David Forney. \textit{Introduction to finite fields}, \href{http://web.stanford.edu/~marykw/classes/CS250_W19/readings/Forney_Introduction_to_Finite_Fields.pdf}{URL}, September 2016.
+
+\bibitem{PPIntro} Christopher J. Shallue. \textit{Permutation Polynomials of Finite Fields}, \href{https://arxiv.org/pdf/1211.6044.pdf}{URL}, May 2012.
+
+\end{thebibliography}
+
+\end{document}
