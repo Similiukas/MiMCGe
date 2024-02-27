@@ -1,8 +1,13 @@
-use crate::utils::helpers::{add_finite_field, multiply_finite_field, power_finite_field, square_multiply, to_decimal};
+use crate::utils::helpers::{add_finite_field, multiply_finite_field, power_finite_field, square_multiply, to_binary, to_decimal};
 
 #[test]
 fn convert_to_decimal() {
     assert_eq!(to_decimal(&vec![1,1,0,1,0,1]), 53);
+}
+
+#[test]
+fn convert_to_binary() {
+    assert_eq!(to_binary(53, 6), vec![1,1,0,1,0,1]);
 }
 
 #[test]
