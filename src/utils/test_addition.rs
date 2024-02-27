@@ -32,9 +32,27 @@ fn finite_field_additive_identity_31() {
 }
 
 #[test]
+fn finite_field_additive_identity_47() {
+    let a = generate_random_bits(47);
+    assert_eq!(add_finite_field(&to_binary(0, 47), &a), a)
+}
+
+#[test]
 fn finite_field_additive_identity_61() {
     let a = generate_random_bits(61);
     assert_eq!(add_finite_field(&to_binary(0,61), &a), a)
+}
+
+#[test]
+fn finite_field_additive_identity_83() {
+    let a = generate_random_bits(83);
+    assert_eq!(add_finite_field(&to_binary(0, 83), &a), a)
+}
+
+#[test]
+fn finite_field_additive_identity_101() {
+    let a = generate_random_bits(101);
+    assert_eq!(add_finite_field(&to_binary(0, 101), &a), a)
 }
 
 #[test]

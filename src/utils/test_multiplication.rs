@@ -1,4 +1,4 @@
-use crate::utils::helpers::{generate_random_bits, square_multiply, to_binary};
+use crate::utils::helpers::{generate_random_bits, square_multiply, to_binary, to_decimal};
 
 // Tests for 1^n = 1 for any n
 #[test]
@@ -27,8 +27,23 @@ fn finite_field_multiplicative_identity_31() {
 }
 
 #[test]
+fn finite_field_multiplicative_identity_47() {
+    assert_eq!(square_multiply(&to_binary(1,47), 5,47), to_binary(1, 47));
+}
+
+#[test]
 fn finite_field_multiplicative_identity_61() {
     assert_eq!(square_multiply(&to_binary(1,61), 5,61), to_binary(1, 61));
+}
+
+#[test]
+fn finite_field_multiplicative_identity_83() {
+    assert_eq!(square_multiply(&to_binary(1,83), 5,83), to_binary(1, 83));
+}
+
+#[test]
+fn finite_field_multiplicative_identity_101() {
+    assert_eq!(square_multiply(&to_binary(1,101), 5,101), to_binary(1, 101));
 }
 
 #[test]
@@ -74,9 +89,27 @@ fn finite_field_multiplicative_inverse_31() {
 }
 
 #[test]
+fn finite_field_multiplicative_inverse_47() {
+    let a = generate_random_bits(47);
+    assert_eq!(square_multiply(&a, 2u128.pow(47), 47), a)
+}
+
+#[test]
 fn finite_field_multiplicative_inverse_61() {
     let a = generate_random_bits(61);
     assert_eq!(square_multiply(&a, 2u128.pow(61), 61), a)
+}
+
+#[test]
+fn finite_field_multiplicative_inverse_83() {
+    let a = generate_random_bits(83);
+    assert_eq!(square_multiply(&a, 2u128.pow(83), 83), a)
+}
+
+#[test]
+fn finite_field_multiplicative_inverse_101() {
+    let a = generate_random_bits(101);
+    assert_eq!(square_multiply(&a, 2u128.pow(101), 101), a)
 }
 
 #[test]
