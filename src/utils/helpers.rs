@@ -7,7 +7,7 @@ pub type FieldElement = Vec<u8>;
 pub enum CipherType {
     AES,
     MiMC,
-    MiMCGn(u128),
+    MiMCGn(u128, Option<usize>),
 }
 
 lazy_static! {
@@ -157,6 +157,7 @@ fn _square_multiply(y: u128, x: u128, exponent: u128, block_size: u32) -> u128 {
 
 /// Fast exponentiation implementation using [square and multiply](https://en.wikipedia.org/wiki/Exponentiation_by_squaring) algorithm.
 pub fn square_multiply(a: &FieldElement, exponent: u128, block_size: u32) -> FieldElement {
+    assert!(IRREDUCIBLE_POLYNOMIALS.contains_key(&block_size), "Multiplication for this block size is not implemented");
     to_binary(_square_multiply(1, to_decimal(&a), exponent, block_size), block_size)
 }
 

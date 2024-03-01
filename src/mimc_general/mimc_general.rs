@@ -28,8 +28,8 @@ pub struct MiMCGn {
 }
 
 impl MiMCGn {
-    pub fn new(exponent: u128, block_size: u32) -> Self {
-        let rounds = (block_size as f32 * 2f32.log(exponent as f32)).ceil() as usize;
+    pub fn new(exponent: u128, block_size: u32, round_reduction: Option<usize>) -> Self {
+        let rounds = (block_size as f32 * 2f32.log(exponent as f32)).ceil() as usize - round_reduction.unwrap_or(0);
         MiMCGn::with_round_constants(exponent, block_size, &generate_round_constants(rounds, block_size))
     }
 

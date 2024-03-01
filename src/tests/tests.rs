@@ -1,6 +1,6 @@
-use std::time::{Duration, Instant};
-use crate::tests::helpers::{choose_cipher, confusion, decryption, diffusion, encryption};
-use crate::utils::helpers::{CipherType, FieldElement, generate_random_bits};
+use std::time::Instant;
+use crate::tests::helpers::{choose_cipher, confusion, decryption_encryption, diffusion};
+use crate::utils::helpers::CipherType;
 
 /// # Diffusion test for cipher.
 ///
@@ -16,12 +16,12 @@ pub fn test_diffusion(test_size: usize, block_size: u32, cipher: CipherType) {
     let start = Instant::now();
     let cipher = choose_cipher(&cipher, block_size);
 
-    let mut result = 0.0;
+    let mut result = 0;
     for _ in 0..test_size {
         result += diffusion(&cipher, block_size);
     }
 
-    println!("Final result {} in {:.2?}", result / (test_size as f64), start.elapsed());
+    println!("Final result {} in {:.2?}", (result as f64) / (test_size * block_size.pow(2) as usize) as f64 * 10000.0, start.elapsed());
 }
 
 /// # Confusion test for cipher.
@@ -38,29 +38,12 @@ pub fn test_confusion(test_size: usize, block_size: u32, cipher: CipherType) {
     let start = Instant::now();
     let cipher = choose_cipher(&cipher, block_size);
 
-    let mut result = 0.0;
+    let mut result = 0;
     for _ in 0..test_size {
         result += confusion(&cipher, block_size);
     }
 
-    println!("Final result {} in {:.2?}", result / (test_size as f64), start.elapsed());
-}
-
-fn decryption_encryption(decrypt: bool, test_size: usize, sample_size: usize, block_size: u32, cipher: CipherType) -> Duration {
-    let mut start = Duration::new(0, 0);
-    for _ in 0..test_size {
-        let cipher = choose_cipher(&cipher, block_size);
-        let mut plaintexts: Vec<FieldElement> = Vec::with_capacity(sample_size);
-        for _ in 0..sample_size {
-            plaintexts.push(generate_random_bits(block_size));
-        }
-        if decrypt {
-            start += decryption(plaintexts, generate_random_bits(block_size), &cipher);
-        } else {
-            start += encryption(plaintexts, generate_random_bits(block_size), &cipher);
-        }
-    }
-    start
+    println!("Final result {} in {:.2?}", (result as f64) / (test_size * block_size.pow(2) as usize) as f64 * 10000.0, start.elapsed());
 }
 
 /// # Encryption test for cipher
