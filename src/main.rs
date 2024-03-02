@@ -4,8 +4,6 @@ use clap::Parser;
 
 mod utils;
 mod mimc;
-// TODO: remove
-mod mimc_lib;
 mod tests;
 mod aes;
 mod mimc_general;

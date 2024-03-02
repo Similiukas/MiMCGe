@@ -52,12 +52,6 @@ pub fn generate_random_bits(block_size: u32) -> FieldElement {
     result
 }
 
-/// Generates random number in the specified field as binary element and pads to correct block size.
-pub fn generate_random_element(field: u128) -> FieldElement {
-    let block_size = (field as f32).log(2.0).ceil() as u32;
-    to_binary(thread_rng().gen_range(0..field), block_size)
-}
-
 /// Generates random round constants for MiMC type cipher, where the first constant is 0.
 pub fn generate_round_constants(size: usize, block_size: u32) -> Vec<FieldElement> {
     let mut result: Vec<FieldElement> = Vec::with_capacity(size);
@@ -159,13 +153,4 @@ fn _square_multiply(y: u128, x: u128, exponent: u128, block_size: u32) -> u128 {
 pub fn square_multiply(a: &FieldElement, exponent: u128, block_size: u32) -> FieldElement {
     assert!(IRREDUCIBLE_POLYNOMIALS.contains_key(&block_size), "Multiplication for this block size is not implemented");
     to_binary(_square_multiply(1, to_decimal(&a), exponent, block_size), block_size)
-}
-
-/// Adds elements over F_p field, where p is prime
-pub fn add_field_elements_over_prime_field(a: &FieldElement, b: &FieldElement, field: u128, block_size: u32) -> FieldElement {
-    to_binary((to_decimal(a) + to_decimal(b)) % field, block_size)
-}
-
-pub fn multiply_over_prime_field(a: &FieldElement, b: &FieldElement, field: u128, block_size: u32) -> FieldElement {
-    to_binary((to_decimal(a) * to_decimal(b)) % field, block_size)
 }
