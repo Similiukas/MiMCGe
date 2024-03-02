@@ -169,11 +169,3 @@ pub fn add_field_elements_over_prime_field(a: &FieldElement, b: &FieldElement, f
 pub fn multiply_over_prime_field(a: &FieldElement, b: &FieldElement, field: u128, block_size: u32) -> FieldElement {
     to_binary((to_decimal(a) * to_decimal(b)) % field, block_size)
 }
-
-pub fn power_over_prime_field(a: &FieldElement, pow: u32, field: u128, block_size: u32) -> FieldElement {
-    let mut result: FieldElement = a.to_vec();
-    for _ in 0..pow {
-        result = multiply_over_prime_field(&result, a, field, block_size);
-    }
-    result
-}

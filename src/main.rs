@@ -1,71 +1,66 @@
-use std::time::Instant;
-use g2p::GaloisField;
-use crate::mimc::mimc::MiMC;
-use crate::mimc_general::mimc_general::MiMCGn;
-use crate::tests::tests::{test_confusion, test_diffusion};
-use crate::utils::helpers::{add_finite_field, Cipher, CipherType, generate_random_bits, multiply_finite_field, power_finite_field, square_multiply, to_decimal};
+use crate::tests::tests::{test_cipher, test_confusion, test_decryption_time, test_diffusion, test_encryption_time};
+use crate::utils::helpers::{CipherType, FieldElement, to_binary};
+use clap::Parser;
 
 mod utils;
 mod mimc;
+// TODO: remove
 mod mimc_lib;
 mod tests;
 mod aes;
 mod mimc_general;
 
-fn test_addition() {
-    let block_size = 5;
-    let a = generate_random_bits(block_size);
-    let b = generate_random_bits(block_size);
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// Test type
+    #[arg(value_parser=["diffusion", "confusion", "enc-time", "dec-time", "cipher-test"])]
+    test_type: String,
 
-    let c = add_finite_field(&a, &b);
+    /// Cipher type
+    #[arg(value_parser=["aes", "mimc", "mimcgn"])]
+    cipher_type: String,
 
-    println!("{:?} {:?} {:?}", a, b, c);
-    println!("{} {} {}\n\n", to_decimal(&a), to_decimal(&b), to_decimal(&c));
-}
+    //TODO: fix this#[arg(value_parser=[5, 8, 11, 17, 25, 31, 47, 61, 83, 101, 125, 127])]
+    /// Block size (only some valid are implemented)
+    block_size: u32,
 
-fn test_mul() {
-    let block_size = 61;
-    let a = generate_random_bits(block_size);
-    let b = generate_random_bits(block_size);
+    /// Test size (ranging from 1 to u64)
+    #[arg(short, long, default_value = "1")]
+    test_size: usize,
 
-    let c = multiply_finite_field(&a, &b, block_size);
-    let start = Instant::now();
-    let d = power_finite_field(&c, 2049, block_size);
-    println!("{:.2?}", start.elapsed());
+    #[arg(short, long, default_value = "1")]
+    sample_size : usize,
 
-    println!("{:?} {:?} {:?} {:?}", a, b, c, d);
-    println!("{} {} {} {}\n", to_decimal(&a), to_decimal(&b), to_decimal(&c), to_decimal(&d));
+    #[arg(short, long, default_value = None)]
+    plaintext: Option<u128>,
 
+    #[arg(short, long, default_value = "3")]
+    exponent: u128,
 
-    let start1 = Instant::now();
-    let d1 = square_multiply(&c, 2049, block_size);
-    println!("{:.2?}", start1.elapsed());
-
-    println!("{:?}", d1);
-    println!("{}", to_decimal(&d1));
-}
-
-fn test_mimc() {
-    let block_size = 127;
-    // let k = MiMCGn::new(17, block_size);
-    let k = MiMC::new(block_size);
-    let start = Instant::now();
-    println!("{k}");
-    let key = generate_random_bits(block_size);
-    println!("Key {} {:?}", to_decimal(&key), key);
-    let plaintext = generate_random_bits(block_size);
-    println!("Original:   {} {:?}", to_decimal(&plaintext), plaintext);
-    let ciphertext = k.encrypt(&plaintext, &key);
-    println!("Ciphertext: {} {:?}", to_decimal(&ciphertext), ciphertext);
-    let p_again = k.decrypt(&ciphertext, &key);
-    println!("Plaintext:  {} {:?}", to_decimal(&p_again), p_again);
-    println!("Time {:.2?}", start.elapsed());
+    #[arg(short, long, default_value = None)]
+    round_reduction: Option<usize>
 }
 
 fn main() {
-    // test_addition();
-    // test_mul();
-    test_mimc();
-    // test_diffusion(1000, 31, CipherType::MiMCGn);
-    // test_confusion(1000, 128);
+    let args = Args::parse();
+    println!("{:?}", args);
+
+    let cipher_type = match args.cipher_type.as_str() {
+        "aes" => CipherType::AES,
+        "mimc" => CipherType::MiMC,
+        "mimcgn" => CipherType::MiMCGn(args.exponent, args.round_reduction),
+        _ => unreachable!()
+    };
+
+    let plaintext: Option<FieldElement> = if args.plaintext.is_some() { Some(to_binary(args.plaintext.unwrap_or(1), args.block_size)) } else {None};
+
+    match args.test_type.as_str() {
+        "diffusion" => test_diffusion(args.test_size, args.block_size, cipher_type),
+        "confusion" => test_confusion(args.test_size, args.block_size, cipher_type),
+        "enc-time" => test_encryption_time(args.test_size, args.sample_size, args.block_size, cipher_type),
+        "dec-time" => test_decryption_time(args.test_size, args.sample_size, args.block_size, cipher_type),
+        "cipher-test" => test_cipher(plaintext, args.block_size, cipher_type),
+        _ => unreachable!()
+    }
 }

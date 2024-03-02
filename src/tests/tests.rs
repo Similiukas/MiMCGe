@@ -1,6 +1,6 @@
 use std::time::Instant;
 use crate::tests::helpers::{choose_cipher, confusion, decryption_encryption, diffusion};
-use crate::utils::helpers::CipherType;
+use crate::utils::helpers::{CipherType, FieldElement, generate_random_bits, to_decimal};
 
 /// # Diffusion test for cipher.
 ///
@@ -12,16 +12,16 @@ use crate::utils::helpers::CipherType;
 ///
 /// # Note
 /// Similar to confusion, changing plaintext bits instead of key being the only difference.
-pub fn test_diffusion(test_size: usize, block_size: u32, cipher: CipherType) {
+pub fn test_diffusion(test_size: usize, block_size: u32, cipher_type: CipherType) {
     let start = Instant::now();
-    let cipher = choose_cipher(&cipher, block_size);
+    let cipher = choose_cipher(&cipher_type, block_size);
 
     let mut result = 0;
     for _ in 0..test_size {
         result += diffusion(&cipher, block_size);
     }
 
-    println!("Final result {} in {:.2?}", (result as f64) / (test_size * block_size.pow(2) as usize) as f64 * 10000.0, start.elapsed());
+    println!("Diffusion tested with {test_size} plaintexts\nFinal result {} in {:.2?}", (result as f64) / (test_size * block_size.pow(2) as usize) as f64 * 10000.0, start.elapsed());
 }
 
 /// # Confusion test for cipher.
@@ -34,36 +34,54 @@ pub fn test_diffusion(test_size: usize, block_size: u32, cipher: CipherType) {
 ///
 /// # Note
 /// Similar to diffusion, changing key bits instead of plaintext being the only difference.
-pub fn test_confusion(test_size: usize, block_size: u32, cipher: CipherType) {
+pub fn test_confusion(test_size: usize, block_size: u32, cipher_type: CipherType) {
     let start = Instant::now();
-    let cipher = choose_cipher(&cipher, block_size);
+    let cipher = choose_cipher(&cipher_type, block_size);
 
     let mut result = 0;
     for _ in 0..test_size {
         result += confusion(&cipher, block_size);
     }
 
-    println!("Final result {} in {:.2?}", (result as f64) / (test_size * block_size.pow(2) as usize) as f64 * 10000.0, start.elapsed());
+    println!("Confusion tested with {test_size} plaintexts\nFinal result {} in {:.2?}", (result as f64) / (test_size * block_size.pow(2) as usize) as f64 * 10000.0, start.elapsed());
 }
 
-/// # Encryption test for cipher
+/// # Encryption efficiency test for cipher
 ///
 /// Initializes cipher with random round constants, generates **sample_size** plaintexts and encrypts all of them
 /// sequentially.
 ///
 /// This cycle is repeated **test_size** times.
-pub fn test_encryption(test_size: usize, sample_size: usize, block_size: u32, cipher: CipherType) {
-    let time = decryption_encryption(false, test_size, sample_size, block_size, cipher);
+///
+/// Returns the time it takes to encrypt **test_size** x **sample_size** plaintexts.
+pub fn test_encryption_time(test_size: usize, sample_size: usize, block_size: u32, cipher_type: CipherType) {
+    let time = decryption_encryption(false, test_size, sample_size, block_size, cipher_type);
     println!("Total time to encrypt {test_size}x{sample_size} plaintexts {:.2?}", time);
 }
 
-/// # Decryption test for cipher
+/// # Decryption efficiency test for cipher
 ///
 /// Initializes cipher with random round constants, generates **sample_size** plaintexts and decrypts all of them
 /// sequentially.
 ///
 /// This cycle is repeated **test_size** times.
-pub fn test_decryption(test_size: usize, sample_size: usize, block_size: u32, cipher: CipherType) {
-    let time = decryption_encryption(true, test_size, sample_size, block_size, cipher);
+///
+/// Returns the time it takes to decrypt **test_size** x **sample_size** ciphertexts.
+pub fn test_decryption_time(test_size: usize, sample_size: usize, block_size: u32, cipher_type: CipherType) {
+    let time = decryption_encryption(true, test_size, sample_size, block_size, cipher_type);
     println!("Total time to decrypt {test_size}x{sample_size} ciphertexts {:.2?}", time);
+}
+
+/// # Simple encryption and decryption test
+///
+/// Check if the cipher correctly decrypts the encrypted message
+pub fn test_cipher(plaintext: Option<FieldElement>, block_size: u32, cipher_type: CipherType) {
+    let cipher = choose_cipher(&cipher_type, block_size);
+    let pt = plaintext.unwrap_or(generate_random_bits(block_size));
+    let key = generate_random_bits(block_size);
+    let start = Instant::now();
+    let ciphertext = cipher.encrypt(&pt, &key);
+    let decrypted = cipher.decrypt(&ciphertext, &key);
+    println!("Plaintext:  {} {:?}\nCiphertext: {} {:?}\nDecrypted:  {} {:?}\nTime: {:.2?}", to_decimal(&pt), pt, to_decimal(&ciphertext), ciphertext, to_decimal(&decrypted), decrypted, start.elapsed());
+    assert_eq!(decrypted, pt);
 }
