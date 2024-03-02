@@ -35,7 +35,7 @@ impl MiMCGn {
 
     pub fn with_round_constants(exponent: u128, block_size: u32, round_constants: &Vec<FieldElement>) -> Self {
         // x^n is a permutation if and only if gcd(exponent, 2^n - 1) = 1
-        assert_eq!(gcd(exponent, 2u128.pow(block_size) - 1), 1);
+        assert_eq!(gcd(exponent, 2u128.pow(block_size) - 1), 1, "This is not a permutation polynomial");
         MiMCGn {
             exponent,
             block_size,
