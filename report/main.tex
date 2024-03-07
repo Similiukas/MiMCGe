@@ -24,6 +24,16 @@
     citecolor={blue!80!black},
     urlcolor={blue!80!black}
 }
+% ----- Figure drawing packages
+\usepackage{tikz}
+%%% Public TikZ libraries
+\usetikzlibrary{positioning}
+
+%%% Custom TikZ addons
+% \usetikzlibrary{crypto.symbols}
+\usetikzlibrary{crypto.symbols}
+%\tikzset{shadows=no}        % Option: add shadows to XOR, ADD, etc.
+% -----------------
 
 \pubyear{2023}
 \subjectarea{Computer Science Project}
@@ -46,6 +56,9 @@
 % Paziureti "kabutes" ar tikrai taip reikia jas deti
 % Galbut paziureti "we" ir bandyti perfrazuoti
 % not everything is a theorem, there are lemmas as well
+% Dar reiktų duoti formal definition of what a cipher is. Google it, chat it, bet ir tiesiog funkcija of pair, with inverses
+% Galima parašyt, kad su x^16 diffusion 100 ir 10000 nesiskiria
+% Give proper definition to cipher with figure refer ir su pavadinimu mimcgn
 
 words: 632/981/1932/4345
 
@@ -101,7 +114,7 @@ In this project, we are going to focus on MiMC, which is constructed of the simp
 
 Changing the core function of MiMC which is proven to be secure with a different polynomial is not enough to say that our new cipher is also secure. We are still required to prove that it holds key cryptographic properties like \textit{Diffusion}, \textit{Confussion}, \textit{Avalance Effect}, \textit{Key Sensitivity}, etc. \textcolor{red}{should probably say only the ones being tested}. We will use various methods to test these properties which include mathematical analysis, simulation, and empirical testing. \textcolor{red}{papildyti, apie testavimo budus}
 
-After deciding what are the polynomials we will use for the ciphers, we will have to build them. We will have to check various properties using simulation and testing to be more confident whether our ciphers are indeed secure. Moreover, we will be able to compare various polynomials to see which one is the most efficient. We will also compare it with the original MiMC cipher to check if we perhaps improved it or at least got similar results. To do this, a program is written in Rust programming language. The choice for this language is the growing popularity due to its high performance, reliability, great community and it is also author's subjective preference. As this project is more theory focused and not coding, the implementation part will discuss some key aspects of testing and rather than the overall software design.
+After deciding what are the polynomials we will use for the ciphers, we will have to build them. We will have to check various properties using simulation and testing to be more confident whether our ciphers are indeed secure. Moreover, we will be able to compare various polynomials to see which one is the most efficient. We will also compare it with the original MiMC cipher to check if we perhaps improved it or at least got similar results. To do this, a program is written in Rust programming language. The choice for this language is the growing popularity due to its high performance\textcolor{red}{ideti cite}, reliability, great community and it is also author's subjective preference. As this project is more theory focused and not coding, the implementation part will discuss some key aspects of testing and rather than the overall software design.
 
 Having implemented the ciphers and checked that the new ciphers are secure, we will check what are the possible applications of it. Since the original idea of MiMC was to design a cipher with the intent of being ZK-friendly, we will have to verify whether our new cipher is still applicable for this purpose\textcolor{red}{reread and check what are the actual results we got}.
 
@@ -124,20 +137,16 @@ In general, a block cipher can be described as a function of a pair:
 \[
 f : m \times k \to c,\quad f^{-1} : c \times k \to m,
 \]
-where $f$ encrypts the message $m$ with key $k$ and $f^{-1}$ decrypts the ciphertext $c$. Thus, in general, what we are always looking for is a to find a function $f$ such that\(\forall k \in \mathcal{K}\), where $\mathcal{K}$ is the domain of $k$ we have,
-\[
-(f^{-1} \circ f)(m, k) = m.
-\]
+where $f$ encrypts the message $m$ with key $k$ and $f^{-1}$ decrypts the ciphertext $c$. Thus, we have our first definition:
+\begin{definition}\label{def:1}
+    A \textit{cipher} is a function $f$ which has an inverse $f^{-1}$ such that \(\forall k \in \mathcal{K}\) and \(\forall m \in \mathcal{M}\) we have:
+    \[
+        (f^{-1} \circ f)(m, k) = m.
+    \]
+\end{definition}
 In practice, the domains of $\mathcal{M}$, $\mathcal{K}$ and $\mathcal{C}$ are finite, hence by Universal Mapping Theorem (Theorem 72\cite{CryptanalysisBook}), any cipher can be written as polynomial system of equations over $\operatorname{GF}(p)$, for any prime $p$, where $\operatorname{GF}$ is the Galois (finite) field. In general, working in Galois fields is extremely useful, as it allows to construct ciphers and also we will see that it allows for fast computational implementations\textcolor{red}{veliau parasyt, kad tikrai taip}. However, first, we need to understand the maths of how to work in Galois fields as our cipher will operate in $\operatorname{GF}(p^n)$. We have to properly define such simple things as addition and multiplication once again, as these operations behave differently than in the standard fields of $\mathbb{N}$, $\mathbb{R}$ or $\mathbb{C}$.
 
-After that, we can try to look at MiMC and its' underlying APN $x^3$. Understanding why this particular polynomial works as a cipher is the key to building new ciphers in the same structure. Trying any polynomial and then hoping that we can find the inverse $f^{-1}$ which would decrypt our cipretext is the backwards way of thinking of how ciphers are actually created. We need to prove mathematically that for any message $m$ and any key $k$, we can indeed find the decryption function, such that \(f^{-1} \circ f = id\), where $id$ is the identity function. If we do that, then we have successfully created a cipher algorithm.
-
-However, this is just the first step of creating a properly secure cipher algorithm. What we are then tasked to do is prove mathematically, that it is secure. First, it is important to understand what it means to mathematically prove that the cipher is "secure". Then one of the methods explored in this project to prove this, is showing sufficient non-linearity of the cipher. However, proving security is the hardest step which requires deep knowledge of cryptanalysis, hence, this project is not an extensive dive into the realms of cryptography analysis. Rather, this is just an introduction of what are some techniques that are used to argue and prove that the cipher is indeed secure.
-
-\textcolor{red}{introduce rings, groups, fields}. Then \textcolor{red}{Possible candidates, what would be the decryption (proof of t)} and lastly \textcolor{red}{Motivate round number based on paper. In next chapter gonna need to prove this round number is indeed sufficient with stats and why it was chosen in the first place with attacks and MiMC improvement}
-
-% https://crypto.stackexchange.com/questions/10478/why-is-aes-considered-to-be-secure
-% It is usually the case, that it is not decidable whether the cipher is indeed not breakable. Most of the time the security holds because some mathematical problem is assumed to be "hard" to solve computationally \textcolor{red}{Teoriskai negalima sukuri unbreakable https://crypto.stackexchange.com/questions/87316/is-it-theoretically-possible-to-create-an-unbreakable-cipher Palikti sita treciam skyriuj, o cia labiau sakyti kaip argumentuosim, kad jis secure. Tipo bandysim matematiskai parodyti panasiai kaip original paper}. For example the security of RSA is based on the fact that factorizing numbers is hard\textcolor{red}{cource}.
+After that, we can try to look at MiMC and its' underlying APN $x^3$. Understanding why this particular polynomial works as a cipher is the key to building new ciphers in the same structure. Trying any polynomial and then hoping that we can find the inverse $f^{-1}$ which would decrypt our cipretext is the backwards way of thinking of how ciphers are actually created. We need to prove mathematically that for any message $m$ and any key $k$, we can indeed find the decryption function, such that \(f^{-1} \circ f = id\), where $id$ is the identity function. If we do that, then we have successfully created a cipher algorithm. However, this is just the first step of creating a properly cipher algorithm. What we are then tasked to do is show that it is secure.
 
 \subsection{Field maths}
 As already observed, since the domains of our message $\mathcal{M}$, key $\mathcal{K}$ and ciphertext $\mathcal{C}$ are finite, we will be operating in a Galois (finite) field. However first, it is necessary to understand what a \textit{field} actually is. Thus, an introduction to groups, fields, and maths behind it is given in this subsection and first we start with groups, hence, we give a formal definition of a group:
@@ -179,18 +188,71 @@ The proof of this simply follows the definition of groups and fields\cite{FieldN
 \end{theorem}
 Proving this is done showing that the field axioms hold with modular polynomial arithmetic\cite{FieldNotes}, which need to be discussed.
 
-\subsection{Permutation polynomials}
+\subsection{MiMC with general exponent}
 Modular polynomial arithmetic is done the same way as with integers except we add and divide polynomials. This is because every polynomial $f(x)$ can be expressed as $f(x) = q(x)g(x) + r(x)$ for some polynomial remainder $r(x)$ and polynomial quotient $q(x)$. Then the coefficient operations are simply in $\mathbb{F}$. For example, \(x^3-2x^2-4 = (x^2+x+3)(x-3) + 5\), we can use Euclidean long division to verify this. Now similarly to primes in integers, there are also primes of polynomials.
 \begin{definition}
     A polynomial is \textit{prime} if it is \textit{monic} and is \textit{irreducible}. That is, the highest order coefficient is 1 and the polynomial has no trivial factors.
 \end{definition}
-Moreover, just like with integers, every monic polynomial can be uniquely expressed as a prime polynomial factorization. Thus, prime polynomials behave pretty much the same as the usual primes. The only difference being is that we are working in a different field. Particularly, for our cipher we are working in $\operatorname{GF}(2^n)$, that is, the message $\mathcal{M}$, key $\mathcal{K}$ and ciphertext $\mathcal{C}$ elements are actually elements of $\operatorname{GF}(2^n)$, for some $n \ge 2$. What this means, is that the elements have the form of $f(x) = a_nx^n + a_{n-1}x^{n-1} + ... + a_0$, where $a_0$, $a_1$, ..., $a_n \in \operatorname{GF}(2)$. Any field can be chosen for this, however, implementations of this field are way easier and this is discussed in chapter \ref{Implementations}\textcolor{red}{duoti references, kodel butent GF(2)}. As discussed, our operations are modular polynomial operations, thus addition $+$ and multiplication $*$ is not like with integers.
+Moreover, just like with integers, every monic polynomial can be uniquely expressed as a prime polynomial factorization. Thus, prime polynomials behave pretty much the same as the usual primes. The only difference being is that we are working in a different field. Particularly, for our cipher we are working in $\operatorname{GF}(2^n)$, that is, the message $\mathcal{M}$, key $\mathcal{K}$ and ciphertext $\mathcal{C}$ elements are actually elements of $\operatorname{GF}(2^n)$, for some $n \ge 2$. What this means, is that the elements have the form of $f(x) = a_nx^n + a_{n-1}x^{n-1} + ... + a_0$, where $a_0$, $a_1$, ..., $a_n \in \operatorname{GF}(2)$. Any field can be chosen for this, however, implementations of this field are way easier and this is discussed in chapter \ref{chapter:Implementations}\textcolor{red}{duoti references, kodel butent GF(2)}. As discussed, our operations are modular polynomial operations, thus addition $+$ and multiplication $*$ is not like with integers.\medskip
 
 ------------MAIN---------------
 
-If we take a look at MiMC cipher\cite{MiMC}, it uses the same field $\operatorname{GF}(2^n)$, where $n$ describes the block size. The underlying polynomial for the cipher is $x^3$. However, we can in fact take any polynomial $x^e$, for any $e \ge 2$ and we can prove that this does in fact give us a cipher. The rest of the cipher is unchanged: plaintext $m$ is added to round constant $r_i$ and key $k$. Then instead of cubic the result, it is raised to some power $e$ and this process is repeated for some number of rounds discussed in subsection \ref{sub2.3}.
+\noindent\textbf{MiMCGe} If we take a look at MiMC cipher\cite{MiMC}, it uses the same field $\operatorname{GF}(2^n)$, where $n$ describes the block size. The underlying polynomial for the cipher is $x^3$. However, we can in fact take any polynomial $x^e$, for any $e \ge 2$ and we call this the \textit{MiMCGe} cipher. We can prove that this does in fact give us a cipher (Fig. \ref{fig:cipher}) by our definition \ref{def:1}. The cipher algorithm is simple: plaintext $m$ is added to a random element (round constant) $r_i$ and key $k$. Then instead of cubic the result, it is raised to some power $e$ and this process is repeated for some number of rounds $R := \left\lceil n\log_e(2) \right\rceil$. The choice for this is discussed in subsection \ref{sub:3.1}\textcolor{red}{ideti}. The round constants are chosen as random elements every time we initialise the cipher. However, these constants could also be predefined earlier similarly to AES.
 
-First, let us see why indeed we can take any power $e$. For this, we need to understand what a permutation polynomial is:
+
+\begin{figure}
+    \centering
+    \caption{MiMC with general exponent $e$ cipher algorithm\cite{MiMC}\cite{CipherGraphs}.}
+    \label{fig:cipher}
+    \begin{tikzpicture}
+        \tikzstyle{every node}=[transform shape];
+        \tikzstyle{every node}=[node distance=1.8cm];
+      
+        \node (XOR-1)[XOR,scale=1] {};
+        %% (Start) message
+        \node [left of=XOR-1] (p) {$m$};
+            % Connecting message to first XOR
+        	\path[line] (p) edge (XOR-1);
+        %% Block
+        \node (block-1) [right of=XOR-1,draw,rectangle,thick,minimum width=4em, minimum height=4em] {$x^e$};
+            % Connecting block to XOR before
+        	\path[line] (XOR-1) edge (block-1);
+        %% XOR right of block before
+        \node (XOR-2)[right of=block-1,XOR,scale=1] {};
+        	\path[line] (block-1) edge (XOR-2);
+    
+        %% Second block
+        \node (block-2) [right of=XOR-2,draw,rectangle,thick,minimum width=4em, minimum height=4em] {$x^e$};
+        	\path[line] (XOR-2) edge (block-2);
+        %% Third XOR
+        \node (XOR-3)[right of=block-2,XOR,scale=1, node distance=2.4cm] {};
+        	\path[dashed] (block-2) edge (XOR-3);
+    
+         %% Last block
+        \node (block-3) [right of=XOR-3,draw,rectangle,thick,minimum width=4em, minimum height=4em] {$x^e$};
+            \path[line] (XOR-3) edge (block-3);
+    
+        \node (XOR-4)[right of=block-3,XOR,scale=1] {};
+            \path[line] (block-3) edge (XOR-4);
+    
+        %% Result
+        \node (res)[right of=XOR-4] {$c$};
+            \path[line] (XOR-4) edge (res);
+          
+        %% Subkeys
+        \node (k-0) [above=0.6cm of XOR-1] {};
+            \path[line] (k-0) node[above] {\small $k$} edge (XOR-1);
+        \node (k-1) [above=0.6cm of XOR-2] {};
+            \path[line] (k-1) node[above] {\small $k \oplus r_1$} edge (XOR-2);
+        \node (k-2) [above=0.6cm of XOR-3] {};
+            \path[line] (k-2) node[above] {\small $k \oplus r_{R-1}$} edge (XOR-3);
+        \node (k-3) [above=0.6cm of XOR-4] {};
+            \path[line] (k-3) node[above] {\small $k$} edge (XOR-4);
+    \end{tikzpicture}
+\end{figure}
+
+
+First, we need to prove that indeed this is a cipher hence let us see why indeed we can take any power $e$. For this, we need to understand what a permutation polynomial is:
 \begin{definition}
     A polynomial $f \in \operatorname{GF}(q)$ is called a \textit{permutation polynomial} of $\operatorname{GF}(q)$ if the associated polynomial function $f : c \to f(c)$ is a permutation of $\operatorname{GF}(q)$. 
 \end{definition}
@@ -198,8 +260,8 @@ Moreover, remember, that in order to have a cipher, we need to have a function $
 \begin{theorem}
     A polynomial $x^e$ is a permutation polynomial of the field $\operatorname{GF}(q)$ if and only if gcd($e$, $q - 1$) $= 1$.
 \end{theorem}
-The proof of this uses Hermite's criterion\cite{PPIntro}\textcolor{red}{better to prove myself}. Thus, to have a cipher it is needed to get an inverse function. For that, it is necessary that the degree $e$ and $q - 1 = 2^n - 1$ are coprime, where $n$ is the block size. Now to build an inverse (decryption) function given $a^e = b$, integer $s$ has to be found such that $b^s = a$, where $a$ and $b$ are in $\operatorname{GF}(2^n)$. However, first we an additional theorem:
-\begin{lemma}\label{GroupProp}
+The proof of this uses Hermite's criterion\cite{PPIntro}\textcolor{red}{better to prove myself}. Thus, to have a cipher it is needed to get an inverse function. For that, it is necessary that the degree $e$ and $q - 1 = 2^n - 1$ are coprime, where $n$ is the block size. Now to build an inverse (decryption) function given $a^e = b$, integer $s$ has to be found such that $b^s = a$, where $a$ and $b$ are in $\operatorname{GF}(2^n)$. However, first we an additional lemma:
+\begin{lemma}\label{lem:GroupProp}
     The property $a^{q-1} = 1$ holds for any element $a \in \operatorname{GF}(q)$.
 \end{lemma}
 \begin{proof}
@@ -208,30 +270,35 @@ The proof of this uses Hermite's criterion\cite{PPIntro}\textcolor{red}{better t
 \end{proof}
 Notice, that when $q$ is prime, this is equivalent to the Fermat's little theorem. Now we can use this to prove our result:
 \begin{theorem}
-    The inverse element of $b = a^e$ in $\operatorname{GF}(2^n)$ is given by $b^s$, where $s := \frac{t(2^n-1) + 1}{e}$, for some integer $0 < t < e$\textcolor{red}{gal nedet nelygybiu ir pasakyt, kad dar gcd turi but?}.
+    The inverse element of $b = a^e$ in $\operatorname{GF}(2^n)$ is given by $b^s$, where $s := \frac{t(2^n-1) + 1}{e}$, for some $t$. If gcd($e$, $2^n-1$) $= 1$, then $s$ and $0 < t < e$ are integers.
 \end{theorem}
 \begin{proof}
-    We need to find $s$ such that in $\operatorname{GF}(2^n)$, we have:
+    It consists of two parts. First we prove that in fact $s$ exists, then that $s$ and $t$ are integers. We begin with the fact that we need to find $s$ such that in $\operatorname{GF}(2^n)$, we have:
     \[
         b^s = (a^e)^s = a^{es} = a.
     \]
-    Using lemma \ref{GroupProp}, we have that $a^{2^n-1} = 1$ in $\operatorname{GF}(2^n)$. Moreover, we can raise this to some power $t$ and then multiply by $a$ to get:
+    Using lemma \ref{lem:GroupProp}, we have that $a^{2^n-1} = 1$ in $\operatorname{GF}(2^n)$. Moreover, we can raise this to some power $t$ and then multiply by $a$ to get:
     \begin{gather*}
         a^{2n-1} = 1\\
         (a^{2n-1}) ^ t = 1^t = 1\\
         a (a^{2n-1})^t = a\\
         a^{t(2n-1)+1} = a
     \end{gather*}
-    Note, that $1^t=1$ by the second axiom of the field, which says that $1$ is multiplicative identity. Thus we get that \(es = t(2^n-1)+1 \implies s := \frac{t(2^n-1)+1}{e}\).
-\end{proof}
-This means that the decryption function is of the same form but with a different power $s := \frac{t(2^n-1)+1}{e}$. Notice, that $e \ll s$, thus decryption is considerably slower and methods to compute fast exponentiation are necessary\textcolor{red}{ideti ref, kai bus parasyta}.
+    Note, that $1^t=1$ by the second axiom of the field, which says that $1$ is the multiplicative identity. Thus we get that \(es = t(2^n-1)+1 \Rightarrow s := \frac{t(2^n-1)+1}{e}\).\medskip
 
-\textcolor{red}{prove that it exists and the form. Then maybe that's it? Bet realiai kazkaip biski silpnokai atrodo, nes dauguma theorems neirodyta, o tiesiog pasakyta, tai gal kokia viena irodyt butu gerai.}
+    \noindent Now to prove that $s$ is an integer we need that:
+    \begin{equation}
+        \begin{array}{c}
+            s = \frac{t(2^n-1) + 1}{e} \iff t(2^n-1) + 1 \equiv 0 \mod e
+        \end{array}\label{eq:1}
+    \end{equation}
+    
+    \noindent And this can be simplified to \(t(2^n-1) \equiv -1 \mod e\). For this, we can use the modular multiplicative inverse property which states that $ab \equiv 1 \mod m$ if and only if gcd($a$, $m$) $= 1$. And this is exactly the same case if we multiply by $-1$, since gcd($e$, $2^n-1$) $= 1$. Thus, we get that we can indeed find an integer $t$, such that the equation \eqref{eq:1} is satisfied, giving us an integer $s$. Moreover, if $t \ge e$, then $t$ can be replaced by $t \mod e$ and also, since $\frac{1}{e}$ is not an integer, $t \ne 0$. Giving us that $0 < t < e$.
+\end{proof}
+This means that since the encryption is a permutation polynomial if and only if gcd($e$, $2^n-1$) $= 1$, then the decryption exponent will also be an integer. Thus, the decryption function is of the same form but with a different power $s := \frac{t(2^n-1)+1}{e}$. Notice, that $e \ll s$, hence decryption is considerably slower and methods to compute fast exponentiation are necessary\textcolor{red}{ideti ref, kai bus parasyta}.
+\textcolor{red}{Realiai kazkaip biski silpnokai atrodo, nes dauguma theorems neirodyta, o tiesiog pasakyta, tai gal kokia viena irodyt butu gerai.}
 
 ---------------MAIN---------------
-
-\subsection{Round numbers}\label{sub2.3}
-\textcolor{red}{Now need to argue how to make this secure, bet realiai nedaug cia, daugiau apie sita sekanciam skyriuj. Tiesiog formule vos ne parasyt ir tiek?}
 
 % ------------- SECURITY ANALYSIS ----------------
 \section{Security analysis}
@@ -252,12 +319,23 @@ This means that the decryption function is of the same form but with a different
     \end{itemize}
 \end{itemize}
 
+% https://crypto.stackexchange.com/questions/10478/why-is-aes-considered-to-be-secure
+% It is usually the case, that it is not decidable whether the cipher is indeed not breakable. Most of the time the security holds because some mathematical problem is assumed to be "hard" to solve computationally \textcolor{red}{Teoriskai negalima sukuri unbreakable https://crypto.stackexchange.com/questions/87316/is-it-theoretically-possible-to-create-an-unbreakable-cipher Palikti sita treciam skyriuj, o cia labiau sakyti kaip argumentuosim, kad jis secure. Tipo bandysim matematiskai parodyti panasiai kaip original paper}. For example the security of RSA is based on the fact that factorizing numbers is hard\textcolor{red}{cource}.
+
+
+What we are now tasked to do is show that the cipher is indeed secure. However, proving security is the hardest step which requires deep knowledge of cryptanalysis, hence, this project is not an extensive dive into the realms of cryptography analysis. Rather, this is just an introduction of what are some techniques that are used to argue and prove that the cipher is secure. \textcolor{red}{dabar galima maza tangent pasakyt, kad va is tikro neimanoma ir duoti reference. Poto sakyt, kad net ir AES ar DES buvo sugriauti ir netgi pats MiMC turi ataka. O tuomet pradeti argumentuoti. Pirmas dalykas, tai round number su interpolation attack. Tuomet, diffusion/confusion. Tuomet dieharder NIST STS. Ir viskas? Butu gerai dar kokia ataka ar kas. Paklausti supervisor ar uztenka}
+
+Zodziu, goal for weekend: \textcolor{red}{parasyti gera structure. Nebutinai uzbaigti, bet pradeti visus subsections, kad butu, ka parodyt supervisor ir paklausti, ko truksta}
+
+
 
 % ------------- IMPLEMENTATIONS ----------------
-\section{Implementations}\label{Implementations}
+\section{Implementations}\label{chapter:Implementations}
 \begin{itemize}
+    \item Design subsection which says that for example elements are Vec<u8>. Could also say first struggles, kad ilgai, kol isejo padaryt decryption.
+    \item Testing subsection which says how we test field math, how ciphers are tested, evaluation criteria.
     \item Write code and perform benchmarks
-    \item Analyse found results. Are they faster/better/worse. Conclusions
+    \item \textcolor{blue}{Analyse found results. Are they faster/better/worse. Conclusions} Sitas gal geriau in conclusion chapter.
     \item Future work which explains that we could further optimize it using precalculated tables, etc.
 \end{itemize}
 
@@ -352,6 +430,8 @@ This means that the decryption function is of the same form but with a different
 \bibitem{FieldNotes} David Forney. \textit{Introduction to finite fields}, \href{http://web.stanford.edu/~marykw/classes/CS250_W19/readings/Forney_Introduction_to_Finite_Fields.pdf}{URL}, September 2016.
 
 \bibitem{PPIntro} Christopher J. Shallue. \textit{Permutation Polynomials of Finite Fields}, \href{https://arxiv.org/pdf/1211.6044.pdf}{URL}, May 2012.
+
+\bibitem{CipherGraphs} J\'er\'emy Jean. \textit{TikZ for Cryptographers}, \href{https://www.iacr.org/authors/tikz/}{URL}, 2016.
 
 \end{thebibliography}
 
