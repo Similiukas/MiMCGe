@@ -7,7 +7,7 @@ pub type FieldElement = Vec<u8>;
 pub enum CipherType {
     AES,
     MiMC,
-    MiMCGn(u128, Option<usize>),
+    MiMCGe(u128, Option<usize>),
 }
 
 lazy_static! {

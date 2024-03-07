@@ -1,7 +1,7 @@
 use std::time::{Duration, Instant};
 use crate::aes::aes::AES;
 use crate::mimc::mimc::MiMC;
-use crate::mimc_general::mimc_general::MiMCGn;
+use crate::mimc_general::mimc_general::MiMCGe;
 use crate::utils::helpers::{Cipher, CipherType, FieldElement, generate_random_bits};
 
 
@@ -9,7 +9,7 @@ pub fn choose_cipher(t: &CipherType, block_size: u32) -> Box<dyn Cipher> {
     match t {
         CipherType::AES => Box::new(AES{}),
         CipherType::MiMC => Box::new(MiMC::new(block_size)),
-        CipherType::MiMCGn(e, rr) => Box::new(MiMCGn::new(*e, block_size, *rr)),
+        CipherType::MiMCGe(e, rr) => Box::new(MiMCGe::new(*e, block_size, *rr)),
     }
 }
 

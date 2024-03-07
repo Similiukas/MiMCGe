@@ -19,17 +19,17 @@ struct Args {
     test_type: String,
 
     /// Cipher type.
-    #[arg(value_parser=["aes", "mimc", "mimcgn"])]
+    #[arg(value_parser=["aes", "mimc", "mimcge"])]
     cipher_type: String,
 
-    /// Block size (only some are implemented for MiMC/MiMCGn, only 128 bit for AES).
+    /// Block size (only some are implemented for MiMC/MiMCGe, only 128 bit for AES).
     #[arg(
         default_value_t = 17,
         value_parser = clap::builder::PossibleValuesParser::new(["5", "8", "11", "17", "25", "31", "47", "61", "83", "101", "125", "127", "128"])
                 .map(|s| s.parse::<u32>().unwrap()))]
     block_size: u32,
 
-    /// Test size (ranging from 1 to u64).
+    /// Test size (ranging from 1 to u64). How many times to repeat the same test.
     #[arg(short, long, default_value = "1")]
     test_size: usize,
 
@@ -41,11 +41,11 @@ struct Args {
     #[arg(short, long, default_value = None)]
     plaintext: Option<u128>,
 
-    /// Exponent for MiMCGn cipher *x^n*.
+    /// Exponent for MiMCGe cipher *x^n*.
     #[arg(short, long, default_value = "3")]
     exponent: u128,
 
-    /// How many rounds to reduce for the MiMCGn cipher.
+    /// How many rounds to reduce for the MiMCGe cipher.
     #[arg(short, long, default_value = None)]
     round_reduction: Option<usize>
 }
@@ -57,7 +57,7 @@ fn main() {
     let cipher_type = match args.cipher_type.as_str() {
         "aes" => CipherType::AES,
         "mimc" => CipherType::MiMC,
-        "mimcgn" => CipherType::MiMCGn(args.exponent, args.round_reduction),
+        "mimcge" => CipherType::MiMCGe(args.exponent, args.round_reduction),
         _ => unreachable!()
     };
 
@@ -72,3 +72,7 @@ fn main() {
         _ => unreachable!()
     }
 }
+
+// fn main() {
+//     test_diffusion(1000, 47, CipherType::MiMCGe(8, None));
+// }

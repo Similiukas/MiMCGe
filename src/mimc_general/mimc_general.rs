@@ -2,7 +2,8 @@ use std::fmt;
 use std::fmt::Formatter;
 use crate::utils::helpers::{add_finite_field, Cipher, FieldElement, gcd, generate_round_constants, square_multiply, to_decimal};
 
-/// Finding integer *t* such that **1+t(2^n-1) / e** is an integer.
+/// Finding integer *t* such that **1+t(2^n-1) / e** is an integer. Or simplified to t * ((2^n-1) mod e) = -1 mod e.
+/// Using this since t*(2^n-1) can cause an overflow.
 ///
 /// This value will be between 1 and exponent - 1. It cannot be > exponent - 1, since then we can reduce t to t = t % e.
 ///
@@ -10,15 +11,16 @@ use crate::utils::helpers::{add_finite_field, Cipher, FieldElement, gcd, generat
 ///
 /// Panics if t is not find in range 0 t < e. Cannot do decryption then, since s, where x^s = x in GF(2^n) does not exist.
 fn find_t(exponent: u128, block_size: u32) -> u128 {
+    let m = (2u128.pow(block_size) - 1) % exponent;
     for t in 1..exponent {
-        if (1 + t * (2u128.pow(block_size) - 1)) % exponent == 0 {
+        if (t * m) % exponent == exponent - 1 {
             return t
         }
     }
     unreachable!()
 }
 
-pub struct MiMCGn {
+pub struct MiMCGe {
     exponent: u128,
     block_size: u32,
     field: u128,
@@ -27,16 +29,16 @@ pub struct MiMCGn {
     round_constants: Vec<FieldElement>
 }
 
-impl MiMCGn {
+impl MiMCGe {
     pub fn new(exponent: u128, block_size: u32, round_reduction: Option<usize>) -> Self {
         let rounds = (block_size as f32 * 2f32.log(exponent as f32)).ceil() as usize - round_reduction.unwrap_or(0);
-        MiMCGn::with_round_constants(exponent, block_size, &generate_round_constants(rounds, block_size))
+        MiMCGe::with_round_constants(exponent, block_size, &generate_round_constants(rounds, block_size))
     }
 
     pub fn with_round_constants(exponent: u128, block_size: u32, round_constants: &Vec<FieldElement>) -> Self {
         // x^n is a permutation if and only if gcd(exponent, 2^n - 1) = 1
         assert_eq!(gcd(exponent, 2u128.pow(block_size) - 1), 1, "This is not a permutation polynomial");
-        MiMCGn {
+        MiMCGe {
             exponent,
             block_size,
             field: 2u128.pow(block_size),
@@ -47,7 +49,7 @@ impl MiMCGn {
     }
 }
 
-impl Cipher for MiMCGn {
+impl Cipher for MiMCGe {
     fn encrypt(&self, plaintext: &FieldElement, key: &FieldElement) -> FieldElement {
         let mut state: FieldElement = plaintext.to_vec();
         for round in 0..self.rounds {
@@ -71,7 +73,7 @@ impl Cipher for MiMCGn {
     }
 }
 
-impl fmt::Display for MiMCGn {
+impl fmt::Display for MiMCGe {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         let converted_rc: &Vec<u128> = &self.round_constants.iter().map(|x| to_decimal(x)).collect();
 
@@ -88,7 +90,7 @@ impl fmt::Display for MiMCGn {
 
 #[cfg(test)]
 mod tests {
-    use crate::mimc_general::mimc_general::MiMCGn;
+    use crate::mimc_general::mimc_general::MiMCGe;
     use crate::utils::helpers::{Cipher, to_binary};
 
     #[test]
@@ -97,7 +99,7 @@ mod tests {
         // 0, 79, 42, 125, 150, 10, 103, 30
         let round_constants = vec![vec![0;8], to_binary(79, block), to_binary(42, block), to_binary(125, block),
                                    to_binary(150, block), to_binary(10, block), to_binary(103, block), to_binary(30, block)];
-        let cipher = MiMCGn::with_round_constants(2, block, &round_constants);
+        let cipher = MiMCGe::with_round_constants(2, block, &round_constants);
         // Plaintext 143, key 162, ciphertext 83
         assert_eq!(cipher.encrypt(&to_binary(143, block), &to_binary(162, block)), to_binary(83, block));
     }
@@ -108,7 +110,7 @@ mod tests {
         // 0, 79, 42, 125, 150, 10, 103, 30
         let round_constants = vec![vec![0;8], to_binary(79, block), to_binary(42, block), to_binary(125, block),
                                    to_binary(150, block), to_binary(10, block), to_binary(103, block), to_binary(30, block)];
-        let cipher = MiMCGn::with_round_constants(2, block, &round_constants);
+        let cipher = MiMCGe::with_round_constants(2, block, &round_constants);
         // Ciphertext 83, key 162, ciphertext 143
         assert_eq!(cipher.decrypt(&to_binary(83, block), &to_binary(162, block)), to_binary(143, block));
     }
@@ -118,7 +120,7 @@ mod tests {
     fn encrypt_3() {
         // 0, 5, 22, 16
         let round_constants = vec![vec![0;5], vec![0,0,1,0,1], vec![1,0,1,1,0], vec![1,0,0,0,0]];
-        let cipher = MiMCGn::with_round_constants(3, 5, &round_constants);
+        let cipher = MiMCGe::with_round_constants(3, 5, &round_constants);
         // Plaintext 15, key 29, ciphertext 7
         assert_eq!(cipher.encrypt(&vec![0,1,1,1,1], &vec![1,1,1,0,1]), vec![0,0,1,1,1]);
     }
@@ -128,7 +130,7 @@ mod tests {
     fn decrypt_3() {
         // 0, 5, 22, 16
         let round_constants = vec![vec![0;5], vec![0,0,1,0,1], vec![1,0,1,1,0], vec![1,0,0,0,0]];
-        let cipher = MiMCGn::with_round_constants(3, 5, &round_constants);
+        let cipher = MiMCGe::with_round_constants(3, 5, &round_constants);
         // Ciphertext 7, key 29, plaintext 15
         assert_eq!(cipher.decrypt(&vec![0,0,1,1,1], &vec![1,1,1,0,1]), vec![0,1,1,1,1]);
     }
@@ -137,7 +139,7 @@ mod tests {
     fn encrypt_5() {
         // 0, 30, 11
         let round_constants = vec![vec![0;5], vec![1,1,1,1,0], vec![0,1,0,1,1]];
-        let cipher = MiMCGn::with_round_constants(5, 5, &round_constants);
+        let cipher = MiMCGe::with_round_constants(5, 5, &round_constants);
         // Plaintext 16, key 23, ciphertext 12
         assert_eq!(cipher.encrypt(&vec![1,0,0,0,0], &vec![1,0,1,1,1]), vec![0,1,1,0,0]);
     }
@@ -146,7 +148,7 @@ mod tests {
     fn decrypt_5() {
         // 0, 30, 11
         let round_constants = vec![vec![0;5], vec![1,1,1,1,0], vec![0,1,0,1,1]];
-        let cipher = MiMCGn::with_round_constants(5, 5, &round_constants);
+        let cipher = MiMCGe::with_round_constants(5, 5, &round_constants);
         // Ciphertext 12, key 23, plaintext 16
         assert_eq!(cipher.decrypt(&vec![0,1,1,0,0], &vec![1,0,1,1,1]), vec![1,0,0,0,0]);
     }
@@ -156,7 +158,7 @@ mod tests {
         let block = 11;
         // 0, 501, 1136, 2029
         let round_constants = vec![vec![0;11], to_binary(501, block), to_binary(1136, block), to_binary(2029, block)];
-        let cipher = MiMCGn::with_round_constants(7, block, &round_constants);
+        let cipher = MiMCGe::with_round_constants(7, block, &round_constants);
         // Plaintext 1440, key 154, ciphertext 1029
         assert_eq!(cipher.encrypt(&to_binary(1440, block), &to_binary(154, block)), to_binary(1029, block));
     }
@@ -166,7 +168,7 @@ mod tests {
         let block = 11;
         // 0, 501, 1136, 2029
         let round_constants = vec![vec![0;11], to_binary(501, block), to_binary(1136, block), to_binary(2029, block)];
-        let cipher = MiMCGn::with_round_constants(7, block, &round_constants);
+        let cipher = MiMCGe::with_round_constants(7, block, &round_constants);
         // Ciphertext 1440, key 154, plaintext 1029
         assert_eq!(cipher.decrypt(&to_binary(1029, block), &to_binary(154, block)), to_binary(1440, block));
     }
@@ -186,7 +188,7 @@ mod tests {
             to_binary(7205033936298891818499388494006800195, block), to_binary(17497161803080260119745458385898769753, block), to_binary(37578834402327662055394134160005729299, block), to_binary(21240978322657773079645023711625750132, block), to_binary(37236911606149191099742906052946416063, block), to_binary(42081022960725496538871605827198703624, block), to_binary(18684432868189542060755476402097972613, block),
             to_binary(5883437725093564569545747673014498194, block), to_binary(27031668972804118613304002349961229405, block), to_binary(9831444421268533385150305261192003966, block), to_binary(14151207877237846092529077669506552902, block), to_binary(31004815350678692215653382429727003270, block), to_binary(8246329830944397747374334927475534030, block), to_binary(16610515120689042289211774724145727829, block),
             to_binary(2072040885702662349062282296309023930, block), to_binary(8381710917421248726076725161839749053, block)];
-        let cipher = MiMCGn::with_round_constants(3, block, &round_constants);
+        let cipher = MiMCGe::with_round_constants(3, block, &round_constants);
         assert_eq!(cipher.encrypt(&to_binary(9468632022148749579697753766856589000, block), &to_binary(8467268564892985217747340741738563498, block)), to_binary(8019515472302977383992575657936144960, block));
     }
 
@@ -205,7 +207,7 @@ mod tests {
                                    to_binary(7205033936298891818499388494006800195, block), to_binary(17497161803080260119745458385898769753, block), to_binary(37578834402327662055394134160005729299, block), to_binary(21240978322657773079645023711625750132, block), to_binary(37236911606149191099742906052946416063, block), to_binary(42081022960725496538871605827198703624, block), to_binary(18684432868189542060755476402097972613, block),
                                    to_binary(5883437725093564569545747673014498194, block), to_binary(27031668972804118613304002349961229405, block), to_binary(9831444421268533385150305261192003966, block), to_binary(14151207877237846092529077669506552902, block), to_binary(31004815350678692215653382429727003270, block), to_binary(8246329830944397747374334927475534030, block), to_binary(16610515120689042289211774724145727829, block),
                                    to_binary(2072040885702662349062282296309023930, block), to_binary(8381710917421248726076725161839749053, block)];
-        let cipher = MiMCGn::with_round_constants(3, block, &round_constants);
+        let cipher = MiMCGe::with_round_constants(3, block, &round_constants);
         assert_eq!(cipher.decrypt(&to_binary(8019515472302977383992575657936144960, block), &to_binary(8467268564892985217747340741738563498, block)), to_binary(9468632022148749579697753766856589000, block));
     }
 
@@ -217,7 +219,7 @@ mod tests {
                                    to_binary(38381964355223679481018416380889084556, block), to_binary(31161814714623194397408346364489716770, block), to_binary(32934457635429160815107860710513742589, block), to_binary(26741680603146037214397872553555190766, block), to_binary(3107426661571313149565869224512046096, block), to_binary(40198687631088615974585082090700986998, block), to_binary(5476969655650457568097010922063797835, block),
                                    to_binary(41461862553193984450999192143908749498, block), to_binary(12327403700919129259788074806075185938, block), to_binary(4688292551730950202753753342430543751, block), to_binary(21905517153202268016662264333486113258, block), to_binary(40298766568895148109296556534951900641, block), to_binary(7431960764102833751099153944386722509, block), to_binary(41597672896597230345689763217693153997, block),
                                    to_binary(39356322169560908611575791106241040910, block), to_binary(30915125800993868940638839796466169844, block), to_binary(7707638768011105844732221982838828339, block)];
-        let cipher = MiMCGn::with_round_constants(17, block, &round_constants);
+        let cipher = MiMCGe::with_round_constants(17, block, &round_constants);
         assert_eq!(cipher.encrypt(&to_binary(3539930619944888682700143720924760077, block), &to_binary(2072040885702662349062282296309023930, block)), to_binary(1985296284827060896312693521822282292, block));
     }
 
@@ -229,7 +231,7 @@ mod tests {
                                    to_binary(38381964355223679481018416380889084556, block), to_binary(31161814714623194397408346364489716770, block), to_binary(32934457635429160815107860710513742589, block), to_binary(26741680603146037214397872553555190766, block), to_binary(3107426661571313149565869224512046096, block), to_binary(40198687631088615974585082090700986998, block), to_binary(5476969655650457568097010922063797835, block),
                                    to_binary(41461862553193984450999192143908749498, block), to_binary(12327403700919129259788074806075185938, block), to_binary(4688292551730950202753753342430543751, block), to_binary(21905517153202268016662264333486113258, block), to_binary(40298766568895148109296556534951900641, block), to_binary(7431960764102833751099153944386722509, block), to_binary(41597672896597230345689763217693153997, block),
                                    to_binary(39356322169560908611575791106241040910, block), to_binary(30915125800993868940638839796466169844, block), to_binary(7707638768011105844732221982838828339, block)];
-        let cipher = MiMCGn::with_round_constants(17, block, &round_constants);
+        let cipher = MiMCGe::with_round_constants(17, block, &round_constants);
         assert_eq!(cipher.decrypt(&to_binary(1985296284827060896312693521822282292, block), &to_binary(2072040885702662349062282296309023930, block)), to_binary(3539930619944888682700143720924760077, block));
     }
 }

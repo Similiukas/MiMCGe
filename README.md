@@ -1,4 +1,4 @@
-# MiMC with general degree *n* polynomial (MiMCGn)
+# MiMC with general degree *n* polynomial (MiMCGe)
 
 This is a Computer Science Project for MSci. Mathematics and Computer Science degree at University of Birmingham.
 
@@ -18,7 +18,7 @@ cargo build --release
 
 This will create *./target* directory with the compiled code. Now you can run the CLI tool to see all available options:
 ```bash
-./target/release/mimcgn --help
+./target/release/mimcge --help
 ```
 
 ## Options
@@ -30,19 +30,19 @@ The tool allows to test cipher:
  - **dec-time** (decrypting *test-size* number of ciphertexts *sample-size* amount of times)
  - **cipher-test** (encrypts and decrypts random or given plaintext)
 
-Implemented ciphers for testing are **AES**, **MiMC** and **MiMCGn** which is the second argument to the tool.
+Implemented ciphers for testing are **AES**, **MiMC** and **MiMCGe** which is the second argument to the tool.
 
 **Note:** only a number of block sizes are implemented. This is because cipher operations are in *GF(2^n)* field, thus, for every different block size *n*, irreducible polynomial need to be given.
 Moreover, AES implementation is provided by the [crate](https://docs.rs/aes/latest/aes), which allows only 128 bit block size. 
 
 ## Examples
 
-- To test MiMCGn with polynomial *x^5*, block size of *17* and random plaintext:
+- To test MiMCGe with polynomial *x^5*, block size of *17* and random plaintext:
 ```bash
-./target/release/mimcgn cipher_test mimcgn 17 --exponent 5
+./target/release/mimcge cipher_test mimcge 17 --exponent 5
 ```
 
-- To get MiMCGn with polynomial *x^5* diffusion statistic of block_size *17* and *1000* plaintexts:
+- To get MiMCGe with polynomial *x^5* diffusion statistic of block_size *17* and *1000* plaintexts:
 ```bash
-./target/release/mimcgn diffusion mimcgn 17 --exponent 5 --test-size 1000
+./target/release/mimcge diffusion mimcge 17 --exponent 5 --test-size 1000
 ```

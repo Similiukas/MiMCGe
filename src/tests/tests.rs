@@ -56,7 +56,7 @@ pub fn test_confusion(test_size: usize, block_size: u32, cipher_type: CipherType
 /// Returns the time it takes to encrypt **test_size** x **sample_size** plaintexts.
 pub fn test_encryption_time(test_size: usize, sample_size: usize, block_size: u32, cipher_type: CipherType) {
     let time = decryption_encryption(false, test_size, sample_size, block_size, cipher_type);
-    println!("Total time to encrypt {test_size}x{sample_size} plaintexts {:.2?}", time);
+    println!("Total time to encrypt {test_size}x{sample_size} plaintexts {:.6?}", time);
 }
 
 /// # Decryption efficiency test for cipher
@@ -69,7 +69,7 @@ pub fn test_encryption_time(test_size: usize, sample_size: usize, block_size: u3
 /// Returns the time it takes to decrypt **test_size** x **sample_size** ciphertexts.
 pub fn test_decryption_time(test_size: usize, sample_size: usize, block_size: u32, cipher_type: CipherType) {
     let time = decryption_encryption(true, test_size, sample_size, block_size, cipher_type);
-    println!("Total time to decrypt {test_size}x{sample_size} ciphertexts {:.2?}", time);
+    println!("Total time to decrypt {test_size}x{sample_size} ciphertexts {:.6?}", time);
 }
 
 /// # Simple encryption and decryption test
