@@ -1,6 +1,7 @@
 use std::time::Instant;
+use crate::mimc_general::mimc_general::MiMCGe;
 use crate::tests::helpers::{choose_cipher, confusion, decryption_encryption, diffusion};
-use crate::utils::helpers::{CipherType, FieldElement, generate_random_bits, to_decimal};
+use crate::utils::helpers::{Cipher, CipherType, FieldElement, generate_random_bits, to_binary, to_decimal};
 
 /// # Diffusion test for cipher.
 ///
@@ -75,13 +76,20 @@ pub fn test_decryption_time(test_size: usize, sample_size: usize, block_size: u3
 /// # Simple encryption and decryption test
 ///
 /// Check if the cipher correctly decrypts the encrypted message
-pub fn test_cipher(plaintext: Option<FieldElement>, block_size: u32, cipher_type: CipherType) {
+pub fn test_cipher(plaintext: FieldElement, block_size: u32, cipher_type: CipherType) {
     let cipher = choose_cipher(&cipher_type, block_size);
-    let pt = plaintext.unwrap_or(generate_random_bits(block_size));
     let key = generate_random_bits(block_size);
     let start = Instant::now();
-    let ciphertext = cipher.encrypt(&pt, &key);
+    let ciphertext = cipher.encrypt(&plaintext, &key);
     let decrypted = cipher.decrypt(&ciphertext, &key);
-    println!("Plaintext:  {} {:?}\nCiphertext: {} {:?}\nDecrypted:  {} {:?}\nTime: {:.2?}", to_decimal(&pt), pt, to_decimal(&ciphertext), ciphertext, to_decimal(&decrypted), decrypted, start.elapsed());
-    assert_eq!(decrypted, pt);
+    println!("Plaintext:  {} {:?}\nCiphertext: {} {:?}\nDecrypted:  {} {:?}\nTime: {:.2?}", to_decimal(&plaintext), plaintext, to_decimal(&ciphertext), ciphertext, to_decimal(&decrypted), decrypted, start.elapsed());
+    assert_eq!(decrypted, plaintext);
+}
+
+pub fn encrypt_many(test_size: usize, key: FieldElement, block_size: u32, exponent: u128, round_constants: Vec<u128>) {
+    let rc = round_constants.iter().map(|x| to_binary(*x, block_size)).collect::<Vec<FieldElement>>();
+    let cipher = MiMCGe::with_round_constants(exponent, block_size, &rc);
+    for i in 0..test_size {
+        println!("{}", cipher.encrypt(&to_binary(i as u128, block_size), &key).into_iter().map(|x| x.to_string()).collect::<Vec<String>>().join(""));
+    }
 }

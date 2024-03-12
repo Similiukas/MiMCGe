@@ -1,5 +1,5 @@
-use crate::tests::tests::{test_cipher, test_confusion, test_decryption_time, test_diffusion, test_encryption_time};
-use crate::utils::helpers::{CipherType, FieldElement, to_binary};
+use crate::tests::tests::{encrypt_many, test_cipher, test_confusion, test_decryption_time, test_diffusion, test_encryption_time};
+use crate::utils::helpers::{CipherType, FieldElement, generate_random_bits, to_binary};
 use clap::Parser;
 use clap::builder::TypedValueParser;
 
@@ -15,7 +15,7 @@ mod mimc_general;
 #[command(version, about, long_about = None)]
 struct Args {
     /// Type of test to be performed.
-    #[arg(value_parser=["diffusion", "confusion", "enc-time", "dec-time", "cipher-test"])]
+    #[arg(value_parser=["diffusion", "confusion", "enc-time", "dec-time", "cipher-test", "generate-test-samples"])]
     test_type: String,
 
     /// Cipher type.
@@ -47,12 +47,20 @@ struct Args {
 
     /// How many rounds to reduce for the MiMCGe cipher.
     #[arg(short, long, default_value = None)]
-    round_reduction: Option<usize>
+    round_reduction: Option<usize>,
+
+    /// Key used in encryption. (Only when using encrypt option)
+    #[arg(short, long, default_value = "0")]
+    key: u128,
+
+    /// Round constants used for MiMCGe cipher. (Only when using encrypt option).
+    #[arg(short='c', long, num_args = 1..)]
+    round_constants: Vec<u128>,
 }
 
 fn main() {
     let args = Args::parse();
-    println!("{:?}", args);
+    // println!("{:?}", args);
 
     let cipher_type = match args.cipher_type.as_str() {
         "aes" => CipherType::AES,
@@ -61,7 +69,12 @@ fn main() {
         _ => unreachable!()
     };
 
-    let plaintext: Option<FieldElement> = if args.plaintext.is_some() { Some(to_binary(args.plaintext.unwrap_or(1), args.block_size)) } else {None};
+    let plaintext: FieldElement =
+        if args.plaintext.is_some() {
+            to_binary(args.plaintext.unwrap_or(1), args.block_size)
+        } else {
+            generate_random_bits(args.block_size)
+        };
 
     match args.test_type.as_str() {
         "diffusion" => test_diffusion(args.test_size, args.block_size, cipher_type),
@@ -69,10 +82,7 @@ fn main() {
         "enc-time" => test_encryption_time(args.test_size, args.sample_size, args.block_size, cipher_type),
         "dec-time" => test_decryption_time(args.test_size, args.sample_size, args.block_size, cipher_type),
         "cipher-test" => test_cipher(plaintext, args.block_size, cipher_type),
+        "generate-test-samples" => encrypt_many(args.test_size, to_binary(args.key, args.block_size), args.block_size, args.exponent, args.round_constants),
         _ => unreachable!()
     }
 }
-
-// fn main() {
-//     test_diffusion(1000, 47, CipherType::MiMCGe(8, None));
-// }
