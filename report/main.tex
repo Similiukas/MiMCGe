@@ -68,6 +68,7 @@
 % Perziuret cites, ar netycia nesikartoja
 % Reiketu dar kazkur paekcentuoti, kad cia nieko naujo nedarom, bet tik introduction, kaip ciphers are proving to be secure
 % Galima parasyt, kad project required to learn a lot of cryptanalysis from scratch by myself. Ir sellint, kad ner taip lengva. Galima duoti reference i cryptanalysis course material of same people who designed and broke MiMC.
+% https://stackoverflow.com/a/10548919/9819103
 
 words: 632/981/1932/4345/5891
 
@@ -77,18 +78,6 @@ words: 632/981/1932/4345/5891
 
 % ------------- INTRODUCTION ----------------
 \section{Introduction}
-\begin{itemize}
-    \item Talk about modern cryptography and explain SNARK, MPC, ZK
-   \item What previously has been done related to this
-    \item What we are going to do
-    \begin{itemize}
-        \item Take new polynomial
-        \item Prove that it's still secure
-        \item Works for ZK, MPC?
-        \item Performance check
-    \end{itemize}
-\end{itemize}
-\vspace{15pt}
 In modern day cryptography there are many new techniques that focus on problems beyond classic confidentiality and authenticity between two-party communications. Research ideas like zero-knowledge proofs (ZK), secure multi-party computation (MPC) or fully homomorphic encryption (FHE) have grown in popularity over recent years. A large class of applications that use these ideas have cryptographic schemes that focus on minimizing the number of multiplications. Primarily, there are algorithms that work in a specific field of $\mathbb{F}_p$ or $\operatorname{GF}(p)$ for a prime $p \geq 3$. Working in a Galois field gives a few unique properties since numbers are in a ring structure. Some examples of cryptographic functions which capitalize these properties to lower number of multiplications include GMiMC\cite{GMiMC}, Poseidon\cite{Poseidon}, Griffin\cite{Griffin} and MiMC\cite{MiMC}.
 
 The goal to lower the number of multiplications comes from the fact that these algorithms are specifically intended to be optimized for ZK, MPC and FHE. Consider the current block cipher standard AES which with modern hardware equipped with CPU specific instruction sets (AES-NI) can process close to 1GB/s\cite{AESNI} of data. However in MPC context, this number is drastically lower which limits the usage of AES in multi-party computation protocols\cite{AESInMPC} \textcolor{orange}{Nesu tikras del to cite. Tikras is LowMC 2nd page, 2nd par}. This comes from the fact that traditionally ciphers are built from linear and non-linear blocks which have similar costs in hardware and software. However, in the MPC or FHE context, linear operations, which can be simply viewed as XOR operations rather than non-linear AND operations, are way cheaper and are essentially free since they only incur local computation. Thus the need for ciphers which optimize low multiplicative complexity arises\textcolor{red}{should reread and see if it fits with subsection 1.1 and doesn't repeat same things}.
@@ -131,18 +120,6 @@ Having implemented the ciphers and checked that the new ciphers are secure, we w
 
 % ------------- BUILDING NEW CIPHERS ----------------
 \section{Building new ciphers}
-\begin{itemize}
-    \item What if we would try x\^ 3 - 1 or something?
-    \item The math behind fields and how all operations work there.
-    \item Why taking these polynomials. The idea is that we need a permutation polynomial over our selected field $\mathbb{F}_n$. Need to argue why it has to be a polynomial of this form. Then can show what are these permutation polynomials. Explain \(x^n is a permutation if and only if gcd(exponent, 2^n - 1) = 1\)\par
-    \textcolor{blue}{Maybe use \textbf{GTDS} as well to get new polynomial and use that paper to show that our newly built cipher is still cryptographically secure?}
-    \item \textcolor{blue}{Maybe take some polynomial which would not work $x^2$ and show why it doesn't work.}
-    \item New cipher structure with new parameters (how many rounds, new field, block size etc)
-    \begin{itemize}
-        \item Could do normal MiMC and could do Feistel GMiMC maybe?
-    \end{itemize}
-\end{itemize}
-\vspace{10pt}
 In general, a block cipher can be described as a function of a pair:
 \[
 f : m \times k \to c,\quad f^{-1} : c \times k \to m,
@@ -205,7 +182,7 @@ Modular polynomial arithmetic is done the same way as with integers except we ad
 \end{definition}
 Moreover, just like with integers, every monic polynomial can be uniquely expressed as a prime polynomial factorization. Thus, prime polynomials behave pretty much the same as the usual primes. The only difference being is that we are working in a different field. Particularly, for our cipher we are working in $\operatorname{GF}(2^n)$, that is, the message $\mathcal{M}$, key $\mathcal{K}$ and ciphertext $\mathcal{C}$ elements are actually elements of $\operatorname{GF}(2^n)$, for some $n \ge 2$. What this means, is that the elements have the form of $f(x) = a_nx^n + a_{n-1}x^{n-1} + ... + a_0$, where $a_0$, $a_1$, ..., $a_n \in \operatorname{GF}(2)$. Any field can be chosen for this, however, implementations of this field are way easier and this is discussed in chapter \ref{chapter:Implementations}\textcolor{red}{duoti references, kodel butent GF(2)}. As discussed, our operations are modular polynomial operations, thus addition $+$ and multiplication $*$ is not like with integers.\medskip
 
-------------MAIN---------------
+------------MAIN START---------------
 
 \noindent\textbf{MiMCGe} If we take a look at MiMC cipher\cite{MiMC}, it uses the same field $\operatorname{GF}(2^n)$, where $n$ describes the block size. The underlying polynomial for the cipher is $x^3$. However, we can in fact take any polynomial $x^e$, for any $e \ge 2$ and we call this the \textit{MiMCGe} cipher. We can prove that this does in fact give us a cipher (Fig. \ref{fig:cipher}) by our definition \ref{def:1}. The cipher algorithm is simple: plaintext $m$ is added to a random element (round constant) $r_i$ and key $k$. Then instead of cubic the result, it is raised to some exponent $e$ and this process is repeated for at least $R := \left\lceil n\log_e(2) \right\rceil$ number of rounds or for full security: \(R + \left\lceil \log_e(\frac{6R}{e}) \right\rceil\). The choice for this is discussed in subsection \ref{sub:3.1}. The round constants are chosen as random elements every time we initialise the cipher. However, these constants could also be predefined earlier similarly to AES.
 
@@ -308,27 +285,8 @@ Notice, that when $q$ is prime, this is equivalent to the Fermat's little theore
 This means that since the encryption is a permutation polynomial if and only if gcd($e$, $2^n-1$) $= 1$, then the decryption exponent will also be an integer. Thus, the decryption function is of the same form but with a different power $s := \frac{t(2^n-1)+1}{e}$. Notice, that $e \ll s$, hence decryption is considerably slower and methods to compute fast exponentiation are necessary\textcolor{red}{ideti ref, kai bus parasyta}.
 \textcolor{red}{Realiai kazkaip biski silpnokai atrodo, nes dauguma theorems neirodyta, o tiesiog pasakyta, tai gal kokia viena irodyt butu gerai.}
 
----------------MAIN---------------
-
 % ------------- SECURITY ANALYSIS ----------------
 \section{Security analysis}
-\begin{itemize}
-    \item Prove them together, that they still have cryptographic properties
-    \item Need to argue how the number of rounds have been chosen by looking at the original paper and explaining why it's chosen that way. Then using that, our own ciphers have different round number.
-    \item Need to talk about paper where they broke MiMC.
-    \item \textcolor{red}{Create a graph which shows depending on rounds, what the confusion/diffusion rates are!! Also why showing for all is impossible (too many to test).}
-    \item In the end talk about what are some other techniques people use to analyse security but are too advanced for this paper (linear/differential cryptanalysis).
-    \item Show using graphs, NIST STS that these still hold and explain why we can't just say it works, i.e. it's an open problem on how to actually measure nonlinearity \begin{itemize}
-        \item Diffusion
-        \item Confusion
-        \item Avalanche effect
-        \item key sensitivy
-        \item key space
-        \item \textcolor{blue}{Maybe linear/differential cryptanalysis. Would be really nice to do this}
-        \item \textcolor{blue}{Maybe something else not basic? Like some other specific attacks}
-    \end{itemize}
-\end{itemize}
-
 % https://crypto.stackexchange.com/questions/10478/why-is-aes-considered-to-be-secure
 % Teoriskai negalima sukuri unbreakable. Good rabbit hole, jei reik daugiau background: https://crypto.stackexchange.com/questions/87316/is-it-theoretically-possible-to-create-an-unbreakable-cipher.
 
@@ -360,16 +318,17 @@ If $f$ is truly random, then this should be hard to find, if not, we can disting
 \end{definition}
 It is difficult to know exactly what this degree is hence, estimations are used. The growth of algebraic degree heavily depends on the cipher structure and number of rounds. In the original design, it was incorrectly assumed that it grows exponentially in the number of rounds, however, in the MiMC attack\cite{MiMCAttack} it was discovered that it was rather almost linear. In fact, they got that if the number of rounds \(r < \left\lceil \log_e(2^{n-1}-1) \right\rceil\), where $e$ is the degree of a round function, then a higher-order distinguisher using at most $2^{n-1}$ data can be used (Proposition 2\cite{MiMCAttack}). Note, that $e$ always refers to the \textit{exponent} and not the Euler's number. If we set block size to be equal to 129, then this upper bound is \(\left\lceil \log_3(2^{128}-1) \right\rceil = 81\), while the actual number of rounds is \(\left\lceil 129\log_3(2) \right\rceil = 82\), leaving only 1 round to break. This is done by building and solving univariate polynomial $F(K)$ using known-ciphertexts. This requires $2^{n-1}$ ciphertexts making the attack not practical and it is not intended to replace the original round number estimation as discussed by the authors. However, this gives a great insight of the weakness of the cipher and a new algebraic degree growth bound.
 
-In essence, it means that about \(\left\lceil n\log_e(2) \right\rceil - 1\) rounds can be set up using zero sum. Thus, the rest of the rounds need to be sufficient enough to make construction of univariate polynomial $F(K)$ infeasible. We follow similar way as described in the paper (Section 5.4\cite{MiMCAttack}) but with our general exponent $e$. We use the fact, that the complexity to construct the polynomial $F(K)$ is equal to \(2^{n-1}(\frac{e^{\rho + 1}-1}{2}) = 2^{n-2}(e^{\rho + 1}-1)\), where $\rho$ is the new round number, we want this to be greater than simple exhaustive search \(2^n(R+\rho)\), where \(R = \left\lceil n\log_e(2) \right\rceil \) is the original round number we get:\textcolor{red}{align better}
-\begin{gather*}
-    2^{n-2}(e^{\rho + 1}-1) \ge 2^n(R +\rho)\\
-    e^{\rho + 1} \ge 4(R +\rho) + 1\\
-    \rho \ge \log_e(4(R+\rho) + 1) - \log_e(e)\\
-    \rho \ge \log_e\frac{4(R+\rho) + 1}{e}) \ge \log_e(\frac{6R}{e})
-\end{gather*}
+In essence, it means that about \(\left\lceil n\log_e(2) \right\rceil - 1\) rounds can be set up using zero sum. Thus, the rest of the rounds need to be sufficient enough to make construction of univariate polynomial $F(K)$ infeasible. We follow similar way as described in the paper (Section 5.4\cite{MiMCAttack}) but with our general exponent $e$. We use the fact, that the complexity to construct the polynomial $F(K)$ is equal to \(2^{n-1}(\frac{e^{\rho + 1}-1}{2}) = 2^{n-2}(e^{\rho + 1}-1)\), where $\rho$ is the new round number, we want this to be greater than simple exhaustive search \(2^n(R+\rho)\), where \(R = \left\lceil n\log_e(2) \right\rceil \) is the original round number we get:
+\begin{align*}
+    2^{n-2}(e^{\rho + 1}-1) &\ge 2^n(R +\rho)\\
+    e^{\rho + 1} &\ge 4(R +\rho) + 1\\
+    \rho &\ge \log_e(4(R+\rho) + 1) - \log_e(e)\\
+    \rho &\ge \log_e\frac{4(R+\rho) + 1}{e}) \ge \log_e(\frac{6R}{e})
+\end{align*}
 Where we suppose that \(\rho \le R/2\). Thus, we get that to thwart higher-order based key-recover attack, it is necessary to take \(\rho \approx \log_e(\frac{6R}{e})\) additional rounds. This number is relatively small, for example with block size 129 and exponent 5, $\rho \approx 3$, while with exponent $24$ it is only $\rho \approx 1$. Thus, the lower round MiMCGe has \(R := \left\lceil n\log_e(2) \right\rceil\) rounds, where $e$ is the exponent and $n$ is the block size, while the full round MiMCGe cipher has \(R + \left\lceil \log_e(\frac{6R}{e}) \right\rceil\) rounds.
 
 \subsection{Diffusion and confusion}
+\textcolor{red}{Should really look into \href{https://eprint.iacr.org/2010/564.pdf}{this}}
 In this subsection instead of mathematically proving cipher security we argue it based on statistical data obtained from testing. The core principle this is based on is the Claude Shannon's principle which states that each input and key bit must \textit{influence each} output bit in a \textit{complicated} way\cite{OneTime}. The two properties described here are \textit{diffusion} and \textit{confusion} which can be defined as:
 \begin{definition}
     \textit{Diffusion} means that a small change in the plaintext results in a significant change in the ciphertext.
@@ -379,7 +338,7 @@ In this subsection instead of mathematically proving cipher security we argue it
 \end{definition}
 Diffusion can also be associated with a strict avalanche criterion which states that changing one bit of the plaintext should change each bit of the ciphertext with a probability of one half (a coin flip). Confusion is a similar concept but changing one bit of the key instead of the plaintext should similarly change about half the bits of the ciphertext. In essence, all secure block ciphers should have these properties. For stream ciphers, diffusion is harder to achieve as they do not work with the whole block. However, since we are working with a block cipher, it is possible to test these properties to see if they hold.\medskip
 
-\noindent\textbf{Performing the tests.} Two tests were peformed: diffusion \ref{alg:diff} and confusion \ref{alg:conf}, where the only difference is flipping either plaintext or key bits. The goal is to check how many bits of the new ciphertext change, when flipping only a single bit. In the perfect scenario, the goal is to have \(r / \operatorname{block size}^2 = 0.5\), that is, flipping a single bit is a perfect coin flip of the output. In reality, it is not possible to check every single plaintext and key pair, since this would require \(2^{\operatorname{block size}} * 2^{\operatorname{block size}} / 2 = 2^{2\operatorname{blocksize}-1}\) (since the pair ($p$, $k$) would yield the same result as ($k$, $p$) because addition is commutative) tests assuming round constants are always the same. Hence, only a sample is being tested and the goal is to have \textbf{diffusion and confusion rate of $ 50\% \pm 0.05\%$}.
+\noindent\textbf{Performing the tests.} Two tests were peformed: diffusion \ref{alg:diff} and confusion \ref{alg:conf}, where the only difference is flipping either plaintext or key bits. The goal is to check how many bits of the new ciphertext change, when flipping only a single bit. In the perfect scenario, the goal is to have \(r / n^2 = 0.5\), where $n$ is the block size. That is, flipping a single bit is a perfect coin flip of the output. The denominator is squared since the tests iterate over the whole plaintext and flipping the bit $n$ times. In reality, it is not possible to check very single plaintext and key pair. This is because there are $2^n$ unique choices for the plaintext and $2^n$ unique choices for the key as they are elements of $\operatorname{GF}(2^n)$. It means that there are \(2^n*2^n = 2^{2n}\) different combinations in total assuming round constants are always the same. Hence, only a sample is being tested and the goal is to have \textbf{diffusion and confusion rate of $ 50\% \pm 0.05\%$}.
 
 \begin{minipage}{0.46\textwidth}
 \begin{algorithm}[H]
@@ -416,140 +375,45 @@ Diffusion can also be associated with a strict avalanche criterion which states 
 The tests were run 10000 times with four different exponents ($x^3$, $x^5$, $x^{16}$, $x^{24}$) over the block size 31 for reduced round MiMCGe cipher and the results are displayed in the graphs \ref{fig:diffconftests}. The exponents were chosen with the intent to compare the original $x^3$ with others which performed the best as discussed more broadly \textcolor{red}{prideti (sub)section}. Additionally, round reductions were applied to see how diffusion and confusion depends on the round number. For example round reduction of $0$ means $\left\lceil 31\log_e(2) \right\rceil$ rounds, while $10$ for $e = 3$ means \(\left\lceil 31\log_3(2) \right\rceil - 10 = 10\) rounds.
 
 \begin{figure}
+    \hspace{-1cm}
     \centering
-    \begin{minipage}{0.43\textwidth}
+    \begin{minipage}{0.5\textwidth}
         \centering
-        \begin{tikzpicture}
-            \centering
-            \begin{axis}[
-                title={$x^3$},
-                xlabel={Round reduction},
-                ylabel={Percentage \%},
-                xmin=0, xmax=20,
-                ymin=49.80, ymax=50.20,
-                xtick={0,2,4,6,8,10,12,14,16,18,20},
-                ytick={49.8,49.85,49.9,49.95,50,50.05,50.1,50.15,50.2},
-                legend pos=north west,
-                ymajorgrids=true,
-                grid style=dashed,
-            ]
-            
-            \addplot[color=blue,mark=square]
-                coordinates {
-                (0,50.01309053)(1, 50.0139334)(2, 49.99584807)(3, 50.00662851)(4, 50.01204995)(5, 50.00092612)(6, 50.03459938)(7, 50.00430801)(8, 50.03457856)(9, 49.99689906)(10, 50.00877211)(11, 50.01193548)(12, 49.99694069)(13, 50.00636837)(14, 49.9851717)(15, 50.02783559)(16, 49.9973153)(17, 50.02111342)(18, 50.01580645)(19, 50.05573361)(20, 50.06462019)};
-                \addlegendentry{Diffusion}
-
-            \addplot[color=red,mark=square]
-                coordinates {
-                (0,50.01033299)(1, 50.0028512)(2, 50.00405827)(3, 49.99421436)(4, 49.99359001)(5, 50.02026015)(6, 50.00020812)(7,49.99385016)(8, 49.98982316)(9, 50.01710718)(10, 49.994422481)(11, 49.98970864)(12, 50.04078044)(13, 50.00101977)(14, 49.9760666)(15, 50.02806452)(16, 49.99117586)(17,49.9773257)(18, 49.99147763)(19, 49.93878252)(20, 49.95605619)};
-                \addlegendentry{Confusion}
-                
-            \end{axis}
-        \end{tikzpicture}
+        \include{Resources/DiffusionConfusionx3}
     \end{minipage}\hfill
-    \begin{minipage}{0.43\textwidth}
+    \begin{minipage}{0.5\textwidth}
         \centering
-        \begin{tikzpicture}
-            \begin{axis}[
-                title={$x^5$},
-                xlabel={Round reduction},
-                ylabel={Percentage \%},
-                xmin=0, xmax=14,
-                ymin=49.80, ymax=50.20,
-                xtick={0,2,4,6,8,10,12,14},
-                ytick={49.8,49.85,49.9,49.95,50,50.05,50.1,50.15,50.2},
-                legend pos=north west,
-                ymajorgrids=true,
-                grid style=dashed,
-            ]
-            
-            \addplot[color=blue,mark=square]
-                coordinates {
-                (0,50.0250052)(1, 50.01719043)(2, 50.00563996)(3, 50.00594173)(4, 50.01730489)(5, 50.00752341)(6, 49.98445369)(7, 49.98258065)(8, 50.01220604)(9, 50.00592092)(10, 49.97793965)(11, 50.0008949)(12, 50.00315297)(13, 50.02217482)(14, 50.02880333)};
-                \addlegendentry{Diffusion}
-
-            \addplot[color=red,mark=square]
-                coordinates {
-                (0,50.00844953)(1, 50.02448491)(2, 50.00540062)(3, 49.9932154)(4, 49.99976067)(5, 50.0051717)(6, 49.97917794)(7, 49.9940999)(8, 50.01253902)(9,50.00131113)(10, 50.01664932)(11, 49.9792924)(12, 49.99266389)(13, 49.94990635)(14, 49.94365245)};
-                \addlegendentry{Confusion}
-                
-            \end{axis}
-        \end{tikzpicture}
+        \include{Resources/DiffusionConfusionx5}
     \end{minipage}
 
-    \begin{minipage}{0.43\textwidth}
+    \hspace{-1cm}
+    \begin{minipage}{0.5\textwidth}
         \centering
-        \begin{tikzpicture}
-            \begin{axis}[
-                title={$x^{16}$},
-                xlabel={Round reduction},
-                ylabel={Percentage \%},
-                xmin=0, xmax=8,
-                ymin=0, ymax=60,
-                xtick={0,1,2,3,4,5,6,7,8},
-                ytick={0, 10, 20, 30, 40, 50, 60},
-                legend pos=north west,
-                ymajorgrids=true,
-                grid style=dashed,
-            ]
-            
-            \addplot[color=blue,mark=square]
-                coordinates {
-                (0,4.890738814)(1, 10.61394381)(2, 31.11342352)(3, 31.9458897)(4, 24.24557752)(5, 30.07284079)(6, 32.57023933)(7, 16.64932362)(8, 16.64932362)};
-                \addlegendentry{Diffusion}
-
-            \addplot[color=red,mark=square]
-                coordinates {
-                (0,33.61082206)(1, 34.13111342)(2, 33.71488033)(3, 29.24037461)(4, 30.8012487)(5, 27.57544225)(6, 30.38501561)(7, 18.21019771)(8, 18.21019771)};
-                \addlegendentry{Confusion}
-                
-            \end{axis}
-        \end{tikzpicture}
+        \include{Resources/DiffusionConfusionx16}
     \end{minipage}\hfill
-    \begin{minipage}{0.43\textwidth}
+    \begin{minipage}{0.5\textwidth}
         \centering
-        \begin{tikzpicture}
-            \begin{axis}[
-                title={$x^{24}$},
-                xlabel={Round reduction},
-                ylabel={Percentage \%},
-                xmin=0, xmax=7,
-                ymin=49.80, ymax=50.20,
-                xtick={0,1,2,3,4,5,6,7},
-                ytick={49.8,49.85,49.9,49.95,50,50.05,50.1,50.15,50.2},
-                legend pos=north west,
-                ymajorgrids=true,
-                grid style=dashed,
-            ]
-            
-            \addplot[color=blue,mark=square]
-                coordinates {
-                (0,49.9971384)(1, 50.00253902)(2, 50.03432882)(3, 50.01238293)(4, 50.00505723)(5, 49.98736733)(6, 50.05879292)(7, 50.03920916)};
-                \addlegendentry{Diffusion}
-
-            \addplot[color=red,mark=square]
-                coordinates {
-                (0,50.00594173)(1, 50.01340271)(2, 49.99603538)(3, 50.00188345)(4, 49.99233091)(5, 50.01611863)(6, 49.9492924)(7, 49.93608741)};
-                \addlegendentry{Confusion}
-                
-            \end{axis}
-        \end{tikzpicture}
+        \include{Resources/DiffusionConfusionx24}
     \end{minipage}
-    \caption{Diffusion and confusion tests of chosen ciphers\textcolor{red}{align normalu, nes daba per daug i desine ir i kita file iskelti, tables of data galima iskelti i appendix}}\label{fig:diffconftests}
+    \caption{Diffusion and confusion test results of chosen ciphers}\label{fig:diffconftests}
 \end{figure}
 
 From the tests, it is clear that indeed the ciphers have sufficient diffusion and confusion. When no round reduction is applied, all ciphers, except $x^{16}$ which is discussed separately, have diffusion and confusion rates of $50\% \pm 0.01\%$ which achieve the predefined goal. Moreover, these diffusion and confusion rates stay consistent as the number of rounds decreases. They do not exceed $50\% \pm 0.05\%$ for almost the whole time. This threshold is exceeded only when the ciphers operate with two or less rounds. Note, that when performing the tests, it was observed that increasing the test size (number of times the test is repeated), gives rates which are closer to $50\%$. For example\textcolor{red}{sita isanaliztuoti dar, nes nebutinai berods. Sakyti max 10k same as 1M ir paaiskinti arba cia su table, arba appendix, bet is dalies kazkaip atrodo mazai conclusion del testu.}\medskip
 
-\noindent\textbf{Powers of two case.} The interesting case is when the exponent is a $x^{16}$. It is evident, that this is not because the exponent is even, as $x^{24}$ achieves the specified goal of diffusion and confusion. This only happens with exponents in a form of a power of two and it is clear that these ciphers fail diffusion and confusion as they do not even reach $40\%$, hence we state that \textbf{these are not secure ciphers} as they do not show sufficient non linearity. Analysing further, it was observed that diffusion and confusion rates stays the same no matter what test size is given. That is, testing one or $1000$ different plaintexts yields the same diffusion and confusion percentages even though each time random plaintexts and key is generated.\textcolor{red}{Reikia toliau analizuoti, duoti ne tik $x^{16}$. Labai svarbu gauti conclusion, kodel taip yra!! (gal subfields $2^n$?}
+\noindent\textbf{Powers of two case.} The interesting case is when the exponent is a $x^{16}$. It is evident, that this is not because the exponent is even, as $x^{24}$ achieves the specified goal of diffusion and confusion. This only happens with exponents in a form of a power of two and it is clear that these ciphers fail diffusion and confusion as they do not even reach $40\%$, hence we state that \textbf{these are not secure ciphers} as they do not show sufficient non linearity. Analysing further, it was observed that diffusion and confusion rates stays the same no matter what test size is given. That is, testing one or $1000$ different plaintexts yields the same diffusion and confusion percentages even though each time random plaintexts and key is generated.\textcolor{red}{Reikia toliau analizuoti, duoti ne tik $x^{16}$. Labai svarbu gauti conclusion, kodel taip yra!! (gal subfields $2^n$?)}
 
 \subsection{Pseudo-random number generator}
+Note that, NIST has critiques and statistical analysis is always not as good as formal analysis.
 
+% Pabandyti AES patestuoti su tuo dieharder
+% https://rurban.github.io/dieharder/manual/dieharder.pdf really great intro at page 15
 
 \textcolor{red}{Another way we show that it's secure is showing sufficient non-linearity. Tipo cipher built are with linear and non-linear operations and we want it to be non-linear}
 
 \textcolor{red}{Butu gerai dar kokia ataka ar kas. Galbut tokie mazi side notes apie ivairais atakas ir kaip jos veikia. Paklausti supervisor ar uztenka}
 
 
+---------------MAIN END---------------
 
 % ------------- IMPLEMENTATIONS ----------------
 \section{Implementations}\label{chapter:Implementations}
@@ -559,14 +423,6 @@ From the tests, it is clear that indeed the ciphers have sufficient diffusion an
     \item Write code and perform benchmarks
     \item \textcolor{blue}{Analyse found results. Are they faster/better/worse. Conclusions} Sitas gal geriau in conclusion chapter.
     \item Future work which explains that we could further optimize it using precalculated tables, etc.
-\end{itemize}
-
-
-% ------------- APPLICATIONS ----------------
-\section{Applications (MPC, ZK, SNARK)}
-\begin{itemize}
-    \item Talk about the importance of ZK, SNARK and it's usage in block chain for example or evoting: \href{https://ethereum.org/en/zero-knowledge-proofs/}{URL} has great sources to read more
-    \item Maybe talk about whether they're still available for MPC, ZK applications? What else?
 \end{itemize}
 
 
