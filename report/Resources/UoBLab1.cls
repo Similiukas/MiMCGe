@@ -156,6 +156,7 @@
 % space between text and footnote
 \setlength{\skip\footins}{12\p@ \@plus 6\p@ \@minus 1\p@}
 
+
 %FLOAT PARAMETERS:
 % The total number of floats that can be allowed on a page.
 \setcounter{totalnumber}{10}
