@@ -1,4 +1,4 @@
-# MiMC with general degree *n* polynomial (MiMCGe)
+# MiMC with general degree *e* polynomial (MiMCGe)
 
 This is a Computer Science Project for MSci. Mathematics and Computer Science degree at University of Birmingham.
 

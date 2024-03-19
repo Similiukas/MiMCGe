@@ -1,6 +1,6 @@
 use crate::utils::helpers::{add_finite_field, generate_random_bits, to_binary};
 
-// Tests 0 + a = a in GF(2^n)
+/// Identity: 0 + a = a in GF(2^n)
 #[test]
 fn finite_field_additive_identity_5() {
     let a = generate_random_bits(5);
@@ -29,6 +29,12 @@ fn finite_field_additive_identity_17() {
 fn finite_field_additive_identity_31() {
     let a = generate_random_bits(31);
     assert_eq!(add_finite_field(&to_binary(0, 31), &a), a)
+}
+
+#[test]
+fn finite_field_additive_identity_33() {
+    let a = generate_random_bits(33);
+    assert_eq!(add_finite_field(&to_binary(0, 33), &a), a)
 }
 
 #[test]

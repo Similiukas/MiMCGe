@@ -25,7 +25,7 @@ struct Args {
     /// Block size (only some are implemented for MiMC/MiMCGe, only 128 bit for AES).
     #[arg(
         default_value_t = 17,
-        value_parser = clap::builder::PossibleValuesParser::new(["5", "8", "11", "17", "25", "31", "47", "61", "83", "101", "125", "127", "128"])
+        value_parser = clap::builder::PossibleValuesParser::new(["5", "8", "11", "17", "25", "31", "33", "47", "61", "83", "101", "125", "127", "128"])
                 .map(|s| s.parse::<u32>().unwrap()))]
     block_size: u32,
 
@@ -54,7 +54,7 @@ struct Args {
     key: u128,
 
     /// Round constants used for MiMCGe cipher. (Only when using encrypt option).
-    #[arg(short='c', long, num_args = 1..)]
+    #[arg(short='R', long, num_args = 1..)]
     round_constants: Vec<u128>,
 }
 

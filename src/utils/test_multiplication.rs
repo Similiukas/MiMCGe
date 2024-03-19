@@ -1,6 +1,6 @@
 use crate::utils::helpers::{generate_random_bits, square_multiply, to_binary, to_decimal};
 
-// Tests for 1^n = 1 for any n
+// Tests identity: for 1^n = 1 for any n
 #[test]
 fn finite_field_multiplicative_identity_5() {
     assert_eq!(square_multiply(&vec![0,0,0,0,1], 5,5), vec![0,0,0,0,1]);
@@ -24,6 +24,11 @@ fn finite_field_multiplicative_identity_17() {
 #[test]
 fn finite_field_multiplicative_identity_31() {
     assert_eq!(square_multiply(&to_binary(1,31), 5,31), to_binary(1, 31));
+}
+
+#[test]
+fn finite_field_multiplicative_identity_33() {
+    assert_eq!(square_multiply(&to_binary(1,33), 5,33), to_binary(1, 33));
 }
 
 #[test]
@@ -86,6 +91,12 @@ fn finite_field_multiplicative_inverse_17() {
 fn finite_field_multiplicative_inverse_31() {
     let a = generate_random_bits(31);
     assert_eq!(square_multiply(&a, 2u128.pow(31), 31), a)
+}
+
+#[test]
+fn finite_field_multiplicative_inverse_33() {
+    let a = generate_random_bits(33);
+    assert_eq!(square_multiply(&a, 2u128.pow(33), 33), a)
 }
 
 #[test]

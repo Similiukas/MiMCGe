@@ -18,6 +18,7 @@ lazy_static! {
         (17, (0x10000, 0x20009)),                                                       // x^16, x^17 + x^3 + 1
         (25, (0x1000000, 0x2000145)),                                                   // x^24, x^25 + x^8 + x^6 + x^2 + 1
         (31, (0x40000000, 0x80000009)),                                                 // x^30, x^31 + x^3 + 1
+        (33, (0x100000000, 0x200003D49)),                                               // x^32, x^33 + x^13 + x^12 + x^11 + x^10 + x^8 + x^6 + x^3 + 1
         (47, (0x400000000000, 0x800000000021)),                                         // x^46, x^47 + x^5 + 1
         (61, (0x1000000000000000, 0x2000000000000027)),                                 // x^60, x^61 + x^5 + x^2 + x + 1
         (83, (0x400000000000000000000, 0x800000000000000000095)),                       // x^82, x^83 + x^7 + x^4 + x^2 + 1
@@ -64,12 +65,10 @@ pub fn generate_round_constants(size: usize, block_size: u32) -> Vec<FieldElemen
 
 /// Converts bit array to decimal expression
 pub fn to_decimal(bits: &[u8]) -> u128 {
-    let mut result = 0;
+    let mut result: u128 = 0;
     let mut multiple = 1;
     for &bit in bits.iter().rev() {
-        if bit == 1u8 {
-            result += multiple;
-        }
+        result += (bit as u128) * multiple;
         multiple *= 2;
     }
     result
@@ -77,16 +76,14 @@ pub fn to_decimal(bits: &[u8]) -> u128 {
 
 /// Converts number to bit array expression
 pub fn to_binary(number: u128, block_size: u32) -> FieldElement {
-    let mut result = FieldElement::new();
+    let b = block_size as usize;
+    let mut result = vec![0u8; b];
     let mut state = number;
-    while state > 0 {
-        result.push((state % 2) as u8);
-        state /= 2;
+    for i in 0..b {
+        result[b - i - 1] = (state & 1) as u8;
+        state >>= 1;
     }
 
-    // Pad to correct size
-    result.append(&mut vec![0u8; (block_size as usize) - result.len()]);
-    result.reverse();
     result
 }
 
