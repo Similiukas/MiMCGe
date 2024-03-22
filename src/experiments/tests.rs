@@ -1,7 +1,6 @@
 use std::time::Instant;
-use crate::mimc_general::mimc_general::MiMCGe;
-use crate::tests::helpers::{choose_cipher, confusion, decryption_encryption, diffusion};
-use crate::utils::helpers::{Cipher, CipherType, FieldElement, generate_random_bits, to_binary, to_decimal};
+use crate::experiments::helpers::{choose_cipher, confusion, decryption_encryption, diffusion};
+use crate::utils::helpers::{CipherType, FieldElement, to_binary, to_decimal};
 
 /// # Diffusion test for cipher.
 ///

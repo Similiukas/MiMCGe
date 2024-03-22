@@ -4,10 +4,10 @@ use lazy_static::lazy_static;
 
 pub type FieldElement = Vec<u8>;
 
-pub enum CipherType {
+pub enum CipherType<'a> {
     AES,
     MiMC,
-    MiMCGe(u128, Option<usize>),
+    MiMCGe(u128, &'a Vec<u128>, Option<usize>),
 }
 
 lazy_static! {

@@ -2,14 +2,24 @@ use std::time::{Duration, Instant};
 use crate::aes::aes::AES;
 use crate::mimc::mimc::MiMC;
 use crate::mimc_general::mimc_general::MiMCGe;
-use crate::utils::helpers::{Cipher, CipherType, FieldElement, generate_random_bits};
-
+use crate::utils::helpers::{Cipher, CipherType, FieldElement, generate_random_bits, to_binary};
 
 pub fn choose_cipher(t: &CipherType, block_size: u32) -> Box<dyn Cipher> {
     match t {
         CipherType::AES => Box::new(AES{}),
         CipherType::MiMC => Box::new(MiMC::new(block_size)),
-        CipherType::MiMCGe(e, rr) => Box::new(MiMCGe::new(*e, block_size, *rr)),
+        CipherType::MiMCGe(e, rc, rr) => {
+            if !rc.is_empty() {
+                Box::new(MiMCGe::with_round_constants(
+                    *e,
+                    block_size,
+                    &rc.iter().map(|x| to_binary(*x, block_size)).collect::<Vec<FieldElement>>()
+                ))
+            }
+            else {
+                Box::new(MiMCGe::new(*e, block_size, *rr))
+            }
+        }
     }
 }
 
@@ -63,10 +73,10 @@ fn decryption(ciphertexts: Vec<FieldElement>, key: FieldElement, cipher: &Box<dy
     start.elapsed()
 }
 
-pub fn decryption_encryption(decrypt: bool, test_size: usize, sample_size: usize, block_size: u32, cipher: CipherType) -> Duration {
+pub fn decryption_encryption(decrypt: bool, test_size: usize, sample_size: usize, block_size: u32, cipher_type: CipherType) -> Duration {
     let mut start = Duration::new(0, 0);
     for _ in 0..test_size {
-        let cipher = choose_cipher(&cipher, block_size);
+        let cipher = choose_cipher(&cipher_type, block_size);
         let mut plaintexts: Vec<FieldElement> = Vec::with_capacity(sample_size);
         for _ in 0..sample_size {
             plaintexts.push(generate_random_bits(block_size));

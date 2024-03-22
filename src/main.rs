@@ -5,9 +5,10 @@ use clap::builder::TypedValueParser;
 
 mod utils;
 mod mimc;
-mod tests;
+mod experiments;
 mod aes;
 mod mimc_general;
+mod tests;
 
 // TODO: add link to report in readme
 
@@ -41,6 +42,10 @@ struct Args {
     #[arg(short, long, default_value = None)]
     plaintext: Option<u128>,
 
+    /// Key used in encryption.
+    #[arg(short, long, default_value = None)]
+    key: Option<u128>,
+
     /// Exponent for MiMCGe cipher *x^n*.
     #[arg(short, long, default_value = "3")]
     exponent: u128,
@@ -56,6 +61,10 @@ struct Args {
     /// Round constants used for MiMCGe cipher. (Only when using encrypt option).
     #[arg(short='R', long, num_args = 1..)]
     round_constants: Vec<u128>,
+
+    /// How many rounds to reduce for the MiMCGe cipher. (Ignored if round constants are given)
+    #[arg(short, long, default_value = None)]
+    round_reduction: Option<usize>,
 }
 
 fn main() {
@@ -65,13 +74,20 @@ fn main() {
     let cipher_type = match args.cipher_type.as_str() {
         "aes" => CipherType::AES,
         "mimc" => CipherType::MiMC,
-        "mimcge" => CipherType::MiMCGe(args.exponent, args.round_reduction),
+        "mimcge" => CipherType::MiMCGe(args.exponent, &args.round_constants, args.round_reduction),
         _ => unreachable!()
     };
 
     let plaintext: FieldElement =
         if args.plaintext.is_some() {
-            to_binary(args.plaintext.unwrap_or(1), args.block_size)
+            to_binary(args.plaintext.unwrap_or(0), args.block_size)
+        } else {
+            generate_random_bits(args.block_size)
+        };
+
+    let key: FieldElement =
+        if args.key.is_some() {
+            to_binary(args.key.unwrap_or(0), args.block_size)
         } else {
             generate_random_bits(args.block_size)
         };
