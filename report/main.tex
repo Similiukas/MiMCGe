@@ -448,7 +448,7 @@ From the tests, it is clear that indeed the ciphers have sufficient diffusion an
 
 \noindent\textbf{Powers of two case.} The interesting case is when the exponent is a $x^{16}$. It is evident, that this is not because the exponent is even, as $x^{24}$ achieves the specified goal of diffusion and confusion. This only happens with exponents in a form of a power of two and it is clear that these ciphers fail diffusion and confusion as they do not even reach $40\%$, hence we state that \textbf{these are not secure ciphers} as they do not show sufficient non linearity. Analysing further, it was observed that diffusion and confusion rates stays the same no matter what test size is given. That is, testing one or $1000$ different plaintexts yields the same diffusion and confusion percentages even though each time random plaintexts and key is generated.\textcolor{red}{Reikia toliau analizuoti, duoti ne tik $x^{16}$. Labai svarbu gauti conclusion, kodel taip yra!! (gal subfields $2^n$?)}
 
-\subsection{Pseudo-random number generator}
+\subsection{Pseudo-random number generator}\label{chapter:prng}
 Another way the ciphers can be looked as is through random number generators. If a cipher is truly secure, then it must be non-linear and the mapping of the input is random. That is, if we give an input, it should map to the output in a random and unpredictable way. Hence, a cipher is also a pseudo-random number generator. This is, however, a consequence of producing a cipher rather than the actual objective. Thus, when arguing security, formal mathematical analysis is always more prioritised over statistical analysis. However, it is a great tool which can easily demonstrate if the cipher is insecure.
 
 Note, that it is impossible to generate truly random numbers in any mathematical way. In fact, even in physics, the sources of true randomness are rare. Hence, the term \textit{pseudo}-random number generators (PRNG) is used when speaking about random number generators, which are software based. The study of randomness is a an active field of research with recent papers using quantum physics for zero-knowledge proofs\cite{QuantumZK} or developing generators for FHE\cite{LatticeRNG}. Thus, there are tools created specifically for testing these generators, notably NIST STS\cite{NIST} and Dieharder\cite{Dieharder} which are considered to be industry standard for testing cryptographic algorithms\cite{AESNI}.
@@ -476,7 +476,7 @@ If this value is really low or really close to 1 with predetermined significance
             $x^{24}$ & 15 & 0 & 187/187 & 100\% \\
             \hline
         \end{tabular}
-        \caption{NIST test results}\label{tab:NIST-results}
+        \caption{NIST test results.}\label{tab:NIST-results}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
@@ -490,17 +490,17 @@ If this value is really low or really close to 1 with predetermined significance
             $x^{24}$ & 63 & 12 & (39) & 0\% \\
             \hline
         \end{tabular}
-        \caption{Dieharder test results}\label{tab:dieharder-results}
+        \caption{Dieharder test results.}\label{tab:dieharder-results}
     \end{minipage}
 \end{table}
 
-\noindent\textbf{NIST STS.} It is a collection of 15 tests developed by the National Institute of Standards and Technology (NIST) aimed at assessing the randomness or statistical properties of PRNG or cryptographic algorithms. The tests require an input file at least of 10000 random stream of bits. For accurate results, there has to be at least 55 bit streams (as stated in Section 4.2.2\cite{NIST}). In MiMCGe case, four different exponents ($x^3$, $x^5$, $x^{16}$, $x^{24}$) were tested with a block size of 127. 1000 bit streams were generated of 7875 different numbers which yield to $127 * 7875 = 1000125$ size per bit stream. In total, the input size is $\sim$1GB. The generated file simply consists of encrypted sequential numbers, where the random seed corresponds to the key together with round constants. This seed was chosen randomly and is the same for all the different exponents and tests The implementation of generating this file is discussed in chapter\textcolor{red}{ref}.
+\noindent\textbf{NIST STS.} It is a collection of 15 tests developed by the National Institute of Standards and Technology (NIST) aimed at assessing the randomness or statistical properties of PRNG or cryptographic algorithms. The tests require an input file at least of 10000 random stream of bits. For accurate results, there has to be at least 55 bit streams (as stated in NIST manula Section 4.2.2\cite{NIST}). In MiMCGe case, four different exponents ($x^3$, $x^5$, $x^{16}$, $x^{24}$) were tested with a block size of 127. 1000 bit streams were generated of 7875 different numbers which yield to $127 * 7875 = 1000125$ size per bit stream. In total, the input size is $\sim$1GB. The generated file simply consists of encrypted sequential numbers, where the random seed corresponds to the key together with round constants. This seed was chosen randomly and is the same for all the different exponents and tests. The implementation of generating this file is discussed in chapter\textcolor{red}{ref}.
 
 At first, two control tests were performed. First is the built in test which checks a known PRNG against the test suite to check whether the tests correctly identify PRNG. The second control test was to see whether the construction of the input file is generated correctly. For this, the numbers were not encrypted and a file of just sequential numbers was given to the the test suite. This correctly identified that 15 out of 15 tests fail. Now, the files with encrypted numbers were given and the results are provided in the table \ref{tab:NIST-results}. The result column indicates how many of the test experiments were passed, out of all performed. Note, that some tests have multiple experiments (i.e. \textit{Non-overlapping Template Matching Test} has 147 experiments). The only experiment $x^5$ failed was the non-overlapping template experiment, however even then, the result was 979/1000, while the pass rate is 980/1000\textcolor{red}{appendix full result}. It is evident, that indeed, as previously discussed, powers of two exponents are not secure ciphers. The test suite could not even perform the \textit{Random Excursions} and \textit{Random Excursions Variant} tests for $x^{16}$. However, NIST STS test suite gives more confidence that the other ciphers are indeed secure.\textcolor{red}{pasneket apie ta testa, kuri x16 praejo}\medskip
 
 \noindent\textbf{Dieharder.} It is another battery of statistical tests for pseudo-random number generators. Dieharder was developed as an extension of the original Diehard battery of tests by George Marsaglia\cite{Diehard}. This test suite is similar to NIST STS, however it has 31 different tests and the biggest difference is the input size. This test suite requires considerably larger sample space which can be anywhere close to $\sim$240GB. If the input file is smaller, then the tests rewind the file and go through it again. This can cause inaccurate results, however, the test suite also works with a random bit stream. Hence, for this test, instead of a file, a stream of encrypted sequential 32 bit numbers was provided. Implementation details are discussed in chapter\textcolor{red}{ref}.
 
-Once again, the same two control tests were performed to check the test suite and the implementation of the input. Then the same exponents ($x^3$, $x^5$, $x^{16}$, $x^{24}$) were tested and the results are given in the table \ref{tab:dieharder-results}\textcolor{red}{argumentuoti weak ner blogai}. Note that, since these tests require considerably larger input, it took $\sim$\textcolor{red}{KIEK} days to get the full results, while NIST STS took around 8 hours.\textcolor{orange}{Galbut galima sakyt su 1GB buvo per mazai ir ka gavom} However, as before, it is evident, that once again we are proven that $x^{16}$ is not a secure cipher, while other exponents perform as expected.
+Once again, the same two control tests were performed to check the test suite and the implementation of the input. Then the same exponents ($x^3$, $x^5$, $x^{16}$, $x^{24}$) were tested and the results are given in the table \ref{tab:dieharder-results}\textcolor{red}{argumentuoti weak ner blogai}. Note that, since these tests require considerably larger input, it took $\sim$\textcolor{red}{KIEK} days to get the full results, while NIST STS took around 8 hours.\textcolor{orange}{Galbut galima sakyt su 1GB buvo per mazai ir ka gavom} However, as before, it is evident, that once again we are proven that $x^{16}$ is not a secure cipher, while other exponents perform as expected. \textcolor{red}{daugiau paanalizuoti, kai bus iki galo pabaigti testai}
 
 In general, these two test suites give a way to verify that a cipher does behave like a pseudo-random number generator. However, it is important to note, that they do not prove security. The underlying test which they perform is the null hypothesis testing which can only reject the hypothesis. It is, therefore, impossible using these tools to prove the null hypothesis. But even so, when these tools fail to reject the null hypothesis, they in turn give more confidence, that the ciphers are in fact secure.  
 
@@ -521,12 +521,13 @@ In general, these two test suites give a way to verify that a cipher does behave
 Having done all the theoretical work, it is necessary to move to the practical cipher implementation. This comes with its own challenges when tackling software design and optimisation problems. In this project, a CLI tool was built which implements MiMCGe cipher\footnote{\label{note:git}The code is accessible on \href{https://git.cs.bham.ac.uk/projects-2023-24/sxt063}{Gitlab}.}. It allows to test encryption and decryption, run diffusion and confusion tests, generate test inputs for the NIST STS and dieharder test suites. For comparison, AES and original MiMC ciphers are also implemented which can be used instead of MiMCGe.
 
 \subsection{Design}
-The git project\footref{note:git} has four directories:
+The git project\footref{note:git} has five directories:
 \begin{itemize}
     \item \textit{/scripts}. Contains the utility shell scripts which were run to get test results for diffusion and confusion and to generate test data for statistical tests.
     \item \textit{/src}. Contains the implementation of the CLI tool of the cipher written in Rust.
-    \item \textit{/test-inputs}. Contains the test inputs used for the statistical test suites.
-    \item \textit{/test-results}. Contains the results generated from the statistical test suites.
+    \item \textit{/test-suite-inputs}. Contains the generated input files used for the statistical test suites.
+    \item \textit{/test-suite-results}. Contains the results generated from the statistical test suites.
+    \item \textit{/tests}. Contain integration tests for the CLI tool.
 \end{itemize}
 The CLI tool is written in Rust, thus it first has to be installed on the system, then the user can compile the code. There is a supplementary \textit{README.md} file which has user manual together with some useful examples. Moreover, the code is well documented and the tool itself provides help when run with the \verb|--help| flag. For example, encrypting 2026 with key 432, exponent $x^7$ in a block size of 11 can be run as:
 \begin{verbatim}
@@ -536,7 +537,7 @@ Ciphertext: 1067 [1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1]
 Decrypted:  2026 [1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0]
 Time: 20.67µs
 \end{verbatim}
-The program prints the plaintext in decimal form and as a bit vector, then the corresponding ciphertext and its' bit vector together with decrypted ciphertext and the time it took to encrypt and decrypt.
+The program prints the plaintext in decimal form and as a bit vector, then the corresponding ciphertext and its' bit vector together with decrypted ciphertext and the time it took to encrypt and decrypt.\medskip
 
 \noindent\textbf{Implementing field arithmetic.} As discussed in chapter \ref{sub:field-maths}, basic operations are not the same as with standard fields $\mathbb{N}$ or $\mathbb{R}$. Thus, field arithmetic needs to be implementing from scratch. We start by creating a type for the element of the field: \verb|FieldElement| which will essentially be a vector of 1s and 0s (bits). This is because the elements of the Galois field $\operatorname{GF}(2^n)$ are polynomials, thus, the elements in the bit array represent the coefficients of the polynomial. That is, if we have an element $x^5+x^3+x^2+1 \in \operatorname{GF}(2^3)$, then the corresponding \verb|FieldElement| will be of length $2^3 = 8$ and look as: \verb|[0, 0, 0, 1, 0, 1, 1, 0, 1]|. This shows one of the benefits of implementation when working with the finite in the form of $\operatorname{GF}(2^n)$, as elements are just simple bit arrays. 
 
@@ -558,7 +559,7 @@ However, with multiplication, problems arise. This is because when two polynomia
 The only operation left is exponentiation. This can also be implemented naively using the definition, that $a^e = \overbrace{a * ... * a}^e$ since multiplication is already defined. However, notice, that decryption exponent is considerably larger (i.e. for block size $n = 33$ and exponent $e = 5$, decryption exponent $s := \frac{t(2^n-1)+1}{e} = \frac{4(2^{33}-1)+1}{5} = 6871947673$). It was tested that with naive implementation, decryption of block size 47 took $\sim$30 min. Thus, some method to minimise the number of multiplications is needed. There are a few ways to do this. One of the more popular methods is using pre-computed tables. However, they require a lot of data and also since this tool allows variable block size, square and multiply algorithm \ref{alg:exp} was chosen. This algorithm similarly to multiplication, utilises halving and doubling but in this case instead it is squaring. This algorithm brings down multiplications to around $\mathcal{O}(\log(e))$, where $e$ is the exponent. This allows to bring back decryption time into practical use and the same decryption of block size 47 now takes $\sim$1$\mu s$\textcolor{red}{patikrinti abu}.
 
 % https://www.cs.uaf.edu/2015/spring/cs463/lecture/02_09_mul_exp.html
-\textcolor{red}{parasyt normaliai apie improvement, kad exponential improvement}
+\textcolor{red}{parasyt normaliai apie improvement, kad exponential improvement. Dar kad tiesiog changing addition to multiplication means from multiplication to exponentiation}
 
 
 \begin{minipage}{0.46\textwidth}
@@ -600,13 +601,69 @@ One important thing to note is that these algorithm do not operate in constant t
 \textcolor{red}{Siaip dar gal biski pakalbet pries field arithemtic apie kazka}
 
 \subsection{Testing}
-Kad field maths testing, poto visokie unit tests, tada cipher.
+An important software development aspect is testing. The two main types of software testing are \textit{unit} and \textit{integration} testing. The former tests just a tiny portions of the code, for example if converting a binary array to the decimal expression is correctly implemented, while the latter tests from the users perspective, i.e. running the tool produces the expected output. Every good software should have both type of tests. How much testing is done, depends on the programmer as too many can slow down development, while not enough run the risk of having software with bugs. Thus, only the key parts of the software are tested.
+
+Integration test file, following the conventional Rust file structure, is located in the \textit{/tests} directory. It contains simple tests which check that then the tool is run with specific block size, key, plaintext and round constants, the expected value is printed to the standard output. This is the \textit{happy path} testing, where with the predefined inputs, the program successfully finishes, providing the expected output. Additionally, tests are run which intentionally expect the program to fail. In that case, an error message is checked whether it has an expected output. This way the CLI tool is checked whether the correct guide on how to properly run the program is provided for the user.
+
+The more interesting tests are the unit tests. These are located in the \textit{/src/tests} directory. There is a larger amount of these tests than integration tests. This is because every aspect of field arithmetic is checked. These tests check that the five main axioms (associativity, identity, inverse, commutativity, distributivity) hold for every implemented block size. These axioms are checked for both addition and multiplication as these are the two main operations are needed. If all of these axioms hold for the block size, then it is guaranteed, that the provided irreducible polynomial is correct for the specific block size. For this reason, every block size must be tested separately. Additionally, various helper functions, such as converting array of bits to decimal expression and vice versa is tested as these two functions are used intensely throughout the program.
 
 \subsection{Choosing the exponents}
-Peforming the benchmarks and choosing the best
-Kokie shell scripts (essentially kaip statistical input generated) %\noindent stuff atskiras
+After implementing and testing that it was done correctly, it is time to compare the ciphers of different exponents to choose the most interesting ones for further analysis. First, the time it takes for the ciphers to encrypt some amount of plaintexts was compared based on the exponent. Four different block sizes were chosen (17, 33, 61 and 125). Then a test is: build a cipher with an exponent ranging from 2 to 40 with random key and round constants. Then count the amount of time it takes for the cipher to encrypt 1000 random plaintexts. This test is repeated 1000 times for each cipher, yielding that each function $x^e$ encrypts $1000*1000=1\,000\,000$ plaintexts. The results of this is given in the graphs \ref{fig:enc-exponent}. 
 
-% Pasakyti, kad del square multiply, x^16 ir t.t. yra daug greitesni
+% \begin{figure}
+%     \hspace{-1cm}
+%     \centering
+%     \begin{minipage}{0.5\textwidth}
+%         \centering
+%         \include{Resources/EncTimeExponent}
+%     \end{minipage}\hfill
+%     \begin{minipage}{0.5\textwidth}
+%         \centering
+%         \include{Resources/EncTimeExponentLog}
+%     \end{minipage}
+
+%     \hspace{-1cm}
+%     \begin{minipage}{0.5\textwidth}
+%         \centering
+%         \include{Resources/RoundNumberExponent}
+%     \end{minipage}\hfill
+%     \begin{minipage}{0.5\textwidth}
+%         \centering
+%         \include{Resources/RoundNumberExponentLog}
+%     \end{minipage}
+%     \caption{Encryption and number of rounds based on exponent.}
+%     \label{fig:enc-exponent}
+% \end{figure}
+
+The top graphs show the encryption test results, while the bottom graphs are the round number functions $R = \left\lceil n\log_e(2) \right\rceil$, where $e$ is the exponent and $n$ is the block size. The graphs on the right are just the graphs on the left with a logarithmic scale for better visualisation. These graphs showcase a few interesting things. First, it is evident, that as the exponent increases, the round number decreases and the amount of time it takes for the test also decreases. This is pretty obvious, as the number of rounds is lower, there are fewer computations. However, looking at the logarithmic scale, it is evident, that as the exponent is increased further, the time it takes to encrypt does not decrease much further. Hence, exponents $> 30$ do not bring further optimisations and we chose $x^{24}$ for further analysis.
+
+Another interesting thing to note is that there are these dips in time which are evident in the top left graph. These sudden dips are for $x^4$, $x^8$ and all $x^{2^a}$ (the powers of two). This is, however, a consequence of the implementation. The cause of this is the square and multiply algorithm \ref{alg:exp}. This algorithm reaches its best case when exponents are the powers of two because then there zero multiplications and the number is only doubled. Thus, we choose $x^{16}$ for further analysis.
+
+% \begin{figure}
+%     \hspace{-1cm}
+%     \centering
+%     \begin{minipage}{0.5\textwidth}
+%         \centering
+%         \include{Resources/EncTimeBlock}
+%     \end{minipage}\hfill
+%     \begin{minipage}{0.5\textwidth}
+%         \centering
+%         \include{Resources/RoundNumberBlock}
+%     \end{minipage}
+%     \caption{Encryption and number of rounds based on block size.}
+%     \label{fig:enc-block}
+% \end{figure}
+
+Another interesting test we can perform is when the dependencies are flipped. That is, encryption time dependency on the block size. In this case, we choose $x^3$ and $x^5$ to check how they differ, together with previously chosen $x^{16}$ and $x^{24}$. Then the test is the same, where 1000 different ciphers are built with random key and round constants (essentially a random seed) and the time it takes for them to encrypt 1000 random plaintexts is counted. Each implemented block size (5, 8, 11, 17, 25, 31, 33, 47, 61, 83, 101, 125 and 127) is tested and the results of this is provided in the graph \ref{fig:enc-block}. This gives a great visualisation, that even though number of rounds is a logarithmic function, the encryption time grows exponentially. Another interesting detail is that as the exponent increases, the encryption time decreases, however, $x^{16}$ slightly faster than $x^{24}$. This is, as stated before, because of the square and multiply algorithm \ref{alg:exp} efficiency.
+
+\textcolor{red}{Nezinau, kazkaip ar tikrai gerai? Gal labiau argumentuot, kodel buten tuos exponent pasirinkta}
+
+\subsection{Generating test data}
+As discussed in chapter \ref{chapter:prng} about statistical test suites, a sample space needs to be provided. Here it is discussed more broadly how these inputs were generated.
+
+With NIST STS, generating the input files is simple. A utility CLI command \verb|generate-test-samples| was created which simply loops through the numbers from 0 up to some specified $t$. Then encrypts them with the given cipher and prints the result to the standard output. For this, a shell script \textit{generate-numbers-list.sh} was created which calls the CLI with the predefined cipher and its parameters and pipes the result to a file. The parameters are the 127 bit key and round constants which represent a random seed. For every different function $x^e$, the same seed was provided. The only difference was the number of round constants, as these represent the number of rounds.
+
+Providing input for dieharder statistical test suite, things are a bit more complicated. Initially, the same setup was used, however, then the test files were too small and were rewound up to 7800 times which caused inaccurate results. For this reason, another method to provide the sample space was needed. Besides the input file, an endless bit stream can also be provided to the dieharder test suite. This stream must be of 32 bit numbers generated by the pseudo-random number generator being tested. For this, \verb|start-bit-stream| CLI command was created which does exactly that. The issue is, however, that some exponents do not work with 32 bit block size (i.e. $x^3$) because the function is not a permutation polynomial. To circumvent this, 33 bit block size is used and then one bit is dropped when outputting the result to the standard output. Another potential issue is that the test take a long time to finish and thus, when iterating over the sequence of bits, the iterator of the sequence might overflow. To prevent the sequence iterator from overflowing, it is reduced by a modulo $p = 4531145293$. This number is chosen specially to be a prime larger than $2^{32}$ and less than $2^{33}$ which means that the iterator forms a ring $\mod p$. In this case the numbers do eventually start to repeat, however the statistical test suite uses less than $2^{32}$ inputs, thus, this does not affect the test results. Similarly as before, shell scripts were created which contain the sample seed. Moreover, another shell script was created to run some of the experiments in parallel as some of them took more than 8 hours.
 
 % Sudeti nedadetus references:
 % galois fiels allow fast computational implementations (page 5, page 7)
@@ -629,6 +686,7 @@ Kokie shell scripts (essentially kaip statistical input generated) %\noindent st
 \begin{itemize}
     \item Summary of what has been achieved and what hasn't. Iterate again where these ciphers could be used, were they faster.
     \item These test suites fail to reject the null hypothesis giving more confidence that these ciphers produce a uniformly distributed collection of numbers.   It is evident that even the highly sophisticated tests cannot determine and bias. Thus, the ciphers produce non linear results from a linear input and behave like a pseudo-random number generator.
+    % Further optimise with hardware specific AES yra, bet mes to negalim.
 \end{itemize}
 
 
