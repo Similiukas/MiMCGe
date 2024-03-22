@@ -1,4 +1,4 @@
-use crate::tests::tests::{encrypt_many, test_cipher, test_confusion, test_decryption_time, test_diffusion, test_encryption_time};
+use crate::experiments::tests::{encrypt_seq, encrypt_seq_stream, test_cipher, test_confusion, test_decryption_time, test_diffusion, test_encryption_time};
 use crate::utils::helpers::{CipherType, FieldElement, generate_random_bits, to_binary};
 use clap::Parser;
 use clap::builder::TypedValueParser;
@@ -16,7 +16,7 @@ mod tests;
 #[command(version, about, long_about = None)]
 struct Args {
     /// Type of test to be performed.
-    #[arg(value_parser=["diffusion", "confusion", "enc-time", "dec-time", "cipher-test", "generate-test-samples"])]
+    #[arg(value_parser=["diffusion", "confusion", "enc-time", "dec-time", "cipher-test", "generate-test-samples", "bit-stream"])]
     test_type: String,
 
     /// Cipher type.
@@ -50,15 +50,7 @@ struct Args {
     #[arg(short, long, default_value = "3")]
     exponent: u128,
 
-    /// How many rounds to reduce for the MiMCGe cipher.
-    #[arg(short, long, default_value = None)]
-    round_reduction: Option<usize>,
-
-    /// Key used in encryption. (Only when using encrypt option)
-    #[arg(short, long, default_value = "0")]
-    key: u128,
-
-    /// Round constants used for MiMCGe cipher. (Only when using encrypt option).
+    /// Round constants used for MiMCGe cipher.
     #[arg(short='R', long, num_args = 1..)]
     round_constants: Vec<u128>,
 
@@ -97,8 +89,9 @@ fn main() {
         "confusion" => test_confusion(args.test_size, args.block_size, cipher_type),
         "enc-time" => test_encryption_time(args.test_size, args.sample_size, args.block_size, cipher_type),
         "dec-time" => test_decryption_time(args.test_size, args.sample_size, args.block_size, cipher_type),
-        "cipher-test" => test_cipher(plaintext, args.block_size, cipher_type),
-        "generate-test-samples" => encrypt_many(args.test_size, to_binary(args.key, args.block_size), args.block_size, args.exponent, args.round_constants),
+        "cipher-test" => test_cipher(plaintext, args.block_size, key, cipher_type),
+        "generate-test-samples" => encrypt_seq(args.test_size, args.block_size, key, cipher_type),
+        "bit-stream" => encrypt_seq_stream(args.block_size, key, cipher_type),
         _ => unreachable!()
     }
 }

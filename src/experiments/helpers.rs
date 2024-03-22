@@ -89,3 +89,19 @@ pub fn decryption_encryption(decrypt: bool, test_size: usize, sample_size: usize
     }
     start
 }
+
+
+fn bits_to_byte(bits: &[u8]) -> u8 {
+    (bits[0] << 7)
+        | (bits[1] << 6)
+        | (bits[2] << 5)
+        | (bits[3] << 4)
+        | (bits[4] << 3)
+        | (bits[5] << 2)
+        | (bits[6] << 1)
+        | bits[7]
+}
+
+pub fn to_32_bit(a: FieldElement) -> [u8; 4] {
+    [bits_to_byte(&a[0..8]),bits_to_byte(&a[8..16]),bits_to_byte(&a[16..24]), bits_to_byte(&a[24..32])]
+}
