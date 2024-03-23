@@ -74,8 +74,9 @@
 % Nuspresti captions of figures apacioj ar virsuj
 % reikia student id ir word count in front page
 % Duoti CPU, kai testuojamas laikas
+% pereiti per notes is messenger
 
-words: 632/981/1932/4345/5891/8032
+words: 632/981/1932/4345/5891/8032/9962
 
 \begin{abstract}
     Talk mostly about what was in the proposal but simplified.
@@ -125,8 +126,8 @@ One such almost practical implementation is Pinocchio\cite{Pinocchio}. Using thi
 
 Even though the concepts for ZK, MPC, FHE have been introduced in the 70s and 80s, the first practical implementations are relatively recent. However, as the world transitions more and more into the digital cyberspace, use cases for these principles are now more important than ever. Privacy and data correctness plays a significant role in every day life. We want to make sure, that our sensitive personal data is handled properly and not leaked to any malicious third party. Thus, getting more efficient and better optimized fundamental encryption schemes allows for bigger widespread tool creation and usage which ensure these concepts.
 
-\subsection{Our Goals}
-In this project, we are going to focus on MiMC, which is constructed of the simplified round function of the Knudsen-Nyberg cipher from 1995\cite{KNCipher}. The core component of this algorithm is the use of \(f(x)=x^3\) APN (almost perfect nonlinear) function \textcolor{red}{add reference to what it is or explain it or both}. What we are going to do is \textit{build new ciphers based on the structure of MiMC by trying different polynomials to better understand how cryptographic algorithms are proven to be secure and then see whether our newly built cipher is efficient and what are the possible applications.}
+\subsection{Our Goals}\label{sub:goals}
+In this project, we are going to focus on MiMC, which is constructed of the simplified round function of the Knudsen-Nyberg cipher from 1995\cite{KNCipher}. The core component of this algorithm is the use of \(f(x)=x^3\) APN (almost perfect non-linear) function \textcolor{red}{add reference to what it is or explain it or both}. What we are going to do is \textit{build new ciphers based on the structure of MiMC by trying different polynomials to better understand how cryptographic algorithms are proven to be secure and then test cryptographic properties and see whether our newly built cipher is efficient.}
 
 Changing the core function of MiMC which is proven to be secure with a different polynomial is not enough to say that our new cipher is also secure. We are still required to prove that it holds key cryptographic properties like \textit{Diffusion}, \textit{Confussion}, \textit{Avalance Effect}, \textit{Key Sensitivity}, etc. \textcolor{red}{should probably say only the ones being tested}. We will use various methods to test these properties which include mathematical analysis, simulation, and empirical testing. \textcolor{red}{papildyti, apie testavimo budus}
 
@@ -154,7 +155,7 @@ In general, a block cipher can be described as a function of a pair:
 f : m \times k \to c,\quad f^{-1} : c \times k \to m,
 \]
 where $f$ encrypts the message $m$ with key $k$ and $f^{-1}$ decrypts the ciphertext $c$. Thus, we have our first definition:
-\begin{definition}\label{def:1}
+\begin{definition}\label{def:cipher}
     A \textit{cipher} is a function $f$ which has an inverse $f^{-1}$ such that \(\forall k \in \mathcal{K}\) and \(\forall m \in \mathcal{M}\) we have:
     \[
         (f^{-1} \circ f)(m, k) = m.
@@ -204,7 +205,7 @@ The proof of this simply follows the definition of groups and fields\cite{FieldN
 \end{theorem}
 Proving this is done showing that the field axioms hold with modular polynomial arithmetic\cite{FieldNotes}, which need to be discussed.
 
-\subsection{MiMC with general exponent}
+\subsection{MiMC with general exponent}\label{sub:mimcge}
 Modular polynomial arithmetic is done the same way as with integers except we add and divide polynomials. This is because every polynomial $f(x)$ can be expressed as $f(x) = q(x)g(x) + r(x)$ for some polynomial remainder $r(x)$ and polynomial quotient $q(x)$. Then the coefficient operations are simply in $\mathbb{F}$. For example, \(x^3-2x^2-4 = (x^2+x+3)(x-3) + 5\), we can use Euclidean long division to verify this. Now similarly to primes in integers, there are also primes of polynomials.
 \begin{definition}\label{def:prime-poly}
     A polynomial is \textit{prime} if it is \textit{monic} and is \textit{irreducible}. That is, the highest order coefficient is 1 and the polynomial has no trivial factors.
@@ -213,7 +214,7 @@ Moreover, just like with integers, every monic polynomial can be uniquely expres
 
 ------------MAIN START---------------
 
-\noindent\textbf{MiMCGe} If we take a look at MiMC cipher\cite{MiMC}, it uses the same field $\operatorname{GF}(2^n)$, where $n$ describes the block size. The underlying polynomial for the cipher is $x^3$. However, we can in fact take any polynomial $x^e$, for any $e \ge 2$ and we call this the \textit{MiMCGe} cipher. We can prove that this does in fact give us a cipher (Fig. \ref{fig:cipher}) by our definition \ref{def:1}. The cipher algorithm is simple: plaintext $m$ is added to a random element (round constant) $r_i$ and key $k$. Then instead of cubic the result, it is raised to some exponent $e$ and this process is repeated for at least $R := \left\lceil n\log_e(2) \right\rceil$ number of rounds or for full security: \(R + \left\lceil \log_e(\frac{6R}{e}) \right\rceil\). The choice for this is discussed in subsection \ref{sub:3.1}. The round constants are chosen as random elements every time we initialise the cipher. However, these constants could also be predefined earlier similarly to AES.
+\noindent\textbf{MiMCGe} If we take a look at MiMC cipher\cite{MiMC}, it uses the same field $\operatorname{GF}(2^n)$, where $n$ describes the block size. The underlying polynomial for the cipher is $x^3$. However, we can in fact take any polynomial $x^e$, for any $e \ge 2$ and we call this the \textit{MiMCGe} cipher. We can prove that this does in fact give us a cipher (Fig. \ref{fig:cipher}) by our definition \ref{def:cipher}. The cipher algorithm is simple: plaintext $m$ is added to a random element (round constant) $r_i$ and key $k$. Then instead of cubic the result, it is raised to some exponent $e$ and this process is repeated for at least $R := \left\lceil n\log_e(2) \right\rceil$ number of rounds or for full security: \(R + \left\lceil \log_e(\frac{6R}{e}) \right\rceil\). The choice for this is discussed in subsection \ref{sub:roundnumber}. The round constants are chosen as random elements every time we initialise the cipher. However, these constants could also be predefined earlier similarly to AES.
 
 
 \begin{figure}
@@ -315,7 +316,7 @@ This means that since the encryption is a permutation polynomial if and only if 
 \textcolor{red}{Realiai kazkaip biski silpnokai atrodo, nes dauguma theorems neirodyta, o tiesiog pasakyta, tai gal kokia viena irodyt butu gerai.}
 
 % ------------- SECURITY ANALYSIS ----------------
-\section{Security analysis}
+\section{Security analysis}\label{chapter:security}
 \begin{itemize}
     \item Prove them together, that they still have cryptographic properties
     \item Need to argue how the number of rounds have been chosen by looking at the original paper and explaining why it's chosen that way. Then using that, our own ciphers have different round number.
@@ -343,7 +344,7 @@ What we are now tasked to do is show that the cipher is indeed secure. However, 
 
 Even the formerly most used ciphers get broken and replaced by other standards (for example DES was broken with introduction of differential cryptanalysis\cite{DESBreak} and later replaced by AES). This is because it is possible to prove that a cipher is secure against some attacks but it is impossible to create a cipher which cannot be broken at all. For that, we need information-theoretic security introduced by Claude Shannon who proved that one-time pad is not breakable with infinite computational power\cite{OneTime}. However, key needs to be at least as big as the plaintext and can be used only once. Hence, what is more commonly used is the computational security which depends on the fact that some problem is considered "hard". For example RSA relies on the fact that large number factorisation is a computationally hard problem. Thus, one of the ways we argue that the cipher is secure is showing that constructing some attack is as computationally hard as brute forcing.
 
-\subsection{Round number}\label{sub:3.1}
+\subsection{Round number}\label{sub:roundnumber}
 Choosing the round number is crucial as we want it to be smaller for efficiency but this comes at the cost of security. Thus, the goal is always to choose it as small as possible to thwart any possible attacks. A few of these attacks are statistical in nature where they try to predict some behaviour from randomness. These are linear\cite{DESLinear} cryptanalysis which try to approximate cipher as a linear function and differential cryptanalysis\cite{DESBreak} which looks at differences through cipher which lead to higher probability in ciphertext allowing to recover parts of the key. However, MiMC was designed based on Knudsen-Nyberg cipher\cite{KNCipher} which was designed to mitigate differential cryptanalysis. But there are also algebraic attacks such as interpolation\cite{InterpolationAttack} or higher-order differential attacks\cite{HigherOrderAttack1}\cite{HigherOrderAttack2} which are especially strong against a cryptographic scheme with simple algebraic representation. In fact, Knudsen-Nyberg cipher was broken with higher-order differential attack\cite{InterpolationAttack} and MiMC has also been broken with the same attack\cite{MiMCAttack}. In the paper, it is conjectured that the number of rounds necessary to prevent higher-order differential attacks is also sufficient to prevent interpolation attacks. Thus, the motivation for choosing the round number is based on these attacks.\medskip
 
 \noindent\textbf{Higher-Order Differential Attack.} The main way this attack works is similar to differential cryptanalysis, however, instead of taking the first derivative, higher-order derivatives are taken. These derivatives are defined as functions $f$ with respect to some $\alpha \in \mathbb{F}^n_2$:
@@ -373,7 +374,7 @@ In essence, it means that about \(\left\lceil n\log_e(2) \right\rceil - 1\) roun
 \end{align*}
 Where we suppose that \(\rho \le R/2\). Thus, we get that to thwart higher-order based key-recover attack, it is necessary to take \(\rho \approx \log_e(\frac{6R}{e})\) additional rounds. This number is relatively small, for example with block size 129 and exponent 5, $\rho \approx 3$, while with exponent $24$ it is only $\rho \approx 1$. Thus, the lower round MiMCGe has \(R := \left\lceil n\log_e(2) \right\rceil\) rounds, where $e$ is the exponent and $n$ is the block size, while the full round MiMCGe cipher has \(R + \left\lceil \log_e(\frac{6R}{e}) \right\rceil\) rounds.
 
-\subsection{Diffusion and confusion}
+\subsection{Diffusion and confusion}\label{sub:diff/conf}
 \textcolor{red}{Should really look into \href{https://eprint.iacr.org/2010/564.pdf}{this}}
 In this subsection instead of mathematically proving cipher security we argue it based on statistical data obtained from testing. The core principle this is based on is the Claude Shannon's principle which states that each input and key bit must \textit{influence each} output bit in a \textit{complicated} way\cite{OneTime}. The two properties described here are \textit{diffusion} and \textit{confusion} which can be defined as:
 \begin{definition}
@@ -448,7 +449,7 @@ From the tests, it is clear that indeed the ciphers have sufficient diffusion an
 
 \noindent\textbf{Powers of two case.} The interesting case is when the exponent is a $x^{16}$. It is evident, that this is not because the exponent is even, as $x^{24}$ achieves the specified goal of diffusion and confusion. This only happens with exponents in a form of a power of two and it is clear that these ciphers fail diffusion and confusion as they do not even reach $40\%$, hence we state that \textbf{these are not secure ciphers} as they do not show sufficient non linearity. Analysing further, it was observed that diffusion and confusion rates stays the same no matter what test size is given. That is, testing one or $1000$ different plaintexts yields the same diffusion and confusion percentages even though each time random plaintexts and key is generated.\textcolor{red}{Reikia toliau analizuoti, duoti ne tik $x^{16}$. Labai svarbu gauti conclusion, kodel taip yra!! (gal subfields $2^n$?)}
 
-\subsection{Pseudo-random number generator}\label{chapter:prng}
+\subsection{Pseudo-random number generator}\label{sub:prng}
 Another way the ciphers can be looked as is through random number generators. If a cipher is truly secure, then it must be non-linear and the mapping of the input is random. That is, if we give an input, it should map to the output in a random and unpredictable way. Hence, a cipher is also a pseudo-random number generator. This is, however, a consequence of producing a cipher rather than the actual objective. Thus, when arguing security, formal mathematical analysis is always more prioritised over statistical analysis. However, it is a great tool which can easily demonstrate if the cipher is insecure.
 
 Note, that it is impossible to generate truly random numbers in any mathematical way. In fact, even in physics, the sources of true randomness are rare. Hence, the term \textit{pseudo}-random number generators (PRNG) is used when speaking about random number generators, which are software based. The study of randomness is a an active field of research with recent papers using quantum physics for zero-knowledge proofs\cite{QuantumZK} or developing generators for FHE\cite{LatticeRNG}. Thus, there are tools created specifically for testing these generators, notably NIST STS\cite{NIST} and Dieharder\cite{Dieharder} which are considered to be industry standard for testing cryptographic algorithms\cite{AESNI}.
@@ -494,7 +495,7 @@ If this value is really low or really close to 1 with predetermined significance
     \end{minipage}
 \end{table}
 
-\noindent\textbf{NIST STS.} It is a collection of 15 tests developed by the National Institute of Standards and Technology (NIST) aimed at assessing the randomness or statistical properties of PRNG or cryptographic algorithms. The tests require an input file at least of 10000 random stream of bits. For accurate results, there has to be at least 55 bit streams (as stated in NIST manula Section 4.2.2\cite{NIST}). In MiMCGe case, four different exponents ($x^3$, $x^5$, $x^{16}$, $x^{24}$) were tested with a block size of 127. 1000 bit streams were generated of 7875 different numbers which yield to $127 * 7875 = 1000125$ size per bit stream. In total, the input size is $\sim$1GB. The generated file simply consists of encrypted sequential numbers, where the random seed corresponds to the key together with round constants. This seed was chosen randomly and is the same for all the different exponents and tests. The implementation of generating this file is discussed in chapter\textcolor{red}{ref}.
+\noindent\textbf{NIST STS.} It is a collection of 15 tests developed by the National Institute of Standards and Technology (NIST) aimed at assessing the randomness or statistical properties of PRNG or cryptographic algorithms. The tests require an input file at least of 10000 random stream of bits. For accurate results, there has to be at least 55 bit streams (as stated in NIST manual Section 4.2.2\cite{NIST}). In MiMCGe case, four different exponents ($x^3$, $x^5$, $x^{16}$, $x^{24}$) were tested with a block size of 127. 1000 bit streams were generated of 7875 different numbers which yield to $127 * 7875 = 1000125$ size per bit stream. In total, the input size is $\sim$1GB. The generated file simply consists of encrypted sequential numbers, where the random seed corresponds to the key together with round constants. This seed was chosen randomly and is the same for all the different exponents and tests. The implementation of generating this file is discussed in chapter\textcolor{red}{ref}.
 
 At first, two control tests were performed. First is the built in test which checks a known PRNG against the test suite to check whether the tests correctly identify PRNG. The second control test was to see whether the construction of the input file is generated correctly. For this, the numbers were not encrypted and a file of just sequential numbers was given to the the test suite. This correctly identified that 15 out of 15 tests fail. Now, the files with encrypted numbers were given and the results are provided in the table \ref{tab:NIST-results}. The result column indicates how many of the test experiments were passed, out of all performed. Note, that some tests have multiple experiments (i.e. \textit{Non-overlapping Template Matching Test} has 147 experiments). The only experiment $x^5$ failed was the non-overlapping template experiment, however even then, the result was 979/1000, while the pass rate is 980/1000\textcolor{red}{appendix full result}. It is evident, that indeed, as previously discussed, powers of two exponents are not secure ciphers. The test suite could not even perform the \textit{Random Excursions} and \textit{Random Excursions Variant} tests for $x^{16}$. However, NIST STS test suite gives more confidence that the other ciphers are indeed secure.\textcolor{red}{pasneket apie ta testa, kuri x16 praejo}\medskip
 
@@ -639,27 +640,27 @@ The top graphs show the encryption test results, while the bottom graphs are the
 
 Another interesting thing to note is that there are these dips in time which are evident in the top left graph. These sudden dips are for $x^4$, $x^8$ and all $x^{2^a}$ (the powers of two). This is, however, a consequence of the implementation. The cause of this is the square and multiply algorithm \ref{alg:exp}. This algorithm reaches its best case when exponents are the powers of two because then there zero multiplications and the number is only doubled. Thus, we choose $x^{16}$ for further analysis.
 
-% \begin{figure}
-%     \hspace{-1cm}
-%     \centering
-%     \begin{minipage}{0.5\textwidth}
-%         \centering
-%         \include{Resources/EncTimeBlock}
-%     \end{minipage}\hfill
-%     \begin{minipage}{0.5\textwidth}
-%         \centering
-%         \include{Resources/RoundNumberBlock}
-%     \end{minipage}
-%     \caption{Encryption and number of rounds based on block size.}
-%     \label{fig:enc-block}
-% \end{figure}
+\begin{figure}
+    \hspace{-1cm}
+    \centering
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \include{Resources/EncTimeBlock}
+    \end{minipage}\hfill
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \include{Resources/RoundNumberBlock}
+    \end{minipage}
+    \caption{Encryption and number of rounds based on block size.}
+    \label{fig:enc-block}
+\end{figure}
 
 Another interesting test we can perform is when the dependencies are flipped. That is, encryption time dependency on the block size. In this case, we choose $x^3$ and $x^5$ to check how they differ, together with previously chosen $x^{16}$ and $x^{24}$. Then the test is the same, where 1000 different ciphers are built with random key and round constants (essentially a random seed) and the time it takes for them to encrypt 1000 random plaintexts is counted. Each implemented block size (5, 8, 11, 17, 25, 31, 33, 47, 61, 83, 101, 125 and 127) is tested and the results of this is provided in the graph \ref{fig:enc-block}. This gives a great visualisation, that even though number of rounds is a logarithmic function, the encryption time grows exponentially. Another interesting detail is that as the exponent increases, the encryption time decreases, however, $x^{16}$ slightly faster than $x^{24}$. This is, as stated before, because of the square and multiply algorithm \ref{alg:exp} efficiency.
 
 \textcolor{red}{Nezinau, kazkaip ar tikrai gerai? Gal labiau argumentuot, kodel buten tuos exponent pasirinkta}
 
 \subsection{Generating test data}
-As discussed in chapter \ref{chapter:prng} about statistical test suites, a sample space needs to be provided. Here it is discussed more broadly how these inputs were generated.
+As discussed in chapter \ref{sub:prng} about statistical test suites, a sample space needs to be provided. Here it is discussed more broadly how these inputs were generated.
 
 With NIST STS, generating the input files is simple. A utility CLI command \verb|generate-test-samples| was created which simply loops through the numbers from 0 up to some specified $t$. Then encrypts them with the given cipher and prints the result to the standard output. For this, a shell script \textit{generate-numbers-list.sh} was created which calls the CLI with the predefined cipher and its parameters and pipes the result to a file. The parameters are the 127 bit key and round constants which represent a random seed. For every different function $x^e$, the same seed was provided. The only difference was the number of round constants, as these represent the number of rounds.
 
@@ -685,9 +686,28 @@ Providing input for dieharder statistical test suite, things are a bit more comp
 \section{Conclusion}
 \begin{itemize}
     \item Summary of what has been achieved and what hasn't. Iterate again where these ciphers could be used, were they faster.
-    \item These test suites fail to reject the null hypothesis giving more confidence that these ciphers produce a uniformly distributed collection of numbers.   It is evident that even the highly sophisticated tests cannot determine and bias. Thus, the ciphers produce non linear results from a linear input and behave like a pseudo-random number generator.
+    \item These test suites fail to reject the null hypothesis giving more confidence that these ciphers produce a uniformly distributed collection of numbers.   It is evident that even the highly sophisticated tests cannot determine and bias. Thus, the ciphers produce non-linear results from a linear input and behave like a pseudo-random number generator.
     % Further optimise with hardware specific AES yra, bet mes to negalim.
 \end{itemize}
+
+Recall, that the main goal of the project was: to built new ciphers, argue their security and test cryptographic properties (chapter \ref{sub:goals}). And in fact, this goal was achieved. First, it was necessary to prove that in the chosen field $\operatorname{GF}(2^n)$ it is possible to find any function which will be a cipher by the definition \ref{def:cipher}. For that, permutation polynomials of any exponent were chosen and this gave the \textit{MiMCGe} cipher (chapter \ref{sub:mimcge}). Then the task was to prove that these class of ciphers are indeed secure.
+
+However, as discussed in chapter \ref{chapter:security}, definitively proving security for symmetric key ciphers is an open problem. Information-theoretic security has been proved only with the one-time pad \cite{OneTime}. Recent progress has been made with substitution-permutation network ciphers but to the best of our knowledge, there is no definitive way of proving security. Because of this, arguing that the cipher is secure against some well known attack paradigms is the best cryptanalysis tool. Additionally, as a consequence, main cryptographic properties, such as diffusion, confusion and randomness can be tested.
+
+\textcolor{red}{Ideti paminejima apie sita paper paciam chapter 3 ir pasakyt, kad musu cipher yra SPN cipher}
+
+The main argument of security is in chapter \ref{chapter} where the number of rounds for the cipher was chosen. Then, it is proved that this round number is sufficient to thwart algebraic attacks, especially higher-order differential attack. The proof is based on the original MiMC paper\cite{MiMC} together with an attack found of the original cipher\cite{MiMCAttack} where ciphers with simple algebraic representation are found to be weak against algebraic attacks.
+
+Having decided full specification of the cipher, the main cryptographic properties were tested. As discussed earlier, the core principle of the cipher is that each input and key bit must influence each output bit in a complicated way. These are the diffusion and confusion properties which were analysed in chapter \ref{sub:diff/conf}. The tests were constructed and it was proven that sufficient diffusion and confusion rates are reached.
+
+Another property tested of the ciphers was that they behave similarly to a pseudo-random number generator. Two industry standard statistical test suites were utilised for this task. It was shown, that indeed the cipher behave like a PRNG which showcases that the ciphers behave like a non-linear functions. However, one important thing to note is that these tools do not prove security, they can only disprove it. Null hypothesis testing is similar to proving by contradiction. First, you assume a statement and then derive a contradiction, proving the statement is false. However, if you cannot get a contradiction, it does not mean that the assumption is correct.
+
+Performing these tests, it was shown, that when the exponent is a power of two ($x^2$, $x^4$, etc.), the ciphers are not secure. \textcolor{red}{nu kazka dar}
+
+Having analysed security, the ciphers were tested for efficiency. A CLI tool was written in Rust which allowed to construct tests of the cipher. The relation between the exponent and block size was compared. The results show that as the exponent increases, the time it takes for the cipher to encrypt decreases \textcolor{red}{O decryption kaip? Gal irgi padaryt tiesiog grafika arba pasakyt, kad neidomu}. Additionally, smarter algorithms had to be utilised in order to get decryption even possible. Some further optimisations can be used with pre-computed multiplication tables, hardware accelerated multiplication or using other algorithms for field arithmetic. However, making the most optimised implementation was not the objective of the project.
+
+In the end, the main aim of these type of ciphers is not the quickest way to encrypt a million bits. These ciphers are implemented with the intent of utilising them for zero-knowledge, multi-party computation or fully homomorphic encryption. As discussed in the beginning, modern cryptography research focuses beyond the classic confidentiality and authenticity between two-party communication problems. Considerable effort is made to find better algorithms for ZK, MPC, SNARK, etc. which in turn provide more security and privacy for everyday internet users and beyond. And this project is just a small glimpse into the realms of cryptanalysis and ways of constructing cryptographic algorithms.
+
 
 
 \setlength{\labelsep}{10pt} % Adds horizontal spacing between numbers and reference [X]<->Name...
@@ -786,7 +806,7 @@ Providing input for dieharder statistical test suite, things are a bit more comp
 
 \bibitem{QuantumZK} Cheng-Long Li, Kai-Yi Zhang, Xingjian Zhang, Kui-Xing Yang, Yu Han, Su-Yi Cheng, Hongrui Cui, Wen-Zhao Liu, Ming-Han Li, Yang Liu, Bing Bai, Hai-Hao Dong, Jun Zhang, Xiongfeng Ma, Yu Yu, Jingyun Fan, Qiang Zhang, Jian-Wei Pan. \textit{Device-independent quantum randomness–enhanced zero-knowledge proof}, \href{https://doi.org/10.1073/pnas.2205463120}{URL}, November 2023.
 
-\bibitem{LatticeRNG} TODO: https://ieeexplore.ieee.org/abstract/document/9870587/
+\bibitem{LatticeRNG} Kalikinkar Mandal. \textit{Cryptographic Pseudorandom Noise Generators for Lattice-based Cryptography and Differential Privacy}, \href{https://ieeexplore.ieee.org/abstract/document/9870587/}{URL}, August 2022.
 
 \bibitem{NIST} Andrew Rukhin, Juan Soto, James Nechvatal, Miles Smid, Elaine Barker, Stefan Leigh, Mark Levenson, Mark Vangel, David Banks,Alan Heckert, James Dray, San Vo. \textit{A Statistical Test Suite for Random and Pseudorandom Number Generators for Cryptographic Applications}, \href{https://csrc.nist.gov/pubs/sp/800/22/r1/upd1/final}{URL}, April 2010.
 
