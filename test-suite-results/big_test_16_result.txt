@@ -1,0 +1,660 @@
+#=============================================================================#
+#            dieharder version 3.31.1 Copyright 2003 Robert G. Brown          #
+#=============================================================================#
+   rng_name    |           filename             |rands/second|
+     file_input|                    _testx16.txt|  7.37e+06  |
+#=============================================================================#
+        test_name   |ntup| tsamples |psamples|  p-value |Assessment
+#=============================================================================#
+   diehard_birthdays|   0|       100|     100|0.00000000|  FAILED  
+      diehard_operm5|   0|   1000000|     100|0.00000000|  FAILED  
+  diehard_rank_32x32|   0|     40000|     100|0.00000000|  FAILED  
+    diehard_rank_6x8|   0|    100000|     100|0.00000000|  FAILED  
+   diehard_bitstream|   0|   2097152|     100|0.00000000|  FAILED  
+        diehard_opso|   0|   2097152|     100|0.00000000|  FAILED  
+        diehard_oqso|   0|   2097152|     100|0.00000000|  FAILED  
+         diehard_dna|   0|   2097152|     100|0.00000000|  FAILED  
+diehard_count_1s_str|   0|    256000|     100|0.00000000|  FAILED  
+diehard_count_1s_byt|   0|    256000|     100|0.00000000|  FAILED  
+ diehard_parking_lot|   0|     12000|     100|0.00000000|  FAILED  
+    diehard_2dsphere|   2|      8000|     100|0.00000000|  FAILED  
+    diehard_3dsphere|   3|      4000|     100|0.00000000|  FAILED  
+     diehard_squeeze|   0|    100000|     100|0.00000000|  FAILED  
+        diehard_sums|   0|       100|     100|0.00000000|  FAILED  
+        diehard_runs|   0|    100000|     100|0.00000000|  FAILED  
+        diehard_runs|   0|    100000|     100|0.00000000|  FAILED  
+       diehard_craps|   0|    200000|     100|0.00000000|  FAILED  
+       diehard_craps|   0|    200000|     100|0.00000000|  FAILED  
+ marsaglia_tsang_gcd|   0|  10000000|     100|0.00000000|  FAILED  
+ marsaglia_tsang_gcd|   0|  10000000|     100|0.00000000|  FAILED  
+         sts_monobit|   1|    100000|     100|0.00000000|  FAILED  
+            sts_runs|   2|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   1|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   2|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   3|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   3|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   4|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   4|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   5|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   5|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   6|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   6|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   7|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   7|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   8|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   8|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   9|    100000|     100|0.00000000|  FAILED  
+          sts_serial|   9|    100000|     100|0.00000000|  FAILED  
+          sts_serial|  10|    100000|     100|0.00000000|  FAILED  
+          sts_serial|  10|    100000|     100|0.00000000|  FAILED  
+          sts_serial|  11|    100000|     100|0.00000000|  FAILED  
+          sts_serial|  11|    100000|     100|0.00000000|  FAILED  
+          sts_serial|  12|    100000|     100|0.00000000|  FAILED  
+          sts_serial|  12|    100000|     100|0.00000000|  FAILED  
+          sts_serial|  13|    100000|     100|0.00000000|  FAILED  
+          sts_serial|  13|    100000|     100|0.00000000|  FAILED  
+          sts_serial|  14|    100000|     100|0.00000000|  FAILED  
+          sts_serial|  14|    100000|     100|0.00000000|  FAILED  
+          sts_serial|  15|    100000|     100|0.00000000|  FAILED  
+          sts_serial|  15|    100000|     100|0.00000000|  FAILED  
+          sts_serial|  16|    100000|     100|0.00000000|  FAILED  
+          sts_serial|  16|    100000|     100|0.00000000|  FAILED  
+         rgb_bitdist|   1|    100000|     100|0.00000000|  FAILED  
+         rgb_bitdist|   2|    100000|     100|0.00000000|  FAILED  
+         rgb_bitdist|   3|    100000|     100|0.00000000|  FAILED  
+         rgb_bitdist|   4|    100000|     100|0.00000000|  FAILED  
+         rgb_bitdist|   5|    100000|     100|0.00000000|  FAILED  
+         rgb_bitdist|   6|    100000|     100|0.00000000|  FAILED  
+         rgb_bitdist|   7|    100000|     100|0.00000000|  FAILED  
+         rgb_bitdist|   8|    100000|     100|0.00000000|  FAILED  
+         rgb_bitdist|   9|    100000|     100|0.00000000|  FAILED  
+         rgb_bitdist|  10|    100000|     100|0.00000000|  FAILED  
+         rgb_bitdist|  11|    100000|     100|0.00000000|  FAILED  
+         rgb_bitdist|  12|    100000|     100|0.00000000|  FAILED  
+rgb_minimum_distance|   2|     10000|    1000|0.00000000|  FAILED  
+rgb_minimum_distance|   3|     10000|    1000|0.00000000|  FAILED  
+rgb_minimum_distance|   4|     10000|    1000|0.00000000|  FAILED  
+rgb_minimum_distance|   5|     10000|    1000|0.00000000|  FAILED  
+    rgb_permutations|   2|    100000|     100|0.00000000|  FAILED  
+    rgb_permutations|   3|    100000|     100|0.00000000|  FAILED  
+    rgb_permutations|   4|    100000|     100|0.00000000|  FAILED  
+    rgb_permutations|   5|    100000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|   0|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|   1|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|   2|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|   3|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|   4|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|   5|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|   6|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|   7|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|   8|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|   9|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  10|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  11|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  12|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  13|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  14|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  15|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  16|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  17|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  18|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  19|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  20|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  21|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  22|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  23|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  24|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  25|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  26|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  27|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  28|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  29|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  30|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  31|   1000000|     100|0.00000000|  FAILED  
+      rgb_lagged_sum|  32|   1000000|     100|0.00000000|  FAILED  
+     rgb_kstest_test|   0|     10000|    1000|0.00000000|  FAILED  
+     dab_bytedistrib|   0|  51200000|       1|0.00000000|  FAILED  
+             dab_dct| 256|     50000|       1|0.00000000|  FAILED  
+Preparing to run test 207.  ntuple = 0
+        dab_filltree|  32|  15000000|       1|0.00000000|  FAILED  
+        dab_filltree|  32|  15000000|       1|0.00000000|  FAILED  
+Preparing to run test 208.  ntuple = 0
+       dab_filltree2|   0|   5000000|       1|0.00000000|  FAILED  
+       dab_filltree2|   1|   5000000|       1|0.00000000|  FAILED  
+Preparing to run test 209.  ntuple = 0
+        dab_monobit2|  12|  65000000|       1|1.00000000|  FAILED  
+
+# The file file_input was rewound 1 times
+# The file file_input was rewound 14 times
+# The file file_input was rewound 30 times
+# The file file_input was rewound 38 times
+# The file file_input was rewound 41 times
+# The file file_input was rewound 68 times
+# The file file_input was rewound 86 times
+# The file file_input was rewound 94 times
+# The file file_input was rewound 95 times
+# The file file_input was rewound 111 times
+# The file file_input was rewound 111 times
+# The file file_input was rewound 111 times
+# The file file_input was rewound 112 times
+# The file file_input was rewound 173 times
+# The file file_input was rewound 173 times
+# The file file_input was rewound 174 times
+# The file file_input was rewound 194 times
+# The file file_input was rewound 448 times
+# The file file_input was rewound 449 times
+# The file file_input was rewound 451 times
+# The file file_input was rewound 452 times
+# The file file_input was rewound 454 times
+# The file file_input was rewound 460 times
+# The file file_input was rewound 467 times
+# The file file_input was rewound 477 times
+# The file file_input was rewound 490 times
+# The file file_input was rewound 505 times
+# The file file_input was rewound 523 times
+# The file file_input was rewound 543 times
+# The file file_input was rewound 566 times
+# The file file_input was rewound 592 times
+# The file file_input was rewound 620 times
+# The file file_input was rewound 650 times
+# The file file_input was rewound 653 times
+# The file file_input was rewound 656 times
+# The file file_input was rewound 661 times
+# The file file_input was rewound 668 times
+# The file file_input was rewound 670 times
+# The file file_input was rewound 674 times
+# The file file_input was rewound 679 times
+# The file file_input was rewound 686 times
+# The file file_input was rewound 698 times
+# The file file_input was rewound 724 times
+# The file file_input was rewound 762 times
+# The file file_input was rewound 813 times
+# The file file_input was rewound 876 times
+# The file file_input was rewound 952 times
+# The file file_input was rewound 1041 times
+# The file file_input was rewound 1143 times
+# The file file_input was rewound 1257 times
+# The file file_input was rewound 1384 times
+# The file file_input was rewound 1524 times
+# The file file_input was rewound 1676 times
+# The file file_input was rewound 1841 times
+# The file file_input was rewound 2019 times
+# The file file_input was rewound 2209 times
+# The file file_input was rewound 2413 times
+# The file file_input was rewound 2628 times
+# The file file_input was rewound 2857 times
+# The file file_input was rewound 3098 times
+# The file file_input was rewound 3352 times
+# The file file_input was rewound 3619 times
+# The file file_input was rewound 3898 times
+# The file file_input was rewound 4190 times
+# The file file_input was rewound 4495 times
+# The file file_input was rewound 4813 times
+# The file file_input was rewound 5143 times
+# The file file_input was rewound 5486 times
+# The file file_input was rewound 5841 times
+# The file file_input was rewound 6209 times
+# The file file_input was rewound 6590 times
+# The file file_input was rewound 6984 times
+# The file file_input was rewound 7390 times
+# The file file_input was rewound 7809 times
+# The file file_input was rewound 7811 times
+# The file file_input was rewound 7830 times
+# The file file_input was rewound 7832 times
+# The file file_input was rewound 7847 times
+# The file file_input was rewound 7850 times
+# The file file_input was rewound 7858 times
+
+------------------------------------------------------------------------------
+RESULTS FOR THE UNIFORMITY OF P-VALUES AND THE PROPORTION OF PASSING SEQUENCES
+------------------------------------------------------------------------------
+   generator is <../../mimcge/_testx16.txt>
+------------------------------------------------------------------------------
+ C1  C2  C3  C4  C5  C6  C7  C8  C9 C10  P-VALUE  PROPORTION  STATISTICAL TEST
+------------------------------------------------------------------------------
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  Frequency
+647   4   9   2   0   1   0   0   3 334  0.000000 *  360/1000 *  BlockFrequency
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  CumulativeSums
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  CumulativeSums
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  Runs
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  LongestRun
+ 96 101 109 116  96  90 117  84 105  86  0.193767    990/1000    Rank
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  FFT
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+303   0   2   0   0   0   0   0   0 695  0.000000 *  697/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  NonOverlappingTemplate
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  OverlappingTemplate
+998   1   0   0   0   1   0   0   0   0  0.000000 *    4/1000 *  Universal
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  ApproximateEntropy
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursions
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursions
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursions
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursions
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursions
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursions
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursions
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursions
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+  0   0   0   0   0   0   0   0   0   0     ----     ------     RandomExcursionsVariant
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  Serial
+1000   0   0   0   0   0   0   0   0   0  0.000000 *    0/1000 *  Serial
+434 141 102  81  55  48  38  46  27  28  0.000000 *  842/1000 *  LinearComplexity
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+The minimum pass rate for each statistical test with the exception of the
+random excursion (variant) test is approximately = 980 for a
+sample size = 1000 binary sequences.
+
+The minimum pass rate for the random excursion (variant) test is undefined.
+
+For further guidelines construct a probability table using the MAPLE program
+provided in the addendum section of the documentation.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+#=============================================================================#
+#            dieharder version 3.31.1 Copyright 2003 Robert G. Brown          #
+#=============================================================================#
+   rng_name    |rands/second|   Seed   |
+stdin_input_raw|  7.73e+04  |1718897551|
+#=============================================================================#
+        test_name   |ntup| tsamples |psamples|  p-value |Assessment
+#=============================================================================#
+   diehard_birthdays|   0|       100|     100|0.95978159|  PASSED
+      diehard_operm5|   0|   1000000|     100|0.00000000|  FAILED
+  diehard_rank_32x32|   0|     40000|     100|0.00000000|  FAILED
+    diehard_rank_6x8|   0|    100000|     100|0.00000000|  FAILED
+   diehard_bitstream|   0|   2097152|     100|0.03737446|  PASSED
+        diehard_opso|   0|   2097152|     100|0.00000000|  FAILED
+        diehard_oqso|   0|   2097152|     100|0.00000000|  FAILED
+         diehard_dna|   0|   2097152|     100|0.00000000|  FAILED
+diehard_count_1s_str|   0|    256000|     100|0.00000000|  FAILED
+diehard_count_1s_byt|   0|    256000|     100|0.00000000|  FAILED
+ diehard_parking_lot|   0|     12000|     100|0.00000000|  FAILED
+    diehard_2dsphere|   2|      8000|     100|0.00000000|  FAILED
+    diehard_3dsphere|   3|      4000|     100|0.00000000|  FAILED
+     diehard_squeeze|   0|    100000|     100|0.00204921|   WEAK
+        diehard_sums|   0|       100|     100|0.01642991|  PASSED
+        diehard_runs|   0|    100000|     100|0.00000000|  FAILED
+        diehard_runs|   0|    100000|     100|0.00000000|  FAILED
+       diehard_craps|   0|    200000|     100|0.00000000|  FAILED
+       diehard_craps|   0|    200000|     100|0.00000000|  FAILED
+ marsaglia_tsang_gcd|   0|  10000000|     100|0.00000000|  FAILED
+ marsaglia_tsang_gcd|   0|  10000000|     100|0.00000000|  FAILED
+         sts_monobit|   1|    100000|     100|0.15079705|  PASSED
+            sts_runs|   2|    100000|     100|0.18441071|  PASSED
+          sts_serial|   1|    100000|     100|0.53910189|  PASSED
+          sts_serial|   2|    100000|     100|0.56726619|  PASSED
+          sts_serial|   3|    100000|     100|0.66310103|  PASSED
+          sts_serial|   3|    100000|     100|0.65293079|  PASSED
+          sts_serial|   4|    100000|     100|0.60962635|  PASSED
+          sts_serial|   4|    100000|     100|0.83614604|  PASSED
+          sts_serial|   5|    100000|     100|0.96610986|  PASSED
+          sts_serial|   5|    100000|     100|0.88756182|  PASSED
+          sts_serial|   6|    100000|     100|0.13408480|  PASSED
+          sts_serial|   6|    100000|     100|0.22709013|  PASSED
+          sts_serial|   7|    100000|     100|0.29529980|  PASSED
+          sts_serial|   7|    100000|     100|0.56075822|  PASSED
+          sts_serial|   8|    100000|     100|0.92618771|  PASSED
+          sts_serial|   8|    100000|     100|0.07366145|  PASSED
+          sts_serial|   9|    100000|     100|0.52593454|  PASSED
+          sts_serial|   9|    100000|     100|0.74880468|  PASSED
+          sts_serial|  10|    100000|     100|0.71953708|  PASSED
+          sts_serial|  10|    100000|     100|0.96242007|  PASSED
+          sts_serial|  11|    100000|     100|0.95439021|  PASSED
+          sts_serial|  11|    100000|     100|0.91358988|  PASSED
+          sts_serial|  12|    100000|     100|0.33609508|  PASSED
+          sts_serial|  12|    100000|     100|0.98663866|  PASSED
+          sts_serial|  13|    100000|     100|0.60444595|  PASSED
+          sts_serial|  13|    100000|     100|0.79921336|  PASSED
+          sts_serial|  14|    100000|     100|0.90069187|  PASSED
+          sts_serial|  14|    100000|     100|0.88572842|  PASSED
+          sts_serial|  15|    100000|     100|0.95008272|  PASSED
+          sts_serial|  15|    100000|     100|0.40177147|  PASSED
+          sts_serial|  16|    100000|     100|0.79058610|  PASSED
+          sts_serial|  16|    100000|     100|0.78260784|  PASSED
+         rgb_bitdist|   1|    100000|     100|0.00000000|  FAILED
+         rgb_bitdist|   2|    100000|     100|0.00001428|   WEAK
+         rgb_bitdist|   3|    100000|     100|0.00000004|  FAILED
+         rgb_bitdist|   4|    100000|     100|0.50299826|  PASSED
+         rgb_bitdist|   5|    100000|     100|0.03329813|  PASSED
+         rgb_bitdist|   6|    100000|     100|0.00000000|  FAILED
+         rgb_bitdist|   7|    100000|     100|0.63326283|  PASSED
+
+#=============================================================================#
+#            dieharder version 3.31.1 Copyright 2003 Robert G. Brown          #
+#=============================================================================#
+   rng_name    |rands/second|   Seed   |
+stdin_input_raw|  1.45e+05  |3605982596|
+#=============================================================================#
+        test_name   |ntup| tsamples |psamples|  p-value |Assessment
+#=============================================================================#
+   diehard_birthdays|   0|       100|     100|0.00000000|  FAILED
+      diehard_operm5|   0|   1000000|     100|0.00000000|  FAILED
+  diehard_rank_32x32|   0|     40000|     100|0.00000000|  FAILED
+    diehard_rank_6x8|   0|    100000|     100|0.00000000|  FAILED
+   diehard_bitstream|   0|   2097152|     100|0.00000000|  FAILED
+        diehard_opso|   0|   2097152|     100|0.00000000|  FAILED
+        diehard_oqso|   0|   2097152|     100|0.00000000|  FAILED
+         diehard_dna|   0|   2097152|     100|0.00000000|  FAILED
+diehard_count_1s_str|   0|    256000|     100|0.00000000|  FAILED
+diehard_count_1s_byt|   0|    256000|     100|0.00000000|  FAILED
+ diehard_parking_lot|   0|     12000|     100|0.00000000|  FAILED
+    diehard_2dsphere|   2|      8000|     100|0.00000000|  FAILED
+    diehard_3dsphere|   3|      4000|     100|0.00000000|  FAILED
+     diehard_squeeze|   0|    100000|     100|0.00000000|  FAILED
+        diehard_sums|   0|       100|     100|0.00000000|  FAILED
+        diehard_runs|   0|    100000|     100|0.00000000|  FAILED
+        diehard_runs|   0|    100000|     100|0.00000000|  FAILED
+       diehard_craps|   0|    200000|     100|0.00000000|  FAILED
+       diehard_craps|   0|    200000|     100|0.00000000|  FAILED
+ marsaglia_tsang_gcd|   0|  10000000|     100|0.00000000|  FAILED
+ marsaglia_tsang_gcd|   0|  10000000|     100|0.00000000|  FAILED
+         sts_monobit|   1|    100000|     100|0.00219916|   WEAK
+            sts_runs|   2|    100000|     100|0.00292330|   WEAK
+          sts_serial|   1|    100000|     100|0.01498880|  PASSED
+          sts_serial|   2|    100000|     100|0.01281570|  PASSED
+          sts_serial|   3|    100000|     100|0.00158885|   WEAK
+          sts_serial|   3|    100000|     100|0.00000107|   WEAK
+          sts_serial|   4|    100000|     100|0.00021102|   WEAK
+          sts_serial|   4|    100000|     100|0.21513417|  PASSED
+          sts_serial|   5|    100000|     100|0.00000000|  FAILED
+          sts_serial|   5|    100000|     100|0.00000000|  FAILED
+          sts_serial|   6|    100000|     100|0.00000000|  FAILED
+          sts_serial|   6|    100000|     100|0.00000000|  FAILED
+          sts_serial|   7|    100000|     100|0.00000000|  FAILED
+          sts_serial|   7|    100000|     100|0.00000000|  FAILED
+          sts_serial|   8|    100000|     100|0.00000000|  FAILED
+          sts_serial|   8|    100000|     100|0.00000000|  FAILED
+          sts_serial|   9|    100000|     100|0.00000000|  FAILED
+          sts_serial|   9|    100000|     100|0.00000000|  FAILED
+          sts_serial|  10|    100000|     100|0.00000000|  FAILED
+          sts_serial|  10|    100000|     100|0.00000000|  FAILED
+          sts_serial|  11|    100000|     100|0.00000000|  FAILED
+          sts_serial|  11|    100000|     100|0.00000000|  FAILED
+          sts_serial|  12|    100000|     100|0.00000000|  FAILED
+          sts_serial|  12|    100000|     100|0.00000000|  FAILED
+          sts_serial|  13|    100000|     100|0.00000000|  FAILED
+          sts_serial|  13|    100000|     100|0.00000000|  FAILED
+          sts_serial|  14|    100000|     100|0.00000000|  FAILED
+          sts_serial|  14|    100000|     100|0.00000000|  FAILED
+          sts_serial|  15|    100000|     100|0.00000000|  FAILED
+          sts_serial|  15|    100000|     100|0.00000000|  FAILED
+          sts_serial|  16|    100000|     100|0.00000000|  FAILED
+          sts_serial|  16|    100000|     100|0.00000000|  FAILED
+         rgb_bitdist|   1|    100000|     100|0.00000000|  FAILED
+         rgb_bitdist|   2|    100000|     100|0.00000000|  FAILED
+         rgb_bitdist|   3|    100000|     100|0.00000000|  FAILED
+         rgb_bitdist|   4|    100000|     100|0.00000000|  FAILED
+         rgb_bitdist|   5|    100000|     100|0.00000000|  FAILED
+         rgb_bitdist|   6|    100000|     100|0.00000000|  FAILED
+         rgb_bitdist|   7|    100000|     100|0.00000000|  FAILED
+         rgb_bitdist|   8|    100000|     100|0.00000000|  FAILED
+         rgb_bitdist|   9|    100000|     100|0.00000000|  FAILED
+         rgb_bitdist|  10|    100000|     100|0.00000000|  FAILED
+         rgb_bitdist|  11|    100000|     100|0.00000000|  FAILED
+         rgb_bitdist|  12|    100000|     100|0.00000000|  FAILED
+rgb_minimum_distance|   2|     10000|    1000|0.00000000|  FAILED
+rgb_minimum_distance|   3|     10000|    1000|0.00000000|  FAILED
+rgb_minimum_distance|   4|     10000|    1000|0.00000000|  FAILED
+rgb_minimum_distance|   5|     10000|    1000|0.00000000|  FAILED
+    rgb_permutations|   2|    100000|     100|0.00000000|  FAILED
+    rgb_permutations|   3|    100000|     100|0.00000000|  FAILED
+    rgb_permutations|   4|    100000|     100|0.00000000|  FAILED
+    rgb_permutations|   5|    100000|     100|0.00000000|  FAILED
+      rgb_lagged_sum|   0|   1000000|     100|0.00000000|  FAILED
+      rgb_lagged_sum|   1|   1000000|     100|0.00000000|  FAILED
+      rgb_lagged_sum|   2|   1000000|     100|0.00000000|  FAILED
+      rgb_lagged_sum|   3|   1000000|     100|0.00000000|  FAILED
+      rgb_lagged_sum|   4|   1000000|     100|0.00000000|  FAILED
+      rgb_lagged_sum|   5|   1000000|     100|0.00000000|  FAILED
+      rgb_lagged_sum|   6|   1000000|     100|0.00000000|  FAILED
+      rgb_lagged_sum|   7|   1000000|     100|0.00000000|  FAILED
+      rgb_lagged_sum|   8|   1000000|     100|0.00000000|  FAILED
+^C
+
+#=============================================================================#
+#            dieharder version 3.31.1 Copyright 2003 Robert G. Brown          #
+#=============================================================================#
+   rng_name    |rands/second|   Seed   |
+stdin_input_raw|  1.29e+05  |1571839948|
+#=============================================================================#
+        test_name   |ntup| tsamples |psamples|  p-value |Assessment
+#=============================================================================#
+     rgb_kstest_test|   0|     10000|    1000|0.00000000|  FAILED
+
+#=============================================================================#
+#            dieharder version 3.31.1 Copyright 2003 Robert G. Brown          #
+#=============================================================================#
+   rng_name    |rands/second|   Seed   |
+stdin_input_raw|  1.15e+05  | 127557274|
+#=============================================================================#
+        test_name   |ntup| tsamples |psamples|  p-value |Assessment
+#=============================================================================#
+     dab_bytedistrib|   0|  51200000|       1|1.00000000|  FAILED
+
+#=============================================================================#
+#            dieharder version 3.31.1 Copyright 2003 Robert G. Brown          #
+#=============================================================================#
+   rng_name    |rands/second|   Seed   |
+stdin_input_raw|  1.23e+05  |2946524323|
+#=============================================================================#
+        test_name   |ntup| tsamples |psamples|  p-value |Assessment
+#=============================================================================#
+             dab_dct| 256|     50000|       1|0.00000000|  FAILED
+
+#=============================================================================#
+#            dieharder version 3.31.1 Copyright 2003 Robert G. Brown          #
+#=============================================================================#
+   rng_name    |rands/second|   Seed   |
+stdin_input_raw|  1.39e+05  |3254183927|
+#=============================================================================#
+        test_name   |ntup| tsamples |psamples|  p-value |Assessment
+#=============================================================================#
+        dab_filltree|  32|  15000000|       1|0.00000000|  FAILED
+        dab_filltree|  32|  15000000|       1|0.00000000|  FAILED
+
+#=============================================================================#
+#            dieharder version 3.31.1 Copyright 2003 Robert G. Brown          #
+#=============================================================================#
+   rng_name    |rands/second|   Seed   |
+stdin_input_raw|  1.21e+05  | 213632061|
+#=============================================================================#
+        test_name   |ntup| tsamples |psamples|  p-value |Assessment
+#=============================================================================#
+       dab_filltree2|   0|   5000000|       1|0.00000000|  FAILED
+       dab_filltree2|   1|   5000000|       1|0.00000000|  FAILED
+
+#=============================================================================#
+#            dieharder version 3.31.1 Copyright 2003 Robert G. Brown          #
+#=============================================================================#
+   rng_name    |rands/second|   Seed   |
+stdin_input_raw|  1.25e+05  | 180258243|
+#=============================================================================#
+        test_name   |ntup| tsamples |psamples|  p-value |Assessment
+#=============================================================================#
+        dab_monobit2|  12|  65000000|       1|1.00000000|  FAILED
+
+
+#=============================================================================#
+#            dieharder version 3.31.1 Copyright 2003 Robert G. Brown          #
+#=============================================================================#
+   rng_name    |rands/second|   Seed   |
+stdin_input_raw|  1.38e+05  |2157551193|
+#=============================================================================#
+        test_name   |ntup| tsamples |psamples|  p-value |Assessment
+#=============================================================================#
+      rgb_lagged_sum|   9|   1000000|     100|0.00000000|  FAILED  
+thread 'main' panicked at src/experiments/tests.rs:110:85:
+called `Result::unwrap()` on an `Err` value: Os { code: 32, kind: BrokenPipe, message: "Broken pipe" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+#=============================================================================#
+#            dieharder version 3.31.1 Copyright 2003 Robert G. Brown          #
+#=============================================================================#
+   rng_name    |rands/second|   Seed   |
+stdin_input_raw|  1.38e+05  | 996979834|
+#=============================================================================#
+        test_name   |ntup| tsamples |psamples|  p-value |Assessment
+#=============================================================================#
+      rgb_lagged_sum|  10|   1000000|     100|0.00000000|  FAILED  
