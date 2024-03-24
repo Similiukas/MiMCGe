@@ -16,7 +16,7 @@ mod tests;
 #[command(version, about, long_about = None)]
 struct Args {
     /// Type of test to be performed.
-    #[arg(value_parser=["diffusion", "confusion", "enc-time", "dec-time", "cipher-test", "generate-test-samples", "bit-stream"])]
+    #[arg(value_parser=["diffusion", "confusion", "enc-time", "dec-time", "cipher-test", "generate-test-samples", "start-bit-stream"])]
     test_type: String,
 
     /// Cipher type.
@@ -91,7 +91,7 @@ fn main() {
         "dec-time" => test_decryption_time(args.test_size, args.sample_size, args.block_size, cipher_type),
         "cipher-test" => test_cipher(plaintext, args.block_size, key, cipher_type),
         "generate-test-samples" => encrypt_seq(args.test_size, args.block_size, key, cipher_type),
-        "bit-stream" => encrypt_seq_stream(args.block_size, key, cipher_type),
+        "start-bit-stream" => encrypt_seq_stream(args.block_size, key, cipher_type),
         _ => unreachable!()
     }
 }
