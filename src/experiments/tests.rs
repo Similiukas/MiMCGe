@@ -1,7 +1,7 @@
 use std::io;
 use std::io::Write;
 use std::time::Instant;
-use crate::experiments::helpers::{choose_cipher, confusion, decryption_encryption, diffusion, to_32_bit};
+use crate::experiments::helpers::{choose_cipher, confusion, decryption_encryption, diffusion, standard_deviation, to_32_bit};
 use crate::utils::helpers::{CipherType, FieldElement, to_binary, to_decimal};
 
 /// # Diffusion test for cipher.
@@ -18,12 +18,20 @@ pub fn test_diffusion(test_size: usize, block_size: u32, cipher_type: CipherType
     let start = Instant::now();
     let cipher = choose_cipher(&cipher_type, block_size);
 
-    let mut result = 0;
+    let mut sum = 0.0;
+    let mut ssq = 0.0;
     for _ in 0..test_size {
-        result += diffusion(&cipher, block_size);
+        let r = diffusion(&cipher, block_size) as f64;
+        sum += r;
+        ssq += r.powi(2);
     }
+    let mean = sum / test_size as f64;
+    let std_deviation = standard_deviation(ssq, sum, test_size);
+    let expected_mean = 0.5 * (block_size.pow(2) as f64);
 
-    println!("Diffusion tested with {test_size} plaintexts\nFinal result {} in {:.2?}", (result as f64) / (test_size * block_size.pow(2) as usize) as f64 * 10000.0, start.elapsed());
+    println!("Diffusion tested with {test_size} plaintexts");
+    println!("Final result {} in {:.2?}", sum / (test_size * block_size.pow(2) as usize) as f64 * 10000.0, start.elapsed());
+    println!("Expected mean: {} mean: {} standard deviation: {}", expected_mean, mean, std_deviation);
 }
 
 /// # Confusion test for cipher.
@@ -40,12 +48,20 @@ pub fn test_confusion(test_size: usize, block_size: u32, cipher_type: CipherType
     let start = Instant::now();
     let cipher = choose_cipher(&cipher_type, block_size);
 
-    let mut result = 0;
+    let mut sum = 0.0;
+    let mut ssq = 0.0;
     for _ in 0..test_size {
-        result += confusion(&cipher, block_size);
+        let r = confusion(&cipher, block_size) as f64;
+        sum += r;
+        ssq += r.powi(2);
     }
+    let mean = sum / test_size as f64;
+    let std_deviation = standard_deviation(ssq, sum, test_size);
+    let expected_mean = 0.5 * (block_size.pow(2) as f64);
 
-    println!("Confusion tested with {test_size} plaintexts\nFinal result {} in {:.2?}", (result as f64) / (test_size * block_size.pow(2) as usize) as f64 * 10000.0, start.elapsed());
+    println!("Confusion tested with {test_size} plaintexts");
+    println!("Final result {} in {:.2?}", sum / (test_size * block_size.pow(2) as usize) as f64 * 10000.0, start.elapsed());
+    println!("Calculated r {} expected mean: {} mean: {} standard deviation: {}", sum, expected_mean, mean, std_deviation);
 }
 
 /// # Encryption efficiency test for cipher

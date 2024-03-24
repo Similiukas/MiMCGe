@@ -105,3 +105,10 @@ fn bits_to_byte(bits: &[u8]) -> u8 {
 pub fn to_32_bit(a: FieldElement) -> [u8; 4] {
     [bits_to_byte(&a[0..8]),bits_to_byte(&a[8..16]),bits_to_byte(&a[16..24]), bits_to_byte(&a[24..32])]
 }
+
+/// Calculating the standard deviation
+///
+/// SD^2 = SSQ/n - (SQS/n)^2   (Sum of Squares and Square of the Sum)
+pub fn standard_deviation(ssq: f64, sum: f64, n: usize) -> f64 {
+    (ssq / n as f64 - (sum / n as f64).powi(2)).sqrt()
+}
