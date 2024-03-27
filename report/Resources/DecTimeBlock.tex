@@ -1,0 +1,32 @@
+\begin{tikzpicture}
+    \centering
+    \begin{axis}[
+        title={Time of 1000x1000 plaintext decryption},
+        xlabel={Block size},
+        ylabel={Time (s)},
+        xmin=5, xmax=125,
+        ymin=0,
+        xtick={5,17,33,47,61,83,101,125},
+        legend pos=north west,
+        ymajorgrids=true,
+        grid style=dashed,
+    ]
+    
+    \addplot[color=red,mark=square]
+        coordinates {(5,1.238124)(8,0)(11,6.284423)(17,20.663773)(25,65.352465)(31,124.771502)(33,144.459927)(47,405.731191)(61,860.227729)(83,2105.199135)(101,3352.728925)(125,5879.720673)};
+        \addlegendentry{$x^3$}
+        
+    \addplot[color=orange,mark=square]
+        coordinates {(5,1.003893)(8,0)(11,4.539344)(17,15.63964)(25,45.325218)(31,85.296183)(33,103.071407)(47,282.846526)(61,599.66113)(83,1435.833522)(101,2489.086115)(125,4179.338077)};
+        \addlegendentry{$x^5$}
+        
+    \addplot[color=green,mark=square]
+        coordinates {(5,0.415313255)(8,0.728571664)(11,1.769222)(17,5.999894)(25,17.709814)(31,30.901419)(33,39.235038)(47,103.618969)(61,228.510623)(83,547.466368)(101,1006.260302)(125,1864.344957)};
+        \addlegendentry{$x^{16}$}
+
+    \addplot[color=blue,mark=square]
+        coordinates {(5,0.783873307)(8,0)(11,3.281657)(17,8.703956)(25,25.118567)(31,43.444618)(33,56.340793)(47,146.734018)(61,312.654053)(83,761.075043)(101,1364.620447)(125,2289.486594)};
+        \addlegendentry{$x^{24}$}
+        
+    \end{axis}
+\end{tikzpicture}

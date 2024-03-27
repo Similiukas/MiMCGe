@@ -378,6 +378,8 @@
 \def\DOI#1{\global\def\@DOI{#1}}
 \def\subjectarea#1{\global\def\@subjectarea{#1}}
 \def\supervisor#1{\global\def\@supervisor{#1}}
+\def\studentId#1{\global\def\@studentId{#1}}
+\def\wordCount#1{\global\def\@wordCount{#1}}
 
 \definecolor{gray}{cmyk}{0, 0, 0, 0.4}
 \newlength{\extraspace}
@@ -473,6 +475,10 @@
     {\helvetica\fontsize{10}{12}\selectfont\raggedright \@school \par}
     \vspace{4\p@}
     {\helvetica\fontsize{10}{12}\selectfont\raggedright Supervisor: \@supervisor \par}
+    \vspace{4\p@}
+    {\helvetica\fontsize{10}{12}\selectfont\raggedright Student ID: \@studentId \par}
+    \vspace{4\p@}
+    {\helvetica\fontsize{10}{12}\selectfont\raggedright Words: \@wordCount \par}
     \vspace{4\p@}
     {\helvetica\fontsize{10}{12}\selectfont\raggedright \@date \par}
     \vspace{8\p@}
