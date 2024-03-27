@@ -1,0 +1,28 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        title={$x^{16}$},
+        xlabel={Round reduction},
+        ylabel={Percentage \%},
+        ylabel style={yshift=2mm},
+        xmin=0, xmax=8,
+        ymin=0, ymax=60,
+        xtick={0,1,2,3,4,5,6,7,8},
+        ytick={0, 10, 20, 30, 40, 50, 60},
+        yticklabel style={/pgf/number format/.cd,precision=2,zerofill},
+        legend pos=north west,
+        ymajorgrids=true,
+        grid style=dashed,
+    ]
+    
+    \addplot[color=blue,mark=square]
+        coordinates {
+        (0,4.890738814)(1, 10.61394381)(2, 31.11342352)(3, 31.9458897)(4, 24.24557752)(5, 30.07284079)(6, 32.57023933)(7, 16.64932362)(8, 16.64932362)};
+        \addlegendentry{Diffusion}
+
+    \addplot[color=red,mark=square]
+        coordinates {
+        (0,33.61082206)(1, 34.13111342)(2, 33.71488033)(3, 29.24037461)(4, 30.8012487)(5, 27.57544225)(6, 30.38501561)(7, 18.21019771)(8, 18.21019771)};
+        \addlegendentry{Confusion}
+        
+    \end{axis}
+\end{tikzpicture}

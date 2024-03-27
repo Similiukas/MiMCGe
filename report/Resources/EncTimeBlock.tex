@@ -1,0 +1,33 @@
+\begin{tikzpicture}
+    \centering
+    \begin{axis}[
+        title={Time of 1000x1000 plaintext encryption},
+        xlabel={Block size},
+        ylabel={Time (s)},
+        xmin=5, xmax=127,
+        ymin=0, ymax=140,
+        xtick={5,17,33,47,61,83,101,127},
+        ytick={20,40,60,80,100,120,140},
+        legend pos=north west,
+        ymajorgrids=true,
+        grid style=dashed,
+    ]
+    
+    \addplot[color=red,mark=square]
+        coordinates {(5,0.779425651)(11,1.832077)(17,3.558432)(25,6.584918)(31,9.213786)(33,10.425455)(47,19.591114)(61,31.261093)(83,54.558276)(101,79.355382)(125,121.142502)(127,126.356184)};
+        \addlegendentry{$x^3$}
+        
+    \addplot[color=orange,mark=square]
+        coordinates {(5,0.687063986)(11,1.538203)(17,3.06219)(25,5.393721)(31,8.051252)(33,9.090086)(47,16.764139)(61,26.580275)(83,45.741668)(101,67.428255)(125,101.666706)(127,105.333163)};
+        \addlegendentry{$x^5$}
+        
+    \addplot[color=green,mark=square]
+        coordinates {(5,0.519270175)(8,0.621494693)(11,1.078232)(17,2.225287)(25,4.007449)(31,5.38127)(33,6.395586)(47,11.283892)(61,18.569098)(83,31.718236)(101,47.254658)(125,71.282208)(127,72.60425)};
+        \addlegendentry{$x^{16}$}
+
+    \addplot[color=blue,mark=square]
+        coordinates {((5,0.573398118)(11,1.201971)(17,2.020592)(25,3.905602)(31,5.336411)(33,6.413426)(47,11.862275)(61,18.671967)(83,33.00753)(101,48.308988)(125,72.13019)(127,73.276918)};
+        \addlegendentry{$x^{24}$}
+        
+    \end{axis}
+\end{tikzpicture}

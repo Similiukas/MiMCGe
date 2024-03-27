@@ -1,0 +1,28 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        title={$x^5$},
+        xlabel={Round reduction},
+        ylabel={Percentage \%},
+        ylabel style={yshift=2mm},
+        xmin=0, xmax=14,
+        ymin=49.80, ymax=50.20,
+        xtick={0,2,4,6,8,10,12,14},
+        ytick={49.8,49.85,49.9,49.95,50,50.05,50.1,50.15,50.2},
+        yticklabel style={/pgf/number format/.cd,precision=2,zerofill},
+        legend pos=north west,
+        ymajorgrids=true,
+        grid style=dashed,
+    ]
+    
+    \addplot[color=blue,mark=square]
+        coordinates {
+        (0,50.0250052)(1, 50.01719043)(2, 50.00563996)(3, 50.00594173)(4, 50.01730489)(5, 50.00752341)(6, 49.98445369)(7, 49.98258065)(8, 50.01220604)(9, 50.00592092)(10, 49.97793965)(11, 50.0008949)(12, 50.00315297)(13, 50.02217482)(14, 50.02880333)};
+        \addlegendentry{Diffusion}
+
+    \addplot[color=red,mark=square]
+        coordinates {
+        (0,50.00844953)(1, 50.02448491)(2, 50.00540062)(3, 49.9932154)(4, 49.99976067)(5, 50.0051717)(6, 49.97917794)(7, 49.9940999)(8, 50.01253902)(9,50.00131113)(10, 50.01664932)(11, 49.9792924)(12, 49.99266389)(13, 49.94990635)(14, 49.94365245)};
+        \addlegendentry{Confusion}
+        
+    \end{axis}
+\end{tikzpicture}
