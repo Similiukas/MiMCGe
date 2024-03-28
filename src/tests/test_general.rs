@@ -1,4 +1,4 @@
-use crate::utils::helpers::{add_finite_field, multiply_finite_field, power_finite_field, square_multiply, to_binary, to_decimal};
+use crate::utils::helpers::{add_finite_field, multiply_finite_field, square_multiply, to_binary, to_decimal};
 
 #[test]
 fn convert_to_decimal() {
@@ -71,18 +71,6 @@ fn multiply_over_finite_field_31() {
     let a = vec![0,0,0,0,1,0,0,1,0,1,1,0,0,1,1,1,0,0,1,0,0,1,1,0,1,0,1,1,0,0,1]; // 78877529
     let b = vec![1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,1,0,0,1,1,1,0,1,1,0,1,1,1]; // 1353986999
     assert_eq!(multiply_finite_field(&a, &b, 31), vec![1,1,1,1,1,1,1,1,0,1,1,1,0,0,1,0,1,1,1,0,0,0,0,1,0,0,1,0,1,0,1]); // 2142859413
-}
-
-#[test]
-fn power_over_finite_field_5() {
-    let a = vec![0,0,1,0,0]; // 4
-    assert_eq!(power_finite_field(&a, 5, 5), vec![1,0,0,0,1]); // 17
-}
-
-#[test]
-fn power_over_finite_field_17() {
-    let a = vec![0,1,0,1,1,1,0,0,0,0,0,1,0,0,1,1,0]; // 47142
-    assert_eq!(power_finite_field(&a, 5, 17), vec![0,0,1,1,1,1,0,1,1,1,1,1,1,1,0,0,1]); // 31737
 }
 
 #[test]

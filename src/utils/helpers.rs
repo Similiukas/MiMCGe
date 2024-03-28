@@ -128,18 +128,6 @@ pub fn multiply_finite_field(a: &FieldElement, b: &FieldElement, block_size: u32
     to_binary(_multiply_finite_field(to_decimal(&a), to_decimal(&b), block_size), block_size)
 }
 
-/// Naive approach for exponentiation in finite field. The implementation is to just multiply the number n times.
-///
-/// This can be optimized further using [square and multiply](https://en.wikipedia.org/wiki/Exponentiation_by_squaring)
-/// method or similar to reduce the number of multiplications.
-pub fn power_finite_field(a: &FieldElement, exponent: usize, block_size: u32) -> FieldElement {
-    let mut result: FieldElement = a.to_vec();
-    for _ in 0..exponent - 1 {
-        result = multiply_finite_field(&result, a, block_size);
-    }
-    result
-}
-
 fn _square_multiply(y: u128, x: u128, exponent: u128, block_size: u32) -> u128 {
     return if exponent == 0 { y }
     else if exponent % 2 == 0 { _square_multiply(y, _multiply_finite_field(x, x, block_size), exponent / 2, block_size) }
