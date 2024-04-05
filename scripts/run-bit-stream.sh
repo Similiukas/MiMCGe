@@ -12,4 +12,4 @@ round_constants=(0 2581531542 1773747006 2819529528 7144946213 1660851658 751223
 # 8 round constants for x^24
 #round_constants=(0 2581531542 1773747006 2819529528 7144946213 1660851658 7512237165 16713709)
 
-./target/release/mimcge start-bit-stream mimcge 33  -k "$key" -e "$exponent" --round-constants "${round_constants[@]}"
+../target/release/mimcge start-bit-stream mimcge 33  -k "$key" -e "$exponent" --round-constants "${round_constants[@]}"
